@@ -35,13 +35,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Emgu.CV">
-      <HintPath>..\..\..\..\..\Program Files\emgucv 2.1.0.793\bin\Emgu.CV.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files\Emgu\Emgu CV\bin\Emgu.CV.dll</HintPath>
     </Reference>
     <Reference Include="Emgu.CV.UI">
-      <HintPath>..\..\..\..\..\Program Files\emgucv 2.1.0.793\bin\Emgu.CV.UI.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files\Emgu\Emgu CV\bin\Emgu.CV.UI.dll</HintPath>
     </Reference>
     <Reference Include="Emgu.Util">
-      <HintPath>..\..\..\..\..\Program Files\emgucv 2.1.0.793\bin\Emgu.Util.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files\Emgu\Emgu CV\bin\Emgu.Util.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
