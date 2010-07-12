@@ -1,4 +1,4 @@
-﻿namespace OpticalFlow
+﻿namespace VisualOdometry.UI
 {
 	partial class MainForm
 	{
@@ -29,13 +29,17 @@
 		private void InitializeComponent()
 		{
 			this.m_TopPanel = new System.Windows.Forms.Panel();
+			this.m_ApplyButton = new System.Windows.Forms.Button();
+			this.m_GroundTopTextBox = new System.Windows.Forms.TextBox();
+			this.label8 = new System.Windows.Forms.Label();
+			this.m_SkyBottomTextBox = new System.Windows.Forms.TextBox();
+			this.label9 = new System.Windows.Forms.Label();
 			this.m_MinDistanceTextBox = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
 			this.m_QaulityLevelTextBox = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
 			this.m_BlockSizeTextBox = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
-			this.m_ApplyButton = new System.Windows.Forms.Button();
 			this.m_MaxFeatureCountTextBox = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.m_BottomPanel = new System.Windows.Forms.Panel();
@@ -46,14 +50,12 @@
 			this.label6 = new System.Windows.Forms.Label();
 			this.m_FoundFeaturesCountTextBox = new System.Windows.Forms.TextBox();
 			this.label5 = new System.Windows.Forms.Label();
-			this.m_CenterPanel = new System.Windows.Forms.Panel();
 			this.m_ImagesSplitter = new System.Windows.Forms.SplitContainer();
-			this.m_ImageBoxWithHeading = new Vision.WinForm.ImageBoxWithHeading();
-			this.m_FlowImageBoxWithHeading = new Vision.WinForm.ImageBoxWithHeading();
+			this.m_FeaturesImageBox = new Vision.WinForm.ImageBoxWithHeading();
+			this.m_FlowImageBox = new Vision.WinForm.ImageBoxWithHeading();
 			this.m_TopPanel.SuspendLayout();
 			this.m_BottomPanel.SuspendLayout();
 			this.groupBox1.SuspendLayout();
-			this.m_CenterPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.m_ImagesSplitter)).BeginInit();
 			this.m_ImagesSplitter.Panel1.SuspendLayout();
 			this.m_ImagesSplitter.Panel2.SuspendLayout();
@@ -62,24 +64,70 @@
 			// 
 			// m_TopPanel
 			// 
+			this.m_TopPanel.Controls.Add(this.m_ApplyButton);
+			this.m_TopPanel.Controls.Add(this.m_GroundTopTextBox);
+			this.m_TopPanel.Controls.Add(this.label8);
+			this.m_TopPanel.Controls.Add(this.m_SkyBottomTextBox);
+			this.m_TopPanel.Controls.Add(this.label9);
 			this.m_TopPanel.Controls.Add(this.m_MinDistanceTextBox);
 			this.m_TopPanel.Controls.Add(this.label4);
 			this.m_TopPanel.Controls.Add(this.m_QaulityLevelTextBox);
 			this.m_TopPanel.Controls.Add(this.label3);
 			this.m_TopPanel.Controls.Add(this.m_BlockSizeTextBox);
 			this.m_TopPanel.Controls.Add(this.label2);
-			this.m_TopPanel.Controls.Add(this.m_ApplyButton);
 			this.m_TopPanel.Controls.Add(this.m_MaxFeatureCountTextBox);
 			this.m_TopPanel.Controls.Add(this.label1);
 			this.m_TopPanel.Dock = System.Windows.Forms.DockStyle.Top;
 			this.m_TopPanel.Location = new System.Drawing.Point(0, 0);
 			this.m_TopPanel.Name = "m_TopPanel";
-			this.m_TopPanel.Size = new System.Drawing.Size(1402, 83);
-			this.m_TopPanel.TabIndex = 0;
+			this.m_TopPanel.Size = new System.Drawing.Size(1279, 83);
+			this.m_TopPanel.TabIndex = 1;
+			// 
+			// m_ApplyButton
+			// 
+			this.m_ApplyButton.Location = new System.Drawing.Point(702, 38);
+			this.m_ApplyButton.Name = "m_ApplyButton";
+			this.m_ApplyButton.Size = new System.Drawing.Size(75, 23);
+			this.m_ApplyButton.TabIndex = 4;
+			this.m_ApplyButton.Text = "Apply";
+			this.m_ApplyButton.UseVisualStyleBackColor = true;
+			this.m_ApplyButton.Click += new System.EventHandler(this.OnApplyButtonClicked);
+			// 
+			// m_GroundTopTextBox
+			// 
+			this.m_GroundTopTextBox.Location = new System.Drawing.Point(587, 38);
+			this.m_GroundTopTextBox.Name = "m_GroundTopTextBox";
+			this.m_GroundTopTextBox.Size = new System.Drawing.Size(68, 22);
+			this.m_GroundTopTextBox.TabIndex = 12;
+			// 
+			// label8
+			// 
+			this.label8.AutoSize = true;
+			this.label8.Location = new System.Drawing.Point(478, 41);
+			this.label8.Name = "label8";
+			this.label8.Size = new System.Drawing.Size(89, 17);
+			this.label8.TabIndex = 11;
+			this.label8.Text = "Ground Top:";
+			// 
+			// m_SkyBottomTextBox
+			// 
+			this.m_SkyBottomTextBox.Location = new System.Drawing.Point(587, 10);
+			this.m_SkyBottomTextBox.Name = "m_SkyBottomTextBox";
+			this.m_SkyBottomTextBox.Size = new System.Drawing.Size(68, 22);
+			this.m_SkyBottomTextBox.TabIndex = 10;
+			// 
+			// label9
+			// 
+			this.label9.AutoSize = true;
+			this.label9.Location = new System.Drawing.Point(478, 13);
+			this.label9.Name = "label9";
+			this.label9.Size = new System.Drawing.Size(83, 17);
+			this.label9.TabIndex = 9;
+			this.label9.Text = "Sky Bottom:";
 			// 
 			// m_MinDistanceTextBox
 			// 
-			this.m_MinDistanceTextBox.Location = new System.Drawing.Point(403, 38);
+			this.m_MinDistanceTextBox.Location = new System.Drawing.Point(371, 38);
 			this.m_MinDistanceTextBox.Name = "m_MinDistanceTextBox";
 			this.m_MinDistanceTextBox.Size = new System.Drawing.Size(68, 22);
 			this.m_MinDistanceTextBox.TabIndex = 8;
@@ -111,7 +159,7 @@
 			// 
 			// m_BlockSizeTextBox
 			// 
-			this.m_BlockSizeTextBox.Location = new System.Drawing.Point(403, 10);
+			this.m_BlockSizeTextBox.Location = new System.Drawing.Point(371, 10);
 			this.m_BlockSizeTextBox.Name = "m_BlockSizeTextBox";
 			this.m_BlockSizeTextBox.Size = new System.Drawing.Size(68, 22);
 			this.m_BlockSizeTextBox.TabIndex = 4;
@@ -124,16 +172,6 @@
 			this.label2.Size = new System.Drawing.Size(77, 17);
 			this.label2.TabIndex = 3;
 			this.label2.Text = "Block Size:";
-			// 
-			// m_ApplyButton
-			// 
-			this.m_ApplyButton.Location = new System.Drawing.Point(510, 38);
-			this.m_ApplyButton.Name = "m_ApplyButton";
-			this.m_ApplyButton.Size = new System.Drawing.Size(75, 23);
-			this.m_ApplyButton.TabIndex = 2;
-			this.m_ApplyButton.Text = "Apply";
-			this.m_ApplyButton.UseVisualStyleBackColor = true;
-			this.m_ApplyButton.Click += new System.EventHandler(this.OnApplyButtonClicked);
 			// 
 			// m_MaxFeatureCountTextBox
 			// 
@@ -155,10 +193,10 @@
 			// 
 			this.m_BottomPanel.Controls.Add(this.groupBox1);
 			this.m_BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.m_BottomPanel.Location = new System.Drawing.Point(0, 578);
+			this.m_BottomPanel.Location = new System.Drawing.Point(0, 565);
 			this.m_BottomPanel.Name = "m_BottomPanel";
-			this.m_BottomPanel.Size = new System.Drawing.Size(1402, 88);
-			this.m_BottomPanel.TabIndex = 1;
+			this.m_BottomPanel.Size = new System.Drawing.Size(1279, 88);
+			this.m_BottomPanel.TabIndex = 2;
 			// 
 			// groupBox1
 			// 
@@ -171,7 +209,7 @@
 			this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.groupBox1.Location = new System.Drawing.Point(0, 0);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(1402, 88);
+			this.groupBox1.Size = new System.Drawing.Size(1279, 88);
 			this.groupBox1.TabIndex = 8;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Features";
@@ -227,66 +265,56 @@
 			this.label5.TabIndex = 4;
 			this.label5.Text = "Found:";
 			// 
-			// m_CenterPanel
-			// 
-			this.m_CenterPanel.Controls.Add(this.m_ImagesSplitter);
-			this.m_CenterPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.m_CenterPanel.Location = new System.Drawing.Point(0, 83);
-			this.m_CenterPanel.Name = "m_CenterPanel";
-			this.m_CenterPanel.Size = new System.Drawing.Size(1402, 495);
-			this.m_CenterPanel.TabIndex = 2;
-			// 
 			// m_ImagesSplitter
 			// 
 			this.m_ImagesSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.m_ImagesSplitter.Location = new System.Drawing.Point(0, 0);
+			this.m_ImagesSplitter.Location = new System.Drawing.Point(0, 83);
 			this.m_ImagesSplitter.Name = "m_ImagesSplitter";
 			// 
 			// m_ImagesSplitter.Panel1
 			// 
-			this.m_ImagesSplitter.Panel1.Controls.Add(this.m_ImageBoxWithHeading);
+			this.m_ImagesSplitter.Panel1.Controls.Add(this.m_FeaturesImageBox);
 			// 
 			// m_ImagesSplitter.Panel2
 			// 
-			this.m_ImagesSplitter.Panel2.Controls.Add(this.m_FlowImageBoxWithHeading);
-			this.m_ImagesSplitter.Size = new System.Drawing.Size(1402, 495);
-			this.m_ImagesSplitter.SplitterDistance = 677;
-			this.m_ImagesSplitter.TabIndex = 1;
+			this.m_ImagesSplitter.Panel2.Controls.Add(this.m_FlowImageBox);
+			this.m_ImagesSplitter.Size = new System.Drawing.Size(1279, 482);
+			this.m_ImagesSplitter.SplitterDistance = 617;
+			this.m_ImagesSplitter.TabIndex = 3;
 			// 
-			// m_ImageBoxWithHeading
+			// m_FeaturesImageBox
 			// 
-			this.m_ImageBoxWithHeading.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.m_ImageBoxWithHeading.Heading = "Features to Track";
-			this.m_ImageBoxWithHeading.Location = new System.Drawing.Point(0, 0);
-			this.m_ImageBoxWithHeading.Name = "m_ImageBoxWithHeading";
-			this.m_ImageBoxWithHeading.Size = new System.Drawing.Size(677, 495);
-			this.m_ImageBoxWithHeading.TabIndex = 1;
+			this.m_FeaturesImageBox.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.m_FeaturesImageBox.Heading = "Features";
+			this.m_FeaturesImageBox.Location = new System.Drawing.Point(0, 0);
+			this.m_FeaturesImageBox.Name = "m_FeaturesImageBox";
+			this.m_FeaturesImageBox.Size = new System.Drawing.Size(617, 482);
+			this.m_FeaturesImageBox.TabIndex = 0;
 			// 
-			// m_FlowImageBoxWithHeading
+			// m_FlowImageBox
 			// 
-			this.m_FlowImageBoxWithHeading.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.m_FlowImageBoxWithHeading.Heading = "Flow";
-			this.m_FlowImageBoxWithHeading.Location = new System.Drawing.Point(0, 0);
-			this.m_FlowImageBoxWithHeading.Name = "m_FlowImageBoxWithHeading";
-			this.m_FlowImageBoxWithHeading.Size = new System.Drawing.Size(721, 495);
-			this.m_FlowImageBoxWithHeading.TabIndex = 0;
+			this.m_FlowImageBox.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.m_FlowImageBox.Heading = "Optical Flow";
+			this.m_FlowImageBox.Location = new System.Drawing.Point(0, 0);
+			this.m_FlowImageBox.Name = "m_FlowImageBox";
+			this.m_FlowImageBox.Size = new System.Drawing.Size(658, 482);
+			this.m_FlowImageBox.TabIndex = 0;
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1402, 666);
-			this.Controls.Add(this.m_CenterPanel);
+			this.ClientSize = new System.Drawing.Size(1279, 653);
+			this.Controls.Add(this.m_ImagesSplitter);
 			this.Controls.Add(this.m_BottomPanel);
 			this.Controls.Add(this.m_TopPanel);
 			this.Name = "MainForm";
-			this.Text = "Optical Flow";
+			this.Text = "Visual Odometry";
 			this.m_TopPanel.ResumeLayout(false);
 			this.m_TopPanel.PerformLayout();
 			this.m_BottomPanel.ResumeLayout(false);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
-			this.m_CenterPanel.ResumeLayout(false);
 			this.m_ImagesSplitter.Panel1.ResumeLayout(false);
 			this.m_ImagesSplitter.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.m_ImagesSplitter)).EndInit();
@@ -298,17 +326,15 @@
 		#endregion
 
 		private System.Windows.Forms.Panel m_TopPanel;
-		private System.Windows.Forms.Button m_ApplyButton;
-		private System.Windows.Forms.TextBox m_MaxFeatureCountTextBox;
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Panel m_BottomPanel;
-		private System.Windows.Forms.Panel m_CenterPanel;
 		private System.Windows.Forms.TextBox m_MinDistanceTextBox;
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.TextBox m_QaulityLevelTextBox;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.TextBox m_BlockSizeTextBox;
 		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.TextBox m_MaxFeatureCountTextBox;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Panel m_BottomPanel;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.TextBox m_NotTrackedFeaturesCount;
 		private System.Windows.Forms.Label label7;
@@ -317,8 +343,13 @@
 		private System.Windows.Forms.TextBox m_FoundFeaturesCountTextBox;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.SplitContainer m_ImagesSplitter;
-		private Vision.WinForm.ImageBoxWithHeading m_ImageBoxWithHeading;
-		private Vision.WinForm.ImageBoxWithHeading m_FlowImageBoxWithHeading;
+		private Vision.WinForm.ImageBoxWithHeading m_FeaturesImageBox;
+		private Vision.WinForm.ImageBoxWithHeading m_FlowImageBox;
+		private System.Windows.Forms.TextBox m_GroundTopTextBox;
+		private System.Windows.Forms.Label label8;
+		private System.Windows.Forms.TextBox m_SkyBottomTextBox;
+		private System.Windows.Forms.Label label9;
+		private System.Windows.Forms.Button m_ApplyButton;
 	}
 }
 

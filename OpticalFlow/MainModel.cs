@@ -185,7 +185,7 @@ namespace OpticalFlow
 		private void CalculateOpticalFlow()
 		{
 			PointF[] trackedFeatures;
-			float[] trackeErrors;
+			float[] trackedErrors;
 
 			LKFLOW_TYPE flags = LKFLOW_TYPE.DEFAULT;
 			if (this.TrackedFeatures != null)
@@ -207,7 +207,7 @@ namespace OpticalFlow
 				flags,
 				out trackedFeatures,
 				out m_TrackingStatus,
-				out trackeErrors);
+				out trackedErrors);
 
 			this.TrackedFeatures = trackedFeatures;
 
