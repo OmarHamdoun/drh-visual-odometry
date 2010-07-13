@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.m_TopPanel = new System.Windows.Forms.Panel();
 			this.m_ApplyButton = new System.Windows.Forms.Button();
 			this.m_GroundTopTextBox = new System.Windows.Forms.TextBox();
@@ -53,6 +54,7 @@
 			this.m_ImagesSplitter = new System.Windows.Forms.SplitContainer();
 			this.m_FeaturesImageBox = new Vision.WinForm.ImageBoxWithHeading();
 			this.m_FlowImageBox = new Vision.WinForm.ImageBoxWithHeading();
+			this.m_Timer = new System.Windows.Forms.Timer(this.components);
 			this.m_TopPanel.SuspendLayout();
 			this.m_BottomPanel.SuspendLayout();
 			this.groupBox1.SuspendLayout();
@@ -300,6 +302,10 @@
 			this.m_FlowImageBox.Size = new System.Drawing.Size(658, 482);
 			this.m_FlowImageBox.TabIndex = 0;
 			// 
+			// m_Timer
+			// 
+			this.m_Timer.Tick += new System.EventHandler(this.OnTimerTick);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -350,6 +356,7 @@
 		private System.Windows.Forms.TextBox m_SkyBottomTextBox;
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.Button m_ApplyButton;
+		private System.Windows.Forms.Timer m_Timer;
 	}
 }
 

@@ -20,13 +20,31 @@ namespace VisualOdometry.UI
 		public MainForm()
 		{
 			InitializeComponent();
-			m_Capture = new Capture();
+			bool useCamera = false;
+
+			if (useCamera)
+			{
+				m_Capture = new Capture();
+			}
+			else
+			{
+				m_Capture = new Capture(@"C:\svnDev\oss\Google\drh-visual-odometry\TestVideos\2010-07-11 11-59-20.065.wmv");
+				m_Timer.Interval = 33;
+				m_Timer.Enabled = true;
+			}
+
 			m_VisualOdometer = new VisualOdometer(m_Capture, new OpticalFlow());
 
 			UpdateFromModel();
 
 			m_VisualOdometer.Changed += new EventHandler(OnVisualOdometerChanged);
 			Application.Idle += OnApplicationIdle;
+		}
+
+
+		private void OnTimerTick(object sender, EventArgs e)
+		{
+			ProcessFrame();
 		}
 
 		protected override void OnLoad(EventArgs e)
@@ -48,39 +66,80 @@ namespace VisualOdometry.UI
 
 		private void OnApplicationIdle(object sender, EventArgs e)
 		{
-			m_VisualOdometer.ProcessFrame();
-			m_FoundFeaturesCountTextBox.Text = m_VisualOdometer.FoundFeaturesCount.ToString();
-			m_TrackedFeaturesCountTextBox.Text = (m_VisualOdometer.TrackedFeatures.Count - m_VisualOdometer.NotTrackedFeaturesCount).ToString();
-			m_NotTrackedFeaturesCount.Text = m_VisualOdometer.NotTrackedFeaturesCount.ToString();
-
-			DrawFeatureLocationPreviousAndCurrent();
-			m_FeaturesImageBox.ImageBox.Image = m_VisualOdometer.CurrentImage;
-			//m_FlowImageBox.ImageBox.Image = m_VisualOdometer.OpticalFlow.FlowImage;
+			ProcessFrame();
 		}
 
-		private void DrawFeatureLocationPreviousAndCurrent()
+		private void ProcessFrame()
 		{
-			if (m_VisualOdometer.HistoryLevel < 2)
+			m_VisualOdometer.ProcessFrame();
+			if (m_VisualOdometer.CurrentImage == null)
 			{
 				return;
 			}
+			m_FoundFeaturesCountTextBox.Text = m_VisualOdometer.InitialFeaturesCount.ToString();
+			m_TrackedFeaturesCountTextBox.Text = m_VisualOdometer.TrackedFeatures.Count.ToString();
+			m_NotTrackedFeaturesCount.Text = m_VisualOdometer.NotTrackedFeaturesCount.ToString();
+
+			DrawRegionBounderies();
+			DrawFeatureLocationsPreviousAndCurrent();
+			m_FeaturesImageBox.ImageBox.Image = m_VisualOdometer.CurrentImage;
+			m_FlowImageBox.ImageBox.Image = m_VisualOdometer.OpticalFlow.MaskImage;
+		}
+
+		private void DrawRegionBounderies()
+		{
+			DrawRegionBoundary(m_VisualOdometer.CurrentImage, m_VisualOdometer.SkyRegionBottom);
+			DrawRegionBoundary(m_VisualOdometer.CurrentImage, m_VisualOdometer.GroundRegionTop);
+		}
+
+		private void DrawRegionBoundary(Image<Bgr, Byte> image, int yPos)
+		{
+			PointF start = new PointF(0, image.Height - yPos);
+			PointF end = new PointF(image.Width, image.Height - yPos);
+			LineSegment2DF lineSegment = new LineSegment2DF(start, end);
+			image.Draw(lineSegment, new Bgr(Color.Red), 1);
+		}
+
+		private Bgr m_FeatureColorPreviousPartialHistory = new Bgr(Color.Yellow);
+		private Bgr m_FeatureColorCurrentPartialHistory = new Bgr(Color.Orange);
+
+		private Bgr m_FeatureColorPreviousFullHistory = new Bgr(Color.Lime);
+		private Bgr m_FeatureColorCurrentFullHistory = new Bgr(Color.Red);
+
+		private void DrawFeatureLocationsPreviousAndCurrent()
+		{
+			List<TrackedFeature> trackedFeatures = m_VisualOdometer.TrackedFeatures;
 			// draw previous location
-			foreach (TrackedFeature trackedFeature in m_VisualOdometer.TrackedFeatures)
+			for(int i = 0; i < trackedFeatures.Count; i++)
 			{
-				if (!trackedFeature.IsOut)
+				TrackedFeature trackedFeature = trackedFeatures[i];
+				if (trackedFeature.ValueCount > 1)
 				{
+					// We have a previous value
 					CircleF circle = new CircleF(trackedFeature[-1], 3.0f);
-					m_VisualOdometer.CurrentImage.Draw(circle, new Bgr(Color.Lime), 2);
+					if (!trackedFeature.IsFull)
+					{
+						m_VisualOdometer.CurrentImage.Draw(circle, m_FeatureColorPreviousPartialHistory, 2);
+					}
+					else
+					{
+						m_VisualOdometer.CurrentImage.Draw(circle, m_FeatureColorPreviousFullHistory, 2);
+					}
 				}
 			}
 
 			// draw current location
-			foreach (TrackedFeature trackedFeature in m_VisualOdometer.TrackedFeatures)
+			for (int i = 0; i < trackedFeatures.Count; i++)
 			{
-				if (!trackedFeature.IsOut)
+				TrackedFeature trackedFeature = trackedFeatures[i];
+				CircleF circle = new CircleF(trackedFeature[0], 3.0f);
+				if (!trackedFeature.IsFull)
 				{
-					CircleF circle = new CircleF(trackedFeature[0], 3.0f);
-					m_VisualOdometer.CurrentImage.Draw(circle, new Bgr(Color.Red), 2);
+					m_VisualOdometer.CurrentImage.Draw(circle, m_FeatureColorCurrentPartialHistory, 2);
+				}
+				else
+				{
+					m_VisualOdometer.CurrentImage.Draw(circle, m_FeatureColorCurrentFullHistory, 2);
 				}
 			}
 		}

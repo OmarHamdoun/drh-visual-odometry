@@ -6,6 +6,7 @@ using Emgu.CV;
 using System.Drawing;
 using Emgu.CV.Structure;
 using Emgu.CV.CvEnum;
+using System.Runtime.InteropServices;
 
 namespace VisualOdometry
 {
@@ -25,6 +26,7 @@ namespace VisualOdometry
 
 		private Image<Gray, Byte> m_PreviousPyrBufferParam;
 		private Image<Gray, Byte> m_CurrentPyrBufferParam;
+		private Image<Gray, Byte> m_MaskImage;
 
 		public event EventHandler Changed;
 
@@ -106,50 +108,102 @@ namespace VisualOdometry
 			}
 		}
 
-		//public int PreviousFoundFeaturesCount
-		//{
-		//    get
-		//    {
-		//        if (this.PreviousFoundFeatures == null)
-		//        {
-		//            return 0;
-		//        }
-		//        return this.PreviousFoundFeatures.Length;
-		//    }
-		//}
-
-		//public int CurrentFoundFeaturesCount
-		//{
-		//    get
-		//    {
-		//        if (this.CurrentFoundFeatures == null)
-		//        {
-		//            return 0;
-		//        }
-		//        return this.CurrentFoundFeatures.Length;
-		//    }
-		//}
-
-		//public int TrackedFeaturesCount
-		//{
-		//    get
-		//    {
-		//        if (this.TrackedFeatures == null)
-		//        {
-		//            return 0;
-		//        }
-		//        return this.TrackedFeatures.Length;
-		//    }
-		//}
-
-		//public int NotTrackedFeaturesCount { get; private set; }
-
-		internal PointF[] FindFeaturesToTrack(Image<Gray, Byte> grayImage)
+		public Image<Gray, Byte> MaskImage
 		{
-			PointF[][] foundFeaturesInChannels = grayImage.GoodFeaturesToTrack(this.MaxFeatureCount, this.QualityLevel, this.MinDistance, this.BlockSize);
+			get { return m_MaskImage; }
+		}
+
+		//internal PointF[] FindFeaturesToTrack(Image<Gray, Byte> grayImage)
+		//{
+		//    PointF[][] foundFeaturesInChannels = grayImage.GoodFeaturesToTrack(this.MaxFeatureCount, this.QualityLevel, this.MinDistance, this.BlockSize);
+		//    // Next we refine the location of the found features
+		//    grayImage.FindCornerSubPix(foundFeaturesInChannels, new Size(c_WinSize, c_WinSize), new Size(-1, -1), m_SubCornerTerminationCriteria);
+		//    return foundFeaturesInChannels[0];
+		//}
+
+		internal PointF[] FindFeaturesToTrack(Image<Gray, Byte> grayImage, List<TrackedFeature> currentlyTrackedFeatures, int skyRegionBottom, int groundRegionTop)
+		{
+			if (m_MaskImage == null)
+			{
+				InitializeMaskImage(grayImage);
+			}
+			PointF[][] foundFeaturesInChannels = null;
+
+			UpdateMaskImage(grayImage.Size, currentlyTrackedFeatures, skyRegionBottom, groundRegionTop);
+			foundFeaturesInChannels = GoodFeaturesToTrack(grayImage, this.MaxFeatureCount, this.QualityLevel, this.MinDistance, this.BlockSize, m_MaskImage);
+
+			//using (Image<Gray, Byte> maskImage = CreateMask(grayImage.Size, currentlyTrackedFeatures, skyRegionBottom, groundRegionTop))
+			//{
+			//    foundFeaturesInChannels = GoodFeaturesToTrack(grayImage, this.MaxFeatureCount, this.QualityLevel, this.MinDistance, this.BlockSize, maskImage);
+			//}
 			// Next we refine the location of the found features
 			grayImage.FindCornerSubPix(foundFeaturesInChannels, new Size(c_WinSize, c_WinSize), new Size(-1, -1), m_SubCornerTerminationCriteria);
 			return foundFeaturesInChannels[0];
+		}
+
+		private void InitializeMaskImage(Image<Gray, Byte> grayImage)
+		{
+			m_MaskImage = new Image<Gray, byte>(grayImage.Width, grayImage.Height);
+		}
+
+		/// <summary>
+		/// Creates a mask for masking out the horizon region and circlea around each currently tracked feature.
+		/// </summary>
+		/// <param name="currentlyTrackedFeatures"></param>
+		/// <param name="skyBottom"></param>
+		/// <param name="groundTop"></param>
+		private void UpdateMaskImage(Size size, List<TrackedFeature> currentlyTrackedFeatures, int skyRegionBottom, int groundRegionTop)
+		{
+			m_MaskImage.SetValue(255); // fill white
+			Gray blockedAreaColor = new Gray(0); // black
+
+			// We mask out the area between the top of the ground region and the bottom of the sky region
+			Rectangle rectangle = new Rectangle(0, m_MaskImage.Height - skyRegionBottom, m_MaskImage.Width, skyRegionBottom - groundRegionTop);
+			m_MaskImage.Draw(rectangle, blockedAreaColor, -1);
+
+			// We also mask out a circle around each currently tracked feature to avoid the we find a new feature too close to an already tracked feature.
+			int circleRadius = (int)(m_MinDistance + 0.5);
+			for (int i = 0; i < currentlyTrackedFeatures.Count; i++)
+			{
+				CircleF circle = new CircleF(currentlyTrackedFeatures[i][0], circleRadius);
+				m_MaskImage.Draw(circle, blockedAreaColor, -1);
+			}
+		}
+
+		/// <summary>
+		/// Finds corners with big eigenvalues in the image. Unfortunately we cannot use the function in Emgu since it does not support a mask. 
+		/// </summary>
+		/// <remarks>The function first calculates the minimal eigenvalue for every source image pixel using cvCornerMinEigenVal function and stores them in eig_image. Then it performs non-maxima suppression (only local maxima in 3x3 neighborhood remain). The next step is rejecting the corners with the minimal eigenvalue less than quality_level?max(eig_image(x,y)). Finally, the function ensures that all the corners found are distanced enough one from another by considering the corners (the most strongest corners are considered first) and checking that the distance between the newly considered feature and the features considered earlier is larger than min_distance. So, the function removes the features than are too close to the stronger features</remarks>
+		/// <param name="maxFeaturesPerChannel">The maximum features to be detected per channel</param>
+		/// <param name="qualityLevel">Multiplier for the maxmin eigenvalue; specifies minimal accepted quality of image corners</param>
+		/// <param name="minDistance">Limit, specifying minimum possible distance between returned corners; Euclidian distance is used. </param>
+		/// <param name="blockSize">Size of the averaging block, passed to underlying cvCornerMinEigenVal or cvCornerHarris used by the function</param>
+		/// <param name="maskImage">If not null, can block out areas that feature points must be taken from.</param>
+		/// <returns>The good features for each channel</returns>
+		public PointF[][] GoodFeaturesToTrack(Image<Gray, Byte> grayImage, int maxFeaturesPerChannel, double qualityLevel, double minDistance, int blockSize, Image<Gray, Byte> maskImage)
+		{
+			using (Image<Gray, Single> eigImage = new Image<Gray, float>(grayImage.Width, grayImage.Height))
+			using (Image<Gray, Single> tmpImage = new Image<Gray, float>(grayImage.Width, grayImage.Height))
+			{
+				int cornercount = maxFeaturesPerChannel;
+				PointF[] pts = new PointF[maxFeaturesPerChannel];
+				GCHandle handle = GCHandle.Alloc(pts, GCHandleType.Pinned);
+				CvInvoke.cvGoodFeaturesToTrack(
+					grayImage.Ptr,
+					eigImage.Ptr,
+					tmpImage.Ptr,
+					handle.AddrOfPinnedObject(),
+					ref cornercount,
+					qualityLevel,
+					minDistance,
+					maskImage.Ptr,
+					blockSize,
+					0,
+					0);
+				handle.Free();
+				Array.Resize(ref pts, cornercount);
+				return new PointF[][] { pts };
+			}
 		}
 
 		internal void ClearPyramids()
@@ -166,39 +220,6 @@ namespace VisualOdometry
 			}
 			m_CurrentPyrBufferParam = null;
 		}
-
-		//public void ProcessFrame()
-		//{
-		//    this.CurrentImage = m_Capture.QueryFrame();
-		//    this.FlowImage = this.CurrentImage.Clone();
-
-		//    this.PreviousGrayImage = this.CurrentGrayImage;
-		//    this.CurrentGrayImage = this.CurrentImage.Convert<Gray, Byte>();
-
-
-		//    DrawFoundFeaturesMarkers();
-
-		//    if (this.PreviousGrayImage == null)
-		//    {
-		//        m_PreviousPyrBufferParam = new Image<Gray, byte>(this.CurrentImage.Width + 8, this.CurrentImage.Height / 3);
-		//        m_CurrentPyrBufferParam = new Image<Gray, byte>(this.CurrentImage.Width + 8, this.CurrentImage.Height / 3);
-		//    }
-		//    else
-		//    {
-		//        CalculateOpticalFlow();
-		//        DrawTrackedFeaturesMarkers();
-		//        DrawFlowVectors();
-		//    }
-		//}
-
-		//private void DrawFoundFeaturesMarkers()
-		//{
-		//    foreach (PointF foundFeature in this.CurrentFoundFeatures)
-		//    {
-		//        CircleF circle = new CircleF(foundFeature, 3.0f);
-		//        this.CurrentImage.Draw(circle, new Bgr(Color.Lime), 2);
-		//    }
-		//}
 
 		internal OpticalFlowResult CalculateOpticalFlow(Image<Gray, Byte> previousGrayImage, Image<Gray, Byte> currentGrayImage, PointF[] previousFoundFeaturePoints)
 		{
@@ -238,43 +259,7 @@ namespace VisualOdometry
 			this.OpticalFlowResult.TrackingErrors = trackingErrors;
 
 			return this.OpticalFlowResult;
-
-			//int notTrackedFeatures = 0;
-			//for (int i = 0; i < m_TrackingStatus.Length; i++)
-			//{
-			//    if (m_TrackingStatus[i] == 0)
-			//    {
-			//        notTrackedFeatures++;
-			//    }
-			//}
-			//this.NotTrackedFeaturesCount = notTrackedFeatures;
 		}
-
-		//private void DrawTrackedFeaturesMarkers()
-		//{
-		//    for (int i = 0; i < this.TrackedFeatures.Length; i++)
-		//    {
-		//        if (m_TrackingStatus[i] == 1)
-		//        {
-		//            CircleF circle = new CircleF(this.TrackedFeatures[i], 3.0f);
-		//            this.CurrentImage.Draw(circle, new Bgr(Color.Red), 2);
-		//        }
-		//    }
-		//}
-
-		//private void DrawFlowVectors()
-		//{
-		//    for (int i = 0; i < this.TrackedFeatures.Length; i++)
-		//    {
-		//        if (m_TrackingStatus[i] == 1)
-		//        {
-		//            LineSegment2DF lineSegment = new LineSegment2DF(this.PreviousFoundFeatures[i], this.TrackedFeatures[i]);
-		//            this.FlowImage.Draw(lineSegment, new Bgr(Color.Red), 1);
-		//            CircleF circle = new CircleF(this.TrackedFeatures[i], 2.0f);
-		//            this.FlowImage.Draw(circle, new Bgr(Color.Red), 1);
-		//        }
-		//    }
-		//}
 
 		private void RaiseChangedEvent()
 		{
@@ -287,6 +272,10 @@ namespace VisualOdometry
 
 		public void Dispose()
 		{
+			if (m_MaskImage != null)
+			{
+				m_MaskImage.Dispose();
+			}
 			OpticalFlowSettings.Default.MaxFeatureCount = this.MaxFeatureCount;
 			OpticalFlowSettings.Default.BlockSize = this.BlockSize;
 			OpticalFlowSettings.Default.QualityLevel = this.QualityLevel;

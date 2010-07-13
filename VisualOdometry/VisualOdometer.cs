@@ -14,16 +14,15 @@ namespace VisualOdometry
 		private int m_GroundRegionTop;
 		private int m_SkyRegionBottom;
 		private double m_HeadingRad;
-		private bool m_SupportUI = true;
-		private PointF[] m_TrackedFeaturePoints;
+		//private PointF[] m_TrackedFeaturePoints;
 		private List<TrackedFeature> m_TrackedFeatures;
-		private int m_HistoryLevel = 0; // Indicates how much history is available for tracked points
 		private int m_NotTrackedFeaturesCount;
 
 		public Image<Bgr, Byte> CurrentImage { get; private set; }
 		private Image<Gray, Byte> m_CurrentGrayImage;
 		private OpticalFlow m_OpticalFlow;
-		public int FoundFeaturesCount { get; private set; }
+		public int InitialFeaturesCount { get; private set; }
+		private int m_ThresholdForFeatureRepopulation;
 
 		public event EventHandler Changed;
 
@@ -34,7 +33,6 @@ namespace VisualOdometry
 			m_GroundRegionTop = OdometerSettings.Default.GroundRegionTop;
 			m_SkyRegionBottom = OdometerSettings.Default.SkyRegionBottom;
 
-			m_TrackedFeatures = new List<TrackedFeature>();
 			this.OpticalFlow = opticalFlow;
 		}
 
@@ -44,7 +42,8 @@ namespace VisualOdometry
 			set
 			{
 				m_OpticalFlow = value;
-				m_HistoryLevel = 0;
+				m_TrackedFeatures = new List<TrackedFeature>();
+				m_ThresholdForFeatureRepopulation = int.MaxValue;
 			}
 		}
 
@@ -105,78 +104,91 @@ namespace VisualOdometry
 		public void ProcessFrame()
 		{
 			this.CurrentImage = m_Capture.QueryFrame();
+			if (this.CurrentImage == null)
+			{
+				// This occurs if we operate against a previously recorded video and the video has ended.
+				return;
+			}
 
 			Image<Gray, Byte> previousGrayImage = m_CurrentGrayImage;
 			m_CurrentGrayImage = this.CurrentImage.Convert<Gray, Byte>();
 
-			if (m_HistoryLevel == 0)
+			if (previousGrayImage == null)
 			{
-				// We are starting and need to find features to track
-				InitializeTracking();
-				m_HistoryLevel++;
+				// This occurs the first time we process a frame.
+				return;
 			}
-			else
-			{
-				TrackFeatures(previousGrayImage);
-				if (m_HistoryLevel == TrackedFeature.HistoryCount)
-				{
-					// grade the smoothness
-				}
-				else
-				{
-					m_HistoryLevel++;
-				}
-			}
+			TrackFeatures(previousGrayImage);
 
-
-	 		if (m_SupportUI)
-			{
-				DrawRegionBounderies();
-			}
+			//if (m_HistoryLevel == 0)
+			//{
+			//    // We are starting and need to find features to track
+			//    PopulateFeaturePoints();
+			//    m_HistoryLevel++;
+			//}
+			//else
+			//{
+			//    TrackFeatures(previousGrayImage);
+			//    if (m_HistoryLevel == TrackedFeature.HistoryCount)
+			//    {
+			//        // grade the smoothness
+			//    }
+			//    else
+			//    {
+			//        m_HistoryLevel++;
+			//    }
+			//}
 		}
 
-		private void InitializeTracking()
+		private void PopulateFeaturePoints()
 		{
-			m_TrackedFeaturePoints = this.OpticalFlow.FindFeaturesToTrack(m_CurrentGrayImage);
-			this.FoundFeaturesCount = m_TrackedFeaturePoints.Length;
-			m_TrackedFeatures = new List<TrackedFeature>(m_TrackedFeaturePoints.Length);
+			PointF[] newTrackedFeaturePoints = this.OpticalFlow.FindFeaturesToTrack(
+				m_CurrentGrayImage,
+				m_TrackedFeatures,
+				m_SkyRegionBottom,
+				m_GroundRegionTop);
 
-			for (int i = 0; i < m_TrackedFeaturePoints.Length; i++)
+			for (int i = 0; i < newTrackedFeaturePoints.Length; i++)
 			{
 				TrackedFeature trackedFeature = new TrackedFeature();
-				trackedFeature.Add(m_TrackedFeaturePoints[i]);
+				trackedFeature.Add(newTrackedFeaturePoints[i]);
 				m_TrackedFeatures.Add(trackedFeature);
 			}
 			this.OpticalFlow.ClearPyramids();
+
+			this.InitialFeaturesCount = m_TrackedFeatures.Count;
+			m_ThresholdForFeatureRepopulation = this.InitialFeaturesCount * 9 / 10;
+			m_NotTrackedFeaturesCount = 0;
 		}
 
 		private void TrackFeatures(Image<Gray, Byte> previousGrayImage)
 		{
-			OpticalFlowResult opticalFlowResult = this.OpticalFlow.CalculateOpticalFlow(previousGrayImage, m_CurrentGrayImage, m_TrackedFeaturePoints);
-			m_TrackedFeaturePoints = opticalFlowResult.TrackedFeaturePoints;
+			PointF[] trackedFeaturePoints = new PointF[m_TrackedFeatures.Count];
+			for (int i = 0; i < trackedFeaturePoints.Length; i++)
+			{
+				trackedFeaturePoints[i] = m_TrackedFeatures[i][0];
+			}
+			OpticalFlowResult opticalFlowResult = this.OpticalFlow.CalculateOpticalFlow(previousGrayImage, m_CurrentGrayImage, trackedFeaturePoints);
+			trackedFeaturePoints = opticalFlowResult.TrackedFeaturePoints;
 
-			m_NotTrackedFeaturesCount = 0;
-			for (int i = 0; i < m_TrackedFeaturePoints.Length; i++)
+			for (int i = trackedFeaturePoints.Length - 1; i >= 0; i--)
 			{
 				bool isTracked = opticalFlowResult.TrackingStatusIndicators[i] == 1;
-				m_TrackedFeatures[i].Add(m_TrackedFeaturePoints[i], isTracked);
-
-				if (!isTracked || m_TrackedFeatures[i].IsOut)
+				if (isTracked && !m_TrackedFeatures[i].IsOut)
+				{
+					m_TrackedFeatures[i].Add(trackedFeaturePoints[i], isTracked);
+				}
+				else
 				{
 					m_NotTrackedFeaturesCount++;
+					m_TrackedFeatures.RemoveAt(i);
 				}
 			}
-		}
 
-		private void DrawRegionBounderies()
-		{
-			DrawRegionBoundary(this.CurrentImage, m_SkyRegionBottom);
-			DrawRegionBoundary(this.CurrentImage, m_GroundRegionTop);
-		}
-
-		public int HistoryLevel
-		{
-			get { return m_HistoryLevel; }
+			if (m_TrackedFeatures.Count < m_ThresholdForFeatureRepopulation)
+			{
+				PopulateFeaturePoints();
+			}
 		}
 
 		public List<TrackedFeature> TrackedFeatures
@@ -187,14 +199,6 @@ namespace VisualOdometry
 		public int NotTrackedFeaturesCount
 		{
 			get { return m_NotTrackedFeaturesCount; }
-		}
-
-		private void DrawRegionBoundary(Image<Bgr, Byte> image, int yPos)
-		{
-			PointF start = new PointF(0, image.Height - yPos);
-			PointF end = new PointF(image.Width, image.Height - yPos);
-			LineSegment2DF lineSegment = new LineSegment2DF(start, end);
-			image.Draw(lineSegment, new Bgr(Color.Red), 1);
 		}
 
 		private void RaiseChangedEvent()
