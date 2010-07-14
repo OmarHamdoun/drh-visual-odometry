@@ -117,7 +117,7 @@ namespace VisualOdometry.UI
 				{
 					// We have a previous value
 					CircleF circle = new CircleF(trackedFeature[-1], 3.0f);
-					if (!trackedFeature.IsFull)
+					if (!trackedFeature.HasFullHistory)
 					{
 						m_VisualOdometer.CurrentImage.Draw(circle, m_FeatureColorPreviousPartialHistory, 2);
 					}
@@ -133,7 +133,7 @@ namespace VisualOdometry.UI
 			{
 				TrackedFeature trackedFeature = trackedFeatures[i];
 				CircleF circle = new CircleF(trackedFeature[0], 3.0f);
-				if (!trackedFeature.IsFull)
+				if (!trackedFeature.HasFullHistory)
 				{
 					m_VisualOdometer.CurrentImage.Draw(circle, m_FeatureColorCurrentPartialHistory, 2);
 				}

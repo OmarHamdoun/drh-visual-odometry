@@ -4,17 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using VisualOdometry.Utilities;
+using System.Diagnostics;
 
 namespace VisualOdometry
 {
 	public class TrackedFeature : HistoryBuffer<PointF>
 	{
 		public const int HistoryCount = 7;
-		private static readonly double s_SmoothTransitionLimit = 0.25;
+		private static readonly double s_SmoothTransitionLimit = 1000;
 		private static readonly double s_SmoothRotationLimit = 30.0 * Math.PI / 180;
 
-		private int m_Score;
-		private int m_CurrentScoreChange;
+		private int m_Score = 0;
+		private int m_CurrentScoreChange = 0;
 		private bool m_IsSmooth;
 
 		public TrackedFeature()
@@ -24,24 +25,24 @@ namespace VisualOdometry
 
 		public override void Add(PointF featurePoint)
 		{
-			Add(featurePoint, true);
+			base.Add(featurePoint);
+			if (this.HasFullHistory)
+			{
+				GradeSmoothness();
+			}
 		}
 
-		internal void Add(PointF featurePoint, bool isTracked)
-		{
-			base.Add(featurePoint);
-			if (!isTracked)
-			{
-				m_Score += 1000;
-			}
-			else
-			{
-				if (this.IsFull)
-				{
-					GradeSmoothness();
-				}
-			}
-		}
+		//internal void Add(PointF featurePoint, bool isTracked)
+		//{
+		//    base.Add(featurePoint);
+		//    if (!isTracked)
+		//    {
+		//        m_Score += 1000;
+		//    }
+		//    else
+		//    {
+		//    }
+		//}
 
 		private void GradeSmoothness()
 		{
@@ -102,6 +103,12 @@ namespace VisualOdometry
 			return delta;
 		}
 
+		public void ApplyScoreChange()
+		{
+			m_Score += m_CurrentScoreChange;
+			//Debug.WriteLine(m_Score);
+		}
+
 		public int Score
 		{
 			get { return m_Score; }
@@ -109,7 +116,14 @@ namespace VisualOdometry
 
 		public bool IsSmooth
 		{
-			get { return m_IsSmooth; }
+			get
+			{
+				if (!this.HasFullHistory)
+				{
+					throw new InvalidOperationException("Full history is required to determine smoothness.");
+				}
+				return m_IsSmooth;
+			}
 		}
 
 		public bool IsOut

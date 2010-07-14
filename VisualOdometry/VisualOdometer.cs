@@ -5,6 +5,7 @@ using System.Text;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace VisualOdometry
 {
@@ -119,28 +120,9 @@ namespace VisualOdometry
 				return;
 			}
 			TrackFeatures(previousGrayImage);
-
-			//if (m_HistoryLevel == 0)
-			//{
-			//    // We are starting and need to find features to track
-			//    PopulateFeaturePoints();
-			//    m_HistoryLevel++;
-			//}
-			//else
-			//{
-			//    TrackFeatures(previousGrayImage);
-			//    if (m_HistoryLevel == TrackedFeature.HistoryCount)
-			//    {
-			//        // grade the smoothness
-			//    }
-			//    else
-			//    {
-			//        m_HistoryLevel++;
-			//    }
-			//}
 		}
 
-		private void PopulateFeaturePoints()
+		private void RepopulateFeaturePoints()
 		{
 			PointF[] newTrackedFeaturePoints = this.OpticalFlow.FindFeaturesToTrack(
 				m_CurrentGrayImage,
@@ -154,7 +136,7 @@ namespace VisualOdometry
 				trackedFeature.Add(newTrackedFeaturePoints[i]);
 				m_TrackedFeatures.Add(trackedFeature);
 			}
-			this.OpticalFlow.ClearPyramids();
+			//this.OpticalFlow.ClearPyramids();
 
 			this.InitialFeaturesCount = m_TrackedFeatures.Count;
 			m_ThresholdForFeatureRepopulation = this.InitialFeaturesCount * 9 / 10;
@@ -171,24 +153,70 @@ namespace VisualOdometry
 			OpticalFlowResult opticalFlowResult = this.OpticalFlow.CalculateOpticalFlow(previousGrayImage, m_CurrentGrayImage, trackedFeaturePoints);
 			trackedFeaturePoints = opticalFlowResult.TrackedFeaturePoints;
 
+			int fullHistoryFeaturesCount = 0;
+			int unsmoothFeaturesCount = 0;
 			for (int i = trackedFeaturePoints.Length - 1; i >= 0; i--)
 			{
 				bool isTracked = opticalFlowResult.TrackingStatusIndicators[i] == 1;
-				if (isTracked && !m_TrackedFeatures[i].IsOut)
+				if (isTracked)
 				{
-					m_TrackedFeatures[i].Add(trackedFeaturePoints[i], isTracked);
+					TrackedFeature trackedFeature = m_TrackedFeatures[i];
+					trackedFeature.Add(trackedFeaturePoints[i]);
+
+					if (trackedFeature.HasFullHistory)
+					{
+						fullHistoryFeaturesCount++;
+						if (!trackedFeature.IsSmooth)
+						{
+							unsmoothFeaturesCount++;
+						}
+					}
 				}
 				else
 				{
-					m_NotTrackedFeaturesCount++;
-					m_TrackedFeatures.RemoveAt(i);
+					RemoveTrackedFeature(i);
 				}
+			}
+
+			if (unsmoothFeaturesCount < fullHistoryFeaturesCount / 2)
+			{
+				// The majority of features is smooth. We downgrade unsmooth features
+				Debug.WriteLine("Consensus: Is smooth");
+				ApplyUnsmoothGrades();
+			}
+			else
+			{
+				// Consensus not smooth; not downgrading unsmooth features.
+				Debug.WriteLine("Consensus: Is not smooth");
 			}
 
 			if (m_TrackedFeatures.Count < m_ThresholdForFeatureRepopulation)
 			{
-				PopulateFeaturePoints();
+				RepopulateFeaturePoints();
 			}
+		}
+
+		private void RemoveTrackedFeature(int index)
+		{
+			m_NotTrackedFeaturesCount++;
+			m_TrackedFeatures.RemoveAt(index);
+		}
+
+		private void ApplyUnsmoothGrades()
+		{
+			int unsmoothFeaturesOutCout = 0;
+			for (int i = m_TrackedFeatures.Count - 1; i >= 0; i--)
+			{
+				TrackedFeature trackedFeature = m_TrackedFeatures[i];
+				trackedFeature.ApplyScoreChange();
+				if (trackedFeature.IsOut)
+				{
+					RemoveTrackedFeature(i);
+					unsmoothFeaturesOutCout++;
+				}
+			}
+
+			Debug.WriteLine("Number of unsmooth features weeded out: " + unsmoothFeaturesOutCout);
 		}
 
 		public List<TrackedFeature> TrackedFeatures
