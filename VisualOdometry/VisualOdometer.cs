@@ -302,7 +302,7 @@ namespace VisualOdometry
 				}
 				PointF previousFeatureLocation = trackedFeature[-1];
 				PointF currentFeatureLocation = trackedFeature[0];
-				if (currentFeatureLocation.Y <= m_SkyRegionBottom)
+				if (true) //currentFeatureLocation.Y <= m_SkyRegionBottom)
 				{
 					double previousAngularPlacement = Math.Atan2(previousFeatureLocation.X, focalLengthX);
 					double currentAngularPlacement = Math.Atan2(currentFeatureLocation.X, focalLengthX);

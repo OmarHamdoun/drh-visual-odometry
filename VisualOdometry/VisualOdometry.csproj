@@ -51,6 +51,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CameraParameters.cs" />
+    <Compile Include="Histogram.cs" />
+    <Compile Include="HistogramBin.cs" />
     <Compile Include="OpticalFlow.cs" />
     <Compile Include="OpticalFlowResult.cs" />
     <Compile Include="OpticalFlowSettings.Designer.cs">

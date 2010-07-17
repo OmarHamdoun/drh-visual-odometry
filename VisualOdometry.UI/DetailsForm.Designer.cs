@@ -29,7 +29,6 @@
 		private void InitializeComponent()
 		{
 			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-			System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
 			this.m_AnglesChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
 			((System.ComponentModel.ISupportInitialize)(this.m_AnglesChart)).BeginInit();
 			this.SuspendLayout();
@@ -41,9 +40,6 @@
 			this.m_AnglesChart.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.m_AnglesChart.Location = new System.Drawing.Point(0, 0);
 			this.m_AnglesChart.Name = "m_AnglesChart";
-			series1.ChartArea = "ChartArea1";
-			series1.Name = "Series1";
-			this.m_AnglesChart.Series.Add(series1);
 			this.m_AnglesChart.Size = new System.Drawing.Size(566, 483);
 			this.m_AnglesChart.TabIndex = 0;
 			this.m_AnglesChart.Text = "Angles";
