@@ -158,7 +158,7 @@ namespace VisualOdometry
 			Gray blockedAreaColor = new Gray(0); // black
 
 			// We mask out the area between the top of the ground region and the bottom of the sky region
-			Rectangle rectangle = new Rectangle(0, m_MaskImage.Height - skyRegionBottom, m_MaskImage.Width, skyRegionBottom - groundRegionTop);
+			Rectangle rectangle = new Rectangle(0, skyRegionBottom, m_MaskImage.Width, groundRegionTop - skyRegionBottom);
 			m_MaskImage.Draw(rectangle, blockedAreaColor, -1);
 
 			// We also mask out a circle around each currently tracked feature to avoid the we find a new feature too close to an already tracked feature.

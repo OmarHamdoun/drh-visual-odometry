@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CameraParameters.cs" />
     <Compile Include="OpticalFlow.cs" />
     <Compile Include="OpticalFlowResult.cs" />
     <Compile Include="OpticalFlowSettings.Designer.cs">

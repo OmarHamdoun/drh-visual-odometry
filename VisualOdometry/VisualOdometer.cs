@@ -11,7 +11,14 @@ namespace VisualOdometry
 {
 	public class VisualOdometer : IDisposable
 	{
+		private const double c_FocalLengthX = 595.18;
+
 		private Capture m_Capture;
+		private CameraParameters m_CameraParameters;
+
+		private Matrix<float> m_UndistortMapX;
+		private Matrix<float> m_UndistortMapY;
+
 		private int m_GroundRegionTop;
 		private int m_SkyRegionBottom;
 		private double m_HeadingRad;
@@ -19,22 +26,46 @@ namespace VisualOdometry
 		private List<TrackedFeature> m_TrackedFeatures;
 		private int m_NotTrackedFeaturesCount;
 
+		private Image<Bgr, Byte> m_RawImage;
 		public Image<Bgr, Byte> CurrentImage { get; private set; }
 		private Image<Gray, Byte> m_CurrentGrayImage;
 		private OpticalFlow m_OpticalFlow;
 		public int InitialFeaturesCount { get; private set; }
 		private int m_ThresholdForFeatureRepopulation;
 
+		private double[] m_HeadingChanges;
+		private int m_HeadingChangesCount;
+
 		public event EventHandler Changed;
 
-		public VisualOdometer(Capture capture, OpticalFlow opticalFlow)
+		public VisualOdometer(Capture capture, CameraParameters cameraParameters, OpticalFlow opticalFlow)
 		{
 			m_Capture = capture;
+			this.CameraParameters = cameraParameters;
 
 			m_GroundRegionTop = OdometerSettings.Default.GroundRegionTop;
 			m_SkyRegionBottom = OdometerSettings.Default.SkyRegionBottom;
 
 			this.OpticalFlow = opticalFlow;
+		}
+
+		public CameraParameters CameraParameters
+		{
+			get { return m_CameraParameters; }
+			set
+			{
+				m_CameraParameters = value;
+				if (m_UndistortMapX != null)
+				{
+					m_UndistortMapX.Dispose();
+					m_UndistortMapX = null;
+				}
+				if (m_UndistortMapY != null)
+				{
+					m_UndistortMapY.Dispose();
+					m_UndistortMapY = null;
+				}
+			}
 		}
 
 		public OpticalFlow OpticalFlow
@@ -48,6 +79,9 @@ namespace VisualOdometry
 			}
 		}
 
+		/// <summary>
+		/// Top of the ground region in screen coordinates.
+		/// </summary>
 		public int GroundRegionTop
 		{
 			get { return m_GroundRegionTop; }
@@ -56,9 +90,9 @@ namespace VisualOdometry
 				if (value != m_GroundRegionTop)
 				{
 					// We ensure that the ground ends below the sky
-					if (value >= m_SkyRegionBottom)
+					if (value <= m_SkyRegionBottom)
 					{
-						value = m_SkyRegionBottom - 1;
+						value = m_SkyRegionBottom + 1;
 					}
 					m_GroundRegionTop = value;
 					RaiseChangedEvent();
@@ -66,6 +100,9 @@ namespace VisualOdometry
 			}
 		}
 
+		/// <summary>
+		/// Botton of the sky region in screen coordinates.
+		/// </summary>
 		public int SkyRegionBottom
 		{
 			get { return m_SkyRegionBottom; }
@@ -74,9 +111,9 @@ namespace VisualOdometry
 				if (value != m_SkyRegionBottom)
 				{
 					// We ensure that the sky always end above the ground
-					if (value <= m_GroundRegionTop)
+					if (value >= m_GroundRegionTop)
 					{
-						value = m_GroundRegionTop + 1;
+						value = m_GroundRegionTop - 1;
 					}
 					m_SkyRegionBottom = value;
 					RaiseChangedEvent();
@@ -104,22 +141,50 @@ namespace VisualOdometry
 
 		public void ProcessFrame()
 		{
-			this.CurrentImage = m_Capture.QueryFrame();
-			if (this.CurrentImage == null)
+			m_RawImage = m_Capture.QueryFrame();
+			if (m_RawImage == null)
 			{
 				// This occurs if we operate against a previously recorded video and the video has ended.
 				return;
 			}
 
+			if (m_UndistortMapX == null)
+			{
+				InitializeUndistortMap(m_RawImage);
+			}
+
 			Image<Gray, Byte> previousGrayImage = m_CurrentGrayImage;
-			m_CurrentGrayImage = this.CurrentImage.Convert<Gray, Byte>();
 
 			if (previousGrayImage == null)
 			{
 				// This occurs the first time we process a frame.
-				return;
+				int upperLimitFeaturesCount = (int)(m_RawImage.Width * m_RawImage.Height / m_OpticalFlow.MinDistance / m_OpticalFlow.MinDistance) * 4;
+				m_HeadingChanges = new double[upperLimitFeaturesCount];
+
+				this.CurrentImage = m_RawImage.Clone();
 			}
-			TrackFeatures(previousGrayImage);
+
+			Undistort(m_RawImage, this.CurrentImage);
+			m_CurrentGrayImage = this.CurrentImage.Convert<Gray, Byte>();
+
+			if (previousGrayImage != null)
+			{
+				TrackFeatures(previousGrayImage);
+			}
+		}
+
+		private void InitializeUndistortMap(Image<Bgr, Byte> image)
+		{
+			m_CameraParameters.IntrinsicCameraParameters.InitUndistortMap(
+				image.Width,
+				image.Height,
+				out m_UndistortMapX,
+				out m_UndistortMapY);
+		}
+
+		private void Undistort(Image<Bgr, Byte> sourceImage, Image<Bgr, Byte> targetImage)
+		{
+			CvInvoke.cvRemap(sourceImage.Ptr, targetImage.Ptr, m_UndistortMapX.Ptr, m_UndistortMapY.Ptr, (int)Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR, new MCvScalar());
 		}
 
 		private void RepopulateFeaturePoints()
@@ -190,6 +255,8 @@ namespace VisualOdometry
 				Debug.WriteLine("Consensus: Is not smooth");
 			}
 
+			CalculateRotation();
+
 			if (m_TrackedFeatures.Count < m_ThresholdForFeatureRepopulation)
 			{
 				RepopulateFeaturePoints();
@@ -204,7 +271,7 @@ namespace VisualOdometry
 
 		private void ApplyUnsmoothGrades()
 		{
-			int unsmoothFeaturesOutCout = 0;
+			int unsmoothFeaturesOutCount = 0;
 			for (int i = m_TrackedFeatures.Count - 1; i >= 0; i--)
 			{
 				TrackedFeature trackedFeature = m_TrackedFeatures[i];
@@ -212,11 +279,34 @@ namespace VisualOdometry
 				if (trackedFeature.IsOut)
 				{
 					RemoveTrackedFeature(i);
-					unsmoothFeaturesOutCout++;
+					unsmoothFeaturesOutCount++;
 				}
 			}
 
-			Debug.WriteLine("Number of unsmooth features weeded out: " + unsmoothFeaturesOutCout);
+			Debug.WriteLine("Number of unsmooth features weeded out: " + unsmoothFeaturesOutCount);
+		}
+
+		private void CalculateRotation()
+		{
+			m_HeadingChangesCount = 0;
+			for (int i = 0; i < m_TrackedFeatures.Count; i++)
+			{
+				TrackedFeature trackedFeature = m_TrackedFeatures[i];
+				if (!trackedFeature.HasFullHistory)
+				{
+					continue;
+				}
+				PointF previousFeatureLocation = trackedFeature[0];
+				PointF currentFeatureLocation = trackedFeature[0];
+				if (currentFeatureLocation.Y > m_SkyRegionBottom)
+				{
+					double previousAngularPlacement = Math.Atan2(currentFeatureLocation.X, c_FocalLengthX);
+					double currentAngularPlacement = Math.Atan2(currentFeatureLocation.X, c_FocalLengthX);
+
+					m_HeadingChanges[m_HeadingChangesCount] = currentAngularPlacement - previousAngularPlacement;
+					m_HeadingChangesCount++;
+				}
+			}
 		}
 
 		public List<TrackedFeature> TrackedFeatures

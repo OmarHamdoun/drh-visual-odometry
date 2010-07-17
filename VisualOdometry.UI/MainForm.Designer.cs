@@ -37,7 +37,7 @@
 			this.label9 = new System.Windows.Forms.Label();
 			this.m_MinDistanceTextBox = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
-			this.m_QaulityLevelTextBox = new System.Windows.Forms.TextBox();
+			this.m_QualityLevelTextBox = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
 			this.m_BlockSizeTextBox = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
@@ -73,7 +73,7 @@
 			this.m_TopPanel.Controls.Add(this.label9);
 			this.m_TopPanel.Controls.Add(this.m_MinDistanceTextBox);
 			this.m_TopPanel.Controls.Add(this.label4);
-			this.m_TopPanel.Controls.Add(this.m_QaulityLevelTextBox);
+			this.m_TopPanel.Controls.Add(this.m_QualityLevelTextBox);
 			this.m_TopPanel.Controls.Add(this.label3);
 			this.m_TopPanel.Controls.Add(this.m_BlockSizeTextBox);
 			this.m_TopPanel.Controls.Add(this.label2);
@@ -143,12 +143,12 @@
 			this.label4.TabIndex = 7;
 			this.label4.Text = "Min Distance:";
 			// 
-			// m_QaulityLevelTextBox
+			// m_QualityLevelTextBox
 			// 
-			this.m_QaulityLevelTextBox.Location = new System.Drawing.Point(154, 38);
-			this.m_QaulityLevelTextBox.Name = "m_QaulityLevelTextBox";
-			this.m_QaulityLevelTextBox.Size = new System.Drawing.Size(68, 22);
-			this.m_QaulityLevelTextBox.TabIndex = 6;
+			this.m_QualityLevelTextBox.Location = new System.Drawing.Point(154, 38);
+			this.m_QualityLevelTextBox.Name = "m_QualityLevelTextBox";
+			this.m_QualityLevelTextBox.Size = new System.Drawing.Size(68, 22);
+			this.m_QualityLevelTextBox.TabIndex = 6;
 			// 
 			// label3
 			// 
@@ -334,7 +334,7 @@
 		private System.Windows.Forms.Panel m_TopPanel;
 		private System.Windows.Forms.TextBox m_MinDistanceTextBox;
 		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.TextBox m_QaulityLevelTextBox;
+		private System.Windows.Forms.TextBox m_QualityLevelTextBox;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.TextBox m_BlockSizeTextBox;
 		private System.Windows.Forms.Label label2;

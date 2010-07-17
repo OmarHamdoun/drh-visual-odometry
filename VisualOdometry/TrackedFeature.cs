@@ -11,7 +11,7 @@ namespace VisualOdometry
 	public class TrackedFeature : HistoryBuffer<PointF>
 	{
 		public const int HistoryCount = 7;
-		private static readonly double s_SmoothTransitionLimit = 1000;
+		private static readonly double s_SmoothTransitionLimit = 0.25;
 		private static readonly double s_SmoothRotationLimit = 30.0 * Math.PI / 180;
 
 		private int m_Score = 0;
@@ -73,8 +73,8 @@ namespace VisualOdometry
 			double directionChange6to2 = Math.Abs(SubtractAngles(direction6, direction2));
 			double directionChange2to1 = Math.Abs(SubtractAngles(direction2, direction1));
 
-			bool previousChangeIsSmooth = distance2 < s_SmoothTransitionLimit && directionChange6to2 < s_SmoothRotationLimit;
-			bool currentChangeIsSmooth = distance1 < s_SmoothTransitionLimit && directionChange2to1 < s_SmoothRotationLimit;
+			bool previousChangeIsSmooth = distance2 < s_SmoothTransitionLimit || directionChange6to2 < s_SmoothRotationLimit;
+			bool currentChangeIsSmooth = distance1 < s_SmoothTransitionLimit || directionChange2to1 < s_SmoothRotationLimit;
 
 			if (previousChangeIsSmooth && currentChangeIsSmooth)
 			{

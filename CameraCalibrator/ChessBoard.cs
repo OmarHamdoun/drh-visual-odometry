@@ -28,7 +28,7 @@ namespace CameraCalibrator
 			{
 				for (int y = 0; y < this.YCount - 1; y++)
 				{
-					MCvPoint3D32f cornerPoint = new MCvPoint3D32f(x, y, 0);
+					MCvPoint3D32f cornerPoint = new MCvPoint3D32f(x * 25, y * 25, 0);
 					cornerPoints.Add(cornerPoint);
 				}
 			}

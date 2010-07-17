@@ -33,14 +33,14 @@ namespace VisualOdometry.UI
 				m_Timer.Enabled = true;
 			}
 
-			m_VisualOdometer = new VisualOdometer(m_Capture, new OpticalFlow());
+			CameraParameters cameraParameters = CameraParameters.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinemaFocus14.txt");
+			m_VisualOdometer = new VisualOdometer(m_Capture, cameraParameters, new OpticalFlow());
 
 			UpdateFromModel();
 
 			m_VisualOdometer.Changed += new EventHandler(OnVisualOdometerChanged);
 			Application.Idle += OnApplicationIdle;
 		}
-
 
 		private void OnTimerTick(object sender, EventArgs e)
 		{
@@ -94,8 +94,8 @@ namespace VisualOdometry.UI
 
 		private void DrawRegionBoundary(Image<Bgr, Byte> image, int yPos)
 		{
-			PointF start = new PointF(0, image.Height - yPos);
-			PointF end = new PointF(image.Width, image.Height - yPos);
+			PointF start = new PointF(0, yPos);
+			PointF end = new PointF(image.Width, yPos);
 			LineSegment2DF lineSegment = new LineSegment2DF(start, end);
 			image.Draw(lineSegment, new Bgr(Color.Red), 1);
 		}
@@ -148,7 +148,7 @@ namespace VisualOdometry.UI
 		{
 			m_MaxFeatureCountTextBox.Text = m_VisualOdometer.OpticalFlow.MaxFeatureCount.ToString();
 			m_BlockSizeTextBox.Text = m_VisualOdometer.OpticalFlow.BlockSize.ToString();
-			m_QaulityLevelTextBox.Text = m_VisualOdometer.OpticalFlow.QualityLevel.ToString();
+			m_QualityLevelTextBox.Text = m_VisualOdometer.OpticalFlow.QualityLevel.ToString();
 			m_MinDistanceTextBox.Text = m_VisualOdometer.OpticalFlow.MinDistance.ToString();
 
 			m_SkyBottomTextBox.Text = m_VisualOdometer.SkyRegionBottom.ToString();
@@ -164,7 +164,7 @@ namespace VisualOdometry.UI
 			Int32.TryParse(m_BlockSizeTextBox.Text, out blockSize);
 
 			double qualityLevel = m_VisualOdometer.OpticalFlow.QualityLevel;
-			Double.TryParse(m_QaulityLevelTextBox.Text, out qualityLevel);
+			Double.TryParse(m_QualityLevelTextBox.Text, out qualityLevel);
 
 			double minDistance = m_VisualOdometer.OpticalFlow.MinDistance;
 			Double.TryParse(m_MinDistanceTextBox.Text, out minDistance);
