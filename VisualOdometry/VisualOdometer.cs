@@ -11,8 +11,6 @@ namespace VisualOdometry
 {
 	public class VisualOdometer : IDisposable
 	{
-		private const double c_FocalLengthX = 595.18;
-
 		private Capture m_Capture;
 		private CameraParameters m_CameraParameters;
 
@@ -33,8 +31,7 @@ namespace VisualOdometry
 		public int InitialFeaturesCount { get; private set; }
 		private int m_ThresholdForFeatureRepopulation;
 
-		private double[] m_HeadingChanges;
-		private int m_HeadingChangesCount;
+		private List<double> m_HeadingChanges;
 
 		public event EventHandler Changed;
 
@@ -159,7 +156,7 @@ namespace VisualOdometry
 			{
 				// This occurs the first time we process a frame.
 				int upperLimitFeaturesCount = (int)(m_RawImage.Width * m_RawImage.Height / m_OpticalFlow.MinDistance / m_OpticalFlow.MinDistance) * 4;
-				m_HeadingChanges = new double[upperLimitFeaturesCount];
+				m_HeadingChanges = new List<double>(upperLimitFeaturesCount);
 
 				this.CurrentImage = m_RawImage.Clone();
 			}
@@ -205,6 +202,12 @@ namespace VisualOdometry
 
 			this.InitialFeaturesCount = m_TrackedFeatures.Count;
 			m_ThresholdForFeatureRepopulation = this.InitialFeaturesCount * 9 / 10;
+			// We ensure that we don't drop below a fixed limit
+			if (m_ThresholdForFeatureRepopulation < 100)
+			{
+				m_ThresholdForFeatureRepopulation = 100;
+			}
+
 			m_NotTrackedFeaturesCount = 0;
 		}
 
@@ -288,7 +291,8 @@ namespace VisualOdometry
 
 		private void CalculateRotation()
 		{
-			m_HeadingChangesCount = 0;
+			m_HeadingChanges.Clear();
+			double focalLengthX = m_CameraParameters.Intrinsic.Fx;
 			for (int i = 0; i < m_TrackedFeatures.Count; i++)
 			{
 				TrackedFeature trackedFeature = m_TrackedFeatures[i];
@@ -296,15 +300,14 @@ namespace VisualOdometry
 				{
 					continue;
 				}
-				PointF previousFeatureLocation = trackedFeature[0];
+				PointF previousFeatureLocation = trackedFeature[-1];
 				PointF currentFeatureLocation = trackedFeature[0];
-				if (currentFeatureLocation.Y > m_SkyRegionBottom)
+				if (currentFeatureLocation.Y <= m_SkyRegionBottom)
 				{
-					double previousAngularPlacement = Math.Atan2(currentFeatureLocation.X, c_FocalLengthX);
-					double currentAngularPlacement = Math.Atan2(currentFeatureLocation.X, c_FocalLengthX);
+					double previousAngularPlacement = Math.Atan2(previousFeatureLocation.X, focalLengthX);
+					double currentAngularPlacement = Math.Atan2(currentFeatureLocation.X, focalLengthX);
 
-					m_HeadingChanges[m_HeadingChangesCount] = currentAngularPlacement - previousAngularPlacement;
-					m_HeadingChangesCount++;
+					m_HeadingChanges.Add(currentAngularPlacement - previousAngularPlacement);
 				}
 			}
 		}
@@ -317,6 +320,11 @@ namespace VisualOdometry
 		public int NotTrackedFeaturesCount
 		{
 			get { return m_NotTrackedFeaturesCount; }
+		}
+
+		public List<double> HeadingChanges
+		{
+			get { return m_HeadingChanges; }
 		}
 
 		private void RaiseChangedEvent()

@@ -16,6 +16,7 @@ namespace VisualOdometry.UI
 	{
 		private Capture m_Capture;
 		private VisualOdometer m_VisualOdometer;
+		private DetailsForm m_DetailsForm = new DetailsForm();
 
 		public MainForm()
 		{
@@ -84,6 +85,11 @@ namespace VisualOdometry.UI
 			DrawFeatureLocationsPreviousAndCurrent();
 			m_FeaturesImageBox.ImageBox.Image = m_VisualOdometer.CurrentImage;
 			m_FlowImageBox.ImageBox.Image = m_VisualOdometer.OpticalFlow.MaskImage;
+
+			if (!m_DetailsForm.IsDisposed)
+			{
+				m_DetailsForm.Update(m_VisualOdometer);
+			}
 		}
 
 		private void DrawRegionBounderies()
@@ -206,6 +212,15 @@ namespace VisualOdometry.UI
 				Settings.Default.Location = this.Location;
 			}
 			Settings.Default.Save();
+		}
+
+		private void OnDetailsButtonClicked(object sender, EventArgs e)
+		{
+			if (m_DetailsForm.IsDisposed)
+			{
+				m_DetailsForm = new DetailsForm();
+			}
+			m_DetailsForm.Show(this);
 		}
 	}
 }

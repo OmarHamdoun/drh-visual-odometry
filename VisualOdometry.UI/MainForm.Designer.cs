@@ -52,9 +52,10 @@
 			this.m_FoundFeaturesCountTextBox = new System.Windows.Forms.TextBox();
 			this.label5 = new System.Windows.Forms.Label();
 			this.m_ImagesSplitter = new System.Windows.Forms.SplitContainer();
+			this.m_Timer = new System.Windows.Forms.Timer(this.components);
 			this.m_FeaturesImageBox = new Vision.WinForm.ImageBoxWithHeading();
 			this.m_FlowImageBox = new Vision.WinForm.ImageBoxWithHeading();
-			this.m_Timer = new System.Windows.Forms.Timer(this.components);
+			this.m_DetailsButton = new System.Windows.Forms.Button();
 			this.m_TopPanel.SuspendLayout();
 			this.m_BottomPanel.SuspendLayout();
 			this.groupBox1.SuspendLayout();
@@ -202,6 +203,7 @@
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.m_DetailsButton);
 			this.groupBox1.Controls.Add(this.m_NotTrackedFeaturesCount);
 			this.groupBox1.Controls.Add(this.label7);
 			this.groupBox1.Controls.Add(this.m_TrackedFeaturesCountTextBox);
@@ -284,6 +286,10 @@
 			this.m_ImagesSplitter.SplitterDistance = 617;
 			this.m_ImagesSplitter.TabIndex = 3;
 			// 
+			// m_Timer
+			// 
+			this.m_Timer.Tick += new System.EventHandler(this.OnTimerTick);
+			// 
 			// m_FeaturesImageBox
 			// 
 			this.m_FeaturesImageBox.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -302,9 +308,15 @@
 			this.m_FlowImageBox.Size = new System.Drawing.Size(658, 482);
 			this.m_FlowImageBox.TabIndex = 0;
 			// 
-			// m_Timer
+			// m_DetailsButton
 			// 
-			this.m_Timer.Tick += new System.EventHandler(this.OnTimerTick);
+			this.m_DetailsButton.Location = new System.Drawing.Point(371, 53);
+			this.m_DetailsButton.Name = "m_DetailsButton";
+			this.m_DetailsButton.Size = new System.Drawing.Size(75, 23);
+			this.m_DetailsButton.TabIndex = 10;
+			this.m_DetailsButton.Text = "Details ...";
+			this.m_DetailsButton.UseVisualStyleBackColor = true;
+			this.m_DetailsButton.Click += new System.EventHandler(this.OnDetailsButtonClicked);
 			// 
 			// MainForm
 			// 
@@ -357,6 +369,7 @@
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.Button m_ApplyButton;
 		private System.Windows.Forms.Timer m_Timer;
+		private System.Windows.Forms.Button m_DetailsButton;
 	}
 }
 
