@@ -31,6 +31,7 @@ namespace VisualOdometry
 		public int InitialFeaturesCount { get; private set; }
 		private int m_ThresholdForFeatureRepopulation;
 
+		private double m_CenterX;
 		private List<double> m_HeadingChanges;
 
 		public event EventHandler Changed;
@@ -155,6 +156,7 @@ namespace VisualOdometry
 			if (previousGrayImage == null)
 			{
 				// This occurs the first time we process a frame.
+				m_CenterX = m_RawImage.Width / 2.0;
 				int upperLimitFeaturesCount = (int)(m_RawImage.Width * m_RawImage.Height / m_OpticalFlow.MinDistance / m_OpticalFlow.MinDistance) * 4;
 				m_HeadingChanges = new List<double>(upperLimitFeaturesCount);
 
@@ -293,6 +295,8 @@ namespace VisualOdometry
 		{
 			m_HeadingChanges.Clear();
 			double focalLengthX = m_CameraParameters.Intrinsic.Fx;
+			double maxAbsDeltaX = Double.MinValue;
+
 			for (int i = 0; i < m_TrackedFeatures.Count; i++)
 			{
 				TrackedFeature trackedFeature = m_TrackedFeatures[i];
@@ -302,14 +306,23 @@ namespace VisualOdometry
 				}
 				PointF previousFeatureLocation = trackedFeature[-1];
 				PointF currentFeatureLocation = trackedFeature[0];
-				if (true) //currentFeatureLocation.Y <= m_SkyRegionBottom)
+				double absDeltaX = Math.Abs(currentFeatureLocation.X - previousFeatureLocation.X);
+				if (absDeltaX > maxAbsDeltaX)
 				{
-					double previousAngularPlacement = Math.Atan2(previousFeatureLocation.X, focalLengthX);
-					double currentAngularPlacement = Math.Atan2(currentFeatureLocation.X, focalLengthX);
+					maxAbsDeltaX = absDeltaX;
+				}
 
-					m_HeadingChanges.Add(currentAngularPlacement - previousAngularPlacement);
+				if (currentFeatureLocation.Y <= m_SkyRegionBottom)
+				{
+					double previousAngularPlacement = Math.Atan2(previousFeatureLocation.X - m_CenterX, focalLengthX);
+					double currentAngularPlacement = Math.Atan2(currentFeatureLocation.X - m_CenterX, focalLengthX);
+					double headingChange = previousAngularPlacement - currentAngularPlacement;
+					Debug.WriteLine(headingChange * 180.0 / Math.PI);
+					m_HeadingChanges.Add(headingChange);
 				}
 			}
+
+			Debug.WriteLine("Max delta x: " + maxAbsDeltaX);
 		}
 
 		public List<TrackedFeature> TrackedFeatures

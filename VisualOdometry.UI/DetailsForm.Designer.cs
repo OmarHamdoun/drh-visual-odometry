@@ -40,7 +40,7 @@
 			this.m_AnglesChart.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.m_AnglesChart.Location = new System.Drawing.Point(0, 0);
 			this.m_AnglesChart.Name = "m_AnglesChart";
-			this.m_AnglesChart.Size = new System.Drawing.Size(566, 483);
+			this.m_AnglesChart.Size = new System.Drawing.Size(371, 316);
 			this.m_AnglesChart.TabIndex = 0;
 			this.m_AnglesChart.Text = "Angles";
 			// 
@@ -48,7 +48,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(566, 483);
+			this.ClientSize = new System.Drawing.Size(371, 316);
 			this.Controls.Add(this.m_AnglesChart);
 			this.Name = "DetailsForm";
 			this.Text = "DetailsForm";

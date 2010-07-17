@@ -30,7 +30,7 @@ namespace VisualOdometry.UI
 
 		private void InitializeHistogram()
 		{
-			m_Histogram = new Histogram(-0.1, 0.1, 20);
+			m_Histogram = new Histogram(-5.0, 5.0, 200);
 			InitializeHistogramChart();
 		}
 
