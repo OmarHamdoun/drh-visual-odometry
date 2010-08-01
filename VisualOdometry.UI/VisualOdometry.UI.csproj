@@ -62,7 +62,6 @@
     <Compile Include="DetailsForm.Designer.cs">
       <DependentUpon>DetailsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="HistogramChartHelper.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

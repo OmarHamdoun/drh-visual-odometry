@@ -75,9 +75,9 @@ namespace Playground.UI
 			//{
 			//    m_HistogramSeries.Points.AddXY(index, 2 * index);
 			//}
-			for (int i = 0; i < m_Data.Histogram.Bins.Length; i++)
+			for (int i = 0; i < m_Data.Histogram.BinsCount; i++)
 			{
-				HistogramBin bin = m_Data.Histogram.Bins[i];
+				HistogramBin bin = m_Data.Histogram[i];
 				// Add data point into the histogram series
 				double x = (bin.Min + bin.Max) / 2.0;
 				m_HistogramSeries.Points.AddXY(x, bin.Count);

@@ -14,6 +14,7 @@ namespace VisualOdometry
 		private HistogramBin[] m_Bins;
 		private HistogramBin m_BelowMinBin;
 		private HistogramBin m_AboveMaxBin;
+		public int FullestBinIndex { get; private set; }
 
 		public Histogram(double min, double max, int binCount)
 		{
@@ -36,9 +37,28 @@ namespace VisualOdometry
 			m_AboveMaxBin = new HistogramBin(max, Double.MaxValue);
 		}
 
-		public HistogramBin[] Bins
+		public HistogramBin this[int binIndex]
 		{
-			get { return m_Bins; }
+			get
+			{
+                if (binIndex == -1)
+                {
+                    return m_BelowMinBin;
+                }
+
+				if (binIndex < m_Bins.Length)
+				{
+					return m_Bins[binIndex];
+				}
+
+				Debug.Assert(binIndex == m_Bins.Length);
+				return m_AboveMaxBin;
+			}
+		}
+
+		public int BinsCount
+		{
+			get { return m_Bins.Length; }
 		}
 
 		private void Clear()
@@ -54,6 +74,7 @@ namespace VisualOdometry
 		public void Fill(double[] values)
 		{
 			Clear();
+			this.FullestBinIndex = -1;
 			Array.Sort<double>(values);
 			int currentBinIndex = -1;
 			HistogramBin currentBin = m_BelowMinBin;
@@ -64,25 +85,16 @@ namespace VisualOdometry
 				while (value > currentBin.Max)
 				{
 					currentBinIndex++;
-					currentBin = GetBin(currentBinIndex);
+					currentBin = this[currentBinIndex];
 				}
 
 				currentBin.Count++;
+
+				if (currentBin.Count > this[this.FullestBinIndex].Count)
+				{
+					this.FullestBinIndex = currentBinIndex;
+				}
 			}
-		}
-
-		private HistogramBin GetBin(int binIndex)
-		{
-			Debug.Assert(binIndex > -1);
-			Debug.Assert(binIndex <= m_Bins.Length);
-
-			if (binIndex < m_Bins.Length)
-			{
-				return m_Bins[binIndex];
-			}
-
-			Debug.Assert(binIndex == m_Bins.Length);
-			return m_AboveMaxBin;
 		}
 
 		public int BelowMinCount

@@ -11,7 +11,7 @@ namespace VisualOdometry.Utilities
 		private int m_Size;
 		private T[] m_History;
 		private int m_IndexForNextValue = 0;
-		private int m_ValueCount = 0;
+		private int m_Count = 0;
 
 		public CircularBuffer(int size)
 		{
@@ -24,16 +24,16 @@ namespace VisualOdometry.Utilities
 			get { return m_Size; }
 		}
 
-		public int ValueCount
+		public int Count
 		{
-			get { return m_ValueCount; }
+			get { return m_Count; }
 		}
 	
 		public virtual void Add(T value)
 		{
-			if (m_ValueCount < m_Size)
+			if (m_Count < m_Size)
 			{
-				m_ValueCount++;
+				m_Count++;
 			}
 
 			m_History[m_IndexForNextValue] = value;
@@ -42,14 +42,14 @@ namespace VisualOdometry.Utilities
 
 		public bool HasFullHistory
 		{
-			get { return (m_ValueCount == m_Size); }
+			get { return (m_Count == m_Size); }
 		}
 
 		public virtual T this[int index]
 		{
 			get
 			{
-				int internalIndex = (m_Size + m_IndexForNextValue - m_ValueCount + index) % m_Size;
+				int internalIndex = (m_Size + m_IndexForNextValue - m_Count + index) % m_Size;
 				return m_History[internalIndex];
 			}
 		}

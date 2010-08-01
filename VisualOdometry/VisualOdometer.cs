@@ -11,6 +11,8 @@ namespace VisualOdometry
 {
 	public class VisualOdometer : IDisposable
 	{
+		private static readonly double s_RadToDegree = 180.0 / Math.PI;
+
 		private Capture m_Capture;
 		private CameraParameters m_CameraParameters;
 
@@ -19,8 +21,7 @@ namespace VisualOdometry
 
 		private int m_GroundRegionTop;
 		private int m_SkyRegionBottom;
-		private double m_HeadingRad;
-		//private PointF[] m_TrackedFeaturePoints;
+		
 		private List<TrackedFeature> m_TrackedFeatures;
 		private int m_NotTrackedFeaturesCount;
 
@@ -32,7 +33,8 @@ namespace VisualOdometry
 		private int m_ThresholdForFeatureRepopulation;
 
 		private double m_CenterX;
-		private List<double> m_HeadingChanges;
+		private List<double> m_RotationIncrements;
+		private double m_CumulativeRotationRad;
 
 		public event EventHandler Changed;
 
@@ -41,8 +43,8 @@ namespace VisualOdometry
 			m_Capture = capture;
 			this.CameraParameters = cameraParameters;
 
-			m_GroundRegionTop = OdometerSettings.Default.GroundRegionTop;
-			m_SkyRegionBottom = OdometerSettings.Default.SkyRegionBottom;
+			this.GroundRegionTop = OdometerSettings.Default.GroundRegionTop;
+			this.SkyRegionBottom = OdometerSettings.Default.SkyRegionBottom;
 
 			this.OpticalFlow = opticalFlow;
 		}
@@ -87,7 +89,7 @@ namespace VisualOdometry
 			{
 				if (value != m_GroundRegionTop)
 				{
-					// We ensure that the ground ends below the sky
+					// We ensure that the ground always ends up below the sky
 					if (value <= m_SkyRegionBottom)
 					{
 						value = m_SkyRegionBottom + 1;
@@ -108,7 +110,7 @@ namespace VisualOdometry
 			{
 				if (value != m_SkyRegionBottom)
 				{
-					// We ensure that the sky always end above the ground
+					// We ensure that the sky always ends up above the ground
 					if (value >= m_GroundRegionTop)
 					{
 						value = m_GroundRegionTop - 1;
@@ -119,22 +121,14 @@ namespace VisualOdometry
 			}
 		}
 
-		public double HeadingRad
+		public double CumulativeRotationRad
 		{
-			get { return m_HeadingRad; }
-			private set
-			{
-				if (value != m_HeadingRad)
-				{
-					m_HeadingRad = value;
-					RaiseChangedEvent();
-				}
-			}
+			get { return m_CumulativeRotationRad; }
 		}
 
-		public double HeadingDegree
+		public double CumulativeRotationDegree
 		{
-			get { return m_HeadingRad * 180.0 / Math.PI;  }
+			get { return m_CumulativeRotationRad * s_RadToDegree; }
 		}
 
 		public void ProcessFrame()
@@ -158,7 +152,7 @@ namespace VisualOdometry
 				// This occurs the first time we process a frame.
 				m_CenterX = m_RawImage.Width / 2.0;
 				int upperLimitFeaturesCount = (int)(m_RawImage.Width * m_RawImage.Height / m_OpticalFlow.MinDistance / m_OpticalFlow.MinDistance) * 4;
-				m_HeadingChanges = new List<double>(upperLimitFeaturesCount);
+				m_RotationIncrements = new List<double>(upperLimitFeaturesCount);
 
 				this.CurrentImage = m_RawImage.Clone();
 			}
@@ -293,36 +287,41 @@ namespace VisualOdometry
 
 		private void CalculateRotation()
 		{
-			m_HeadingChanges.Clear();
+			m_RotationIncrements.Clear();
 			double focalLengthX = m_CameraParameters.Intrinsic.Fx;
-			double maxAbsDeltaX = Double.MinValue;
+			//double maxAbsDeltaX = Double.MinValue;
 
 			for (int i = 0; i < m_TrackedFeatures.Count; i++)
 			{
 				TrackedFeature trackedFeature = m_TrackedFeatures[i];
-				if (!trackedFeature.HasFullHistory)
+				if (trackedFeature.Count < 2)
 				{
 					continue;
 				}
 				PointF previousFeatureLocation = trackedFeature[-1];
 				PointF currentFeatureLocation = trackedFeature[0];
-				double absDeltaX = Math.Abs(currentFeatureLocation.X - previousFeatureLocation.X);
-				if (absDeltaX > maxAbsDeltaX)
-				{
-					maxAbsDeltaX = absDeltaX;
-				}
+				//double absDeltaX = Math.Abs(currentFeatureLocation.X - previousFeatureLocation.X);
+				//if (absDeltaX > maxAbsDeltaX)
+				//{
+				//    maxAbsDeltaX = absDeltaX;
+				//}
 
 				if (currentFeatureLocation.Y <= m_SkyRegionBottom)
 				{
 					double previousAngularPlacement = Math.Atan2(previousFeatureLocation.X - m_CenterX, focalLengthX);
 					double currentAngularPlacement = Math.Atan2(currentFeatureLocation.X - m_CenterX, focalLengthX);
-					double headingChange = previousAngularPlacement - currentAngularPlacement;
-					Debug.WriteLine(headingChange * 180.0 / Math.PI);
-					m_HeadingChanges.Add(headingChange);
+					double rotationIncrement = previousAngularPlacement - currentAngularPlacement;
+					//Debug.WriteLine(headingChange * 180.0 / Math.PI);
+					m_RotationIncrements.Add(rotationIncrement);
 				}
 			}
 
-			Debug.WriteLine("Max delta x: " + maxAbsDeltaX);
+			//Debug.WriteLine("Max delta x: " + maxAbsDeltaX);
+			if (m_RotationIncrements.Count > 0)
+			{
+				double meanRotationIncrement = m_RotationIncrements[m_RotationIncrements.Count / 2];
+				m_CumulativeRotationRad += meanRotationIncrement;
+			}
 		}
 
 		public List<TrackedFeature> TrackedFeatures
@@ -337,7 +336,7 @@ namespace VisualOdometry
 
 		public List<double> HeadingChanges
 		{
-			get { return m_HeadingChanges; }
+			get { return m_RotationIncrements; }
 		}
 
 		private void RaiseChangedEvent()

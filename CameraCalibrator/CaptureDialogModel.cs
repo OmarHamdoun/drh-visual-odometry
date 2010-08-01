@@ -34,6 +34,8 @@ namespace CameraCalibrator
 		private void InitializeCapture()
 		{
 			m_Capture = new Capture();
+			m_Capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FRAME_WIDTH, 1280);
+			m_Capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FRAME_HEIGHT, 720);
 		}
 
 		public void ProcessFrame()

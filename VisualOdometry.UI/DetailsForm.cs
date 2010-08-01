@@ -18,7 +18,6 @@ namespace VisualOdometry.UI
 		private Histogram m_Histogram;
 		private const string c_HistogramSeriesName = "Histogram";
 		private Series m_HistogramSeries;
-		private HistogramChartHelper m_HistogramHelper = new HistogramChartHelper();
 
 		public DetailsForm()
 		{
@@ -103,9 +102,9 @@ namespace VisualOdometry.UI
 			m_Histogram.Fill(degreeAngles);
 			//m_AnglesChart.Series.Clear();
 			m_HistogramSeries.Points.Clear();
-			for (int i = 0; i < m_Histogram.Bins.Length; i++)
+			for (int i = 0; i < m_Histogram.BinsCount; i++)
 			{
-				HistogramBin bin = m_Histogram.Bins[i];
+				HistogramBin bin = m_Histogram[i];
 				// Add data point into the histogram series
 				double x = (bin.Min + bin.Max) / 2.0;
 				m_HistogramSeries.Points.AddXY(x, bin.Count);

@@ -25,7 +25,7 @@ namespace VisualOdometry.Utilities
 					string errorMessage = String.Format("Index must be between 0 and {0}.", -(this.Size - 1));
 					throw new ArgumentException(errorMessage);
 				}
-				return base[this.ValueCount - 1 + index];
+				return base[this.Count - 1 + index];
 			}
 		}
 
