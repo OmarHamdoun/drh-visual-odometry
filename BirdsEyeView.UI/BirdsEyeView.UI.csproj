@@ -5,14 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B60143AF-39C9-481B-B085-A37B58CF99A9}</ProjectGuid>
+    <ProjectGuid>{A50D03B4-50CC-4A5E-99D6-70DB43F83DD9}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CameraCalibrator</RootNamespace>
-    <AssemblyName>CameraCalibrator</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
+    <RootNamespace>BirdsEyeView.UI</RootNamespace>
+    <AssemblyName>BirdsEyeView.UI</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -35,22 +34,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Emgu.CV, Version=2.1.0.793, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Emgu.CV">
       <HintPath>..\..\..\..\..\Program Files\Emgu\Emgu CV\bin\Emgu.CV.dll</HintPath>
     </Reference>
-    <Reference Include="Emgu.CV.UI, Version=2.1.0.793, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Emgu.CV.UI">
       <HintPath>..\..\..\..\..\Program Files\Emgu\Emgu CV\bin\Emgu.CV.UI.dll</HintPath>
     </Reference>
-    <Reference Include="Emgu.Util, Version=2.1.0.793, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Emgu.Util">
       <HintPath>..\..\..\..\..\Program Files\Emgu\Emgu CV\bin\Emgu.Util.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
@@ -58,66 +55,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CalibrateDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CalibrateDialog.Designer.cs">
-      <DependentUpon>CalibrateDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CalibrateDialogModel.cs" />
-    <Compile Include="CalibrationParametersFormModel.cs" />
-    <Compile Include="CalibratorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CalibratorForm.Designer.cs">
-      <DependentUpon>CalibratorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CalibratorState.cs" />
-    <Compile Include="CaptureSettings.cs" />
-    <Compile Include="CaptureSettingsDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CaptureSettingsDialog.Designer.cs">
-      <DependentUpon>CaptureSettingsDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CalibratorFormModel.cs" />
-    <Compile Include="CalibrationParametersForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CalibrationParametersForm.Designer.cs">
-      <DependentUpon>CalibrationParametersForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CaptureDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CaptureDialog.Designer.cs">
-      <DependentUpon>CaptureDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CaptureDialogModel.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="CalibrateDialog.resx">
-      <DependentUpon>CalibrateDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CalibratorForm.resx">
-      <DependentUpon>CalibratorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CalibrationParametersForm.resx">
-      <DependentUpon>CalibrationParametersForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CaptureSettingsDialog.resx">
-      <DependentUpon>CaptureSettingsDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CaptureDialog.resx">
-      <DependentUpon>CaptureDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -129,9 +74,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -147,13 +90,13 @@
       <Project>{A50DD7C7-A8BE-4EA0-BF96-A10CC03A4D3C}</Project>
       <Name>CameraCalibrator.Support</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CameraCalibrator.WinForm.Support\CameraCalibrator.WinForm.Support.csproj">
-      <Project>{3A515BFD-C01C-41A5-A386-9A02A333C1D3}</Project>
-      <Name>CameraCalibrator.WinForm.Support</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Vision.WinFormSupport\Vision.WinFormSupport.csproj">
       <Project>{0A0678B7-E7FB-43A0-96A6-58ACD3A408CE}</Project>
       <Name>Vision.WinFormSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VisualOdometry\VisualOdometry.csproj">
+      <Project>{23E7D8D7-CEDC-44EE-9F5D-4219B5539350}</Project>
+      <Name>VisualOdometry</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

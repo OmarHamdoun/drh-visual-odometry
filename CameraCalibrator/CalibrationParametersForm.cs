@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using Emgu.CV;
 using CameraCalibrator.WinForm.Support;
+using CameraCalibrator.Support;
 
 namespace CameraCalibrator
 {

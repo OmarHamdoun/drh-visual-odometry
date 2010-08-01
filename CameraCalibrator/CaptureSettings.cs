@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using CameraCalibrator.Properties;
 using System.IO;
+using CameraCalibrator.Support;
 
 namespace CameraCalibrator
 {

@@ -8,6 +8,7 @@ using Emgu.CV.Structure;
 using Emgu.CV.CvEnum;
 using CameraCalibrator.WinForm.Support;
 using System.Drawing;
+using CameraCalibrator.Support;
 
 namespace CameraCalibrator
 {
