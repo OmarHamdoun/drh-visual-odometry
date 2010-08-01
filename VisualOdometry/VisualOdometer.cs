@@ -21,7 +21,7 @@ namespace VisualOdometry
 
 		private int m_GroundRegionTop;
 		private int m_SkyRegionBottom;
-		
+
 		private List<TrackedFeature> m_TrackedFeatures;
 		private int m_NotTrackedFeaturesCount;
 
@@ -29,7 +29,7 @@ namespace VisualOdometry
 		public Image<Bgr, Byte> CurrentImage { get; private set; }
 		private Image<Gray, Byte> m_CurrentGrayImage;
 		private OpticalFlow m_OpticalFlow;
-        private RotationAnalyzer m_RotationAnalyzer;
+		private RotationAnalyzer m_RotationAnalyzer;
 		public int InitialFeaturesCount { get; private set; }
 		private int m_ThresholdForFeatureRepopulation;
 
@@ -44,26 +44,26 @@ namespace VisualOdometry
 			this.SkyRegionBottom = OdometerSettings.Default.SkyRegionBottom;
 
 			this.OpticalFlow = opticalFlow;
-            m_RotationAnalyzer = new RotationAnalyzer(this);
+			m_RotationAnalyzer = new RotationAnalyzer(this);
 		}
 
 		public CameraParameters CameraParameters
 		{
 			get { return m_CameraParameters; }
-            //set
-            //{
-            //    m_CameraParameters = value;
-            //    if (m_UndistortMapX != null)
-            //    {
-            //        m_UndistortMapX.Dispose();
-            //        m_UndistortMapX = null;
-            //    }
-            //    if (m_UndistortMapY != null)
-            //    {
-            //        m_UndistortMapY.Dispose();
-            //        m_UndistortMapY = null;
-            //    }
-            //}
+			//set
+			//{
+			//    m_CameraParameters = value;
+			//    if (m_UndistortMapX != null)
+			//    {
+			//        m_UndistortMapX.Dispose();
+			//        m_UndistortMapX = null;
+			//    }
+			//    if (m_UndistortMapY != null)
+			//    {
+			//        m_UndistortMapY.Dispose();
+			//        m_UndistortMapY = null;
+			//    }
+			//}
 		}
 
 		public OpticalFlow OpticalFlow
@@ -77,10 +77,10 @@ namespace VisualOdometry
 			}
 		}
 
-        public RotationAnalyzer RotationAnalyzer
-        {
-            get { return m_RotationAnalyzer; }
-        }
+		public RotationAnalyzer RotationAnalyzer
+		{
+			get { return m_RotationAnalyzer; }
+		}
 
 		/// <summary>
 		/// Top of the ground region in screen coordinates.
@@ -143,8 +143,8 @@ namespace VisualOdometry
 			if (previousGrayImage == null)
 			{
 				// This occurs the first time we process a frame.
-                //int upperLimitFeaturesCount = (int)(m_RawImage.Width * m_RawImage.Height / m_OpticalFlow.MinDistance / m_OpticalFlow.MinDistance) * 4;
-                //m_RotationIncrements = new List<double>(upperLimitFeaturesCount);
+				//int upperLimitFeaturesCount = (int)(m_RawImage.Width * m_RawImage.Height / m_OpticalFlow.MinDistance / m_OpticalFlow.MinDistance) * 4;
+				//m_RotationIncrements = new List<double>(upperLimitFeaturesCount);
 
 				this.CurrentImage = m_RawImage.Clone();
 			}
@@ -156,13 +156,13 @@ namespace VisualOdometry
 			{
 				TrackFeatures(previousGrayImage);
 
-                m_RotationAnalyzer.CalculateRotation();
+				m_RotationAnalyzer.CalculateRotation();
 
-                if (m_TrackedFeatures.Count < m_ThresholdForFeatureRepopulation)
-                {
-                    RepopulateFeaturePoints();
-                }
-            }
+				if (m_TrackedFeatures.Count < m_ThresholdForFeatureRepopulation)
+				{
+					RepopulateFeaturePoints();
+				}
+			}
 		}
 
 		private void InitializeUndistortMap(Image<Bgr, Byte> image)
@@ -299,7 +299,7 @@ namespace VisualOdometry
 		public void Dispose()
 		{
 			OdometerSettings.Default.GroundRegionTop = m_GroundRegionTop;
-			OdometerSettings.Default.SkyRegionBottom= m_SkyRegionBottom;
+			OdometerSettings.Default.SkyRegionBottom = m_SkyRegionBottom;
 			OdometerSettings.Default.Save();
 
 			if (this.OpticalFlow != null)

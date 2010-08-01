@@ -29,12 +29,12 @@ namespace VisualOdometry.UI
 			}
 			else
 			{
-                m_Capture = new Capture(@"C:\svnDev\oss\Google\drh-visual-odometry\TestVideos\2010-07-18 11-10-22.853.wmv");
+				m_Capture = new Capture(@"C:\svnDev\oss\Google\drh-visual-odometry\TestVideos\2010-07-18 11-10-22.853.wmv");
 				m_Timer.Interval = 33;
 				m_Timer.Enabled = true;
 			}
 
-            CameraParameters cameraParameters = CameraParameters.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\MicrosoftCinemaFocus12_1280x720.txt");
+			CameraParameters cameraParameters = CameraParameters.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\MicrosoftCinemaFocus12_1280x720.txt");
 			m_VisualOdometer = new VisualOdometer(m_Capture, cameraParameters, new OpticalFlow());
 
 			UpdateFromModel();
@@ -83,16 +83,16 @@ namespace VisualOdometry.UI
 
 			DrawRegionBounderies();
 
-            if (m_DrawFeaturesCheckBox.Checked)
-            {
-                DrawFeatureLocationsPreviousAndCurrent();
-            }
+			if (m_DrawFeaturesCheckBox.Checked)
+			{
+				DrawFeatureLocationsPreviousAndCurrent();
+			}
 			m_FeaturesImageBox.ImageBox.Image = m_VisualOdometer.CurrentImage;
 
-            if (m_DrawNewFeaturesMaskCheckBox.Checked)
-            {
-                m_FlowImageBox.ImageBox.Image = m_VisualOdometer.OpticalFlow.MaskImage;
-            }
+			if (m_DrawNewFeaturesMaskCheckBox.Checked)
+			{
+				m_FlowImageBox.ImageBox.Image = m_VisualOdometer.OpticalFlow.MaskImage;
+			}
 
 			m_CumulativeRotationTextBox.Text = m_VisualOdometer.RotationAnalyzer.CumulativeRotationDegree.ToString();
 
@@ -126,7 +126,7 @@ namespace VisualOdometry.UI
 		{
 			List<TrackedFeature> trackedFeatures = m_VisualOdometer.TrackedFeatures;
 			// draw previous location
-			for(int i = 0; i < trackedFeatures.Count; i++)
+			for (int i = 0; i < trackedFeatures.Count; i++)
 			{
 				TrackedFeature trackedFeature = trackedFeatures[i];
 				if (trackedFeature.Count > 1)

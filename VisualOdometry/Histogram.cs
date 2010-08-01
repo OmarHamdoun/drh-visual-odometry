@@ -41,10 +41,10 @@ namespace VisualOdometry
 		{
 			get
 			{
-                if (binIndex == -1)
-                {
-                    return m_BelowMinBin;
-                }
+				if (binIndex == -1)
+				{
+					return m_BelowMinBin;
+				}
 
 				if (binIndex < m_Bins.Length)
 				{

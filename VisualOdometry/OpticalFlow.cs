@@ -30,11 +30,12 @@ namespace VisualOdometry
 
 		public event EventHandler Changed;
 
-		public OpticalFlow() : this(
-			OpticalFlowSettings.Default.MaxFeatureCount,
-			OpticalFlowSettings.Default.BlockSize,
-			OpticalFlowSettings.Default.QualityLevel,
-			OpticalFlowSettings.Default.MinDistance)
+		public OpticalFlow()
+			: this(
+				OpticalFlowSettings.Default.MaxFeatureCount,
+				OpticalFlowSettings.Default.BlockSize,
+				OpticalFlowSettings.Default.QualityLevel,
+				OpticalFlowSettings.Default.MinDistance)
 		{
 		}
 

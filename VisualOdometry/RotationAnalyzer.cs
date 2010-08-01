@@ -6,42 +6,47 @@ using System.Drawing;
 
 namespace VisualOdometry
 {
-    public class RotationAnalyzer
-    {
-        private VisualOdometer m_VisualOdometer;
-        private double m_FocalLengthX;
-        private double m_CenterX;
+	public class RotationAnalyzer
+	{
+		private VisualOdometer m_VisualOdometer;
+		private double m_FocalLengthX;
+		private double m_CenterX;
 
-        private double m_CumulativeRotationRad;
-        private List<double> m_RotationIncrements;
+		private double m_CumulativeRotationRad;
+		private List<double> m_RotationIncrements;
 
-        internal RotationAnalyzer(VisualOdometer visualOdometer)
-        {
-            m_VisualOdometer = visualOdometer;
-            m_FocalLengthX = visualOdometer.CameraParameters.Intrinsic.Fx;
-            m_CenterX = visualOdometer.CameraParameters.Intrinsic.Cx;
+		internal RotationAnalyzer(VisualOdometer visualOdometer)
+		{
+			m_VisualOdometer = visualOdometer;
+			m_FocalLengthX = visualOdometer.CameraParameters.Intrinsic.Fx;
+			m_CenterX = visualOdometer.CameraParameters.Intrinsic.Cx;
 
-            m_RotationIncrements = new List<double>();
-        }
+			m_RotationIncrements = new List<double>();
+		}
 
-        public double CurrentRotationIncrement { get; private set; }
+		public double CurrentRotationIncrement { get; private set; }
 
-        public double CumulativeRotationRad
-        {
-            get { return m_CumulativeRotationRad; }
-        }
+		public double CumulativeRotationRad
+		{
+			get { return m_CumulativeRotationRad; }
+		}
 
-        public double CumulativeRotationDegree
-        {
-            get { return m_CumulativeRotationRad * VisualOdometer.RadToDegree; }
-        }
+		public double CumulativeRotationDegree
+		{
+			get { return m_CumulativeRotationRad * VisualOdometer.RadToDegree; }
+		}
 
-        internal void CalculateRotation()
-        {
-            m_RotationIncrements.Clear();
+		public List<double> HeadingChanges
+		{
+			get { return m_RotationIncrements; }
+		}
 
-            List<TrackedFeature> trackedFeatures = m_VisualOdometer.TrackedFeatures;
-            for (int i = 0; i < trackedFeatures.Count; i++)
+		internal void CalculateRotation()
+		{
+			m_RotationIncrements.Clear();
+
+			List<TrackedFeature> trackedFeatures = m_VisualOdometer.TrackedFeatures;
+			for (int i = 0; i < trackedFeatures.Count; i++)
 			{
 				TrackedFeature trackedFeature = trackedFeatures[i];
 				if (trackedFeature.Count < 2)
@@ -58,8 +63,8 @@ namespace VisualOdometry
 
 				if (currentFeatureLocation.Y <= m_VisualOdometer.SkyRegionBottom)
 				{
-                    double previousAngularPlacement = Math.Atan2(previousFeatureLocation.X - m_CenterX, m_FocalLengthX);
-                    double currentAngularPlacement = Math.Atan2(currentFeatureLocation.X - m_CenterX, m_FocalLengthX);
+					double previousAngularPlacement = Math.Atan2(previousFeatureLocation.X - m_CenterX, m_FocalLengthX);
+					double currentAngularPlacement = Math.Atan2(currentFeatureLocation.X - m_CenterX, m_FocalLengthX);
 					double rotationIncrement = previousAngularPlacement - currentAngularPlacement;
 					//Debug.WriteLine(headingChange * 180.0 / Math.PI);
 					m_RotationIncrements.Add(rotationIncrement);
@@ -69,22 +74,17 @@ namespace VisualOdometry
 			//Debug.WriteLine("Max delta x: " + maxAbsDeltaX);
 			if (m_RotationIncrements.Count > 0)
 			{
-                double meanRotationIncrement = CalculateMeanRotationIncrement();
+				double meanRotationIncrement = CalculateMeanRotationIncrement();
 				m_CumulativeRotationRad += meanRotationIncrement;
-                this.CurrentRotationIncrement = meanRotationIncrement;
+				this.CurrentRotationIncrement = meanRotationIncrement;
 			}
 		}
 
-        private double CalculateMeanRotationIncrement()
-        {
-            m_RotationIncrements.Sort();
-            double meanRotationIncrement = m_RotationIncrements[m_RotationIncrements.Count / 2];
-            return meanRotationIncrement;
-        }
-
-        public List<double> HeadingChanges
-        {
-            get { return m_RotationIncrements; }
-        }
-    }
+		private double CalculateMeanRotationIncrement()
+		{
+			m_RotationIncrements.Sort();
+			double meanRotationIncrement = m_RotationIncrements[m_RotationIncrements.Count / 2];
+			return meanRotationIncrement;
+		}
+	}
 }

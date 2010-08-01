@@ -28,7 +28,7 @@ namespace VisualOdometry.Utilities
 		{
 			get { return m_Count; }
 		}
-	
+
 		public virtual void Add(T value)
 		{
 			if (m_Count < m_Size)
