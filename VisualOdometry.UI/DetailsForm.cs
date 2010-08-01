@@ -87,7 +87,7 @@ namespace VisualOdometry.UI
 				return;
 			}
 
-			List<double> headingChanges = visualOdometer.HeadingChanges;
+			List<double> headingChanges = visualOdometer.RotationAnalyzer.HeadingChanges;
 			if (headingChanges.Count == 0)
 			{
 				return;

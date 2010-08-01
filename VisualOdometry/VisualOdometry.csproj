@@ -66,6 +66,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>OdometerSettings.settings</DependentUpon>
     </Compile>
+    <Compile Include="RotationAnalyzer.cs" />
     <Compile Include="TrackedFeature.cs" />
     <Compile Include="Utilities\CircularBuffer.cs" />
     <Compile Include="Utilities\HistoryBuffer.cs" />

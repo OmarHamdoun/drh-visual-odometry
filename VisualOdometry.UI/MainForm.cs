@@ -94,7 +94,7 @@ namespace VisualOdometry.UI
                 m_FlowImageBox.ImageBox.Image = m_VisualOdometer.OpticalFlow.MaskImage;
             }
 
-			m_CumulativeRotationTextBox.Text = m_VisualOdometer.CumulativeRotationDegree.ToString();
+			m_CumulativeRotationTextBox.Text = m_VisualOdometer.RotationAnalyzer.CumulativeRotationDegree.ToString();
 
 			if (!m_DetailsForm.IsDisposed)
 			{

@@ -11,7 +11,7 @@ namespace VisualOdometry
 {
 	public class VisualOdometer : IDisposable
 	{
-		private static readonly double s_RadToDegree = 180.0 / Math.PI;
+		internal static readonly double RadToDegree = 180.0 / Math.PI;
 
 		private Capture m_Capture;
 		private CameraParameters m_CameraParameters;
@@ -29,43 +29,41 @@ namespace VisualOdometry
 		public Image<Bgr, Byte> CurrentImage { get; private set; }
 		private Image<Gray, Byte> m_CurrentGrayImage;
 		private OpticalFlow m_OpticalFlow;
+        private RotationAnalyzer m_RotationAnalyzer;
 		public int InitialFeaturesCount { get; private set; }
 		private int m_ThresholdForFeatureRepopulation;
-
-		//private double m_CenterX;
-		private List<double> m_RotationIncrements;
-		private double m_CumulativeRotationRad;
 
 		public event EventHandler Changed;
 
 		public VisualOdometer(Capture capture, CameraParameters cameraParameters, OpticalFlow opticalFlow)
 		{
 			m_Capture = capture;
-			this.CameraParameters = cameraParameters;
+			m_CameraParameters = cameraParameters;
 
 			this.GroundRegionTop = OdometerSettings.Default.GroundRegionTop;
 			this.SkyRegionBottom = OdometerSettings.Default.SkyRegionBottom;
 
 			this.OpticalFlow = opticalFlow;
+            m_RotationAnalyzer = new RotationAnalyzer(this);
 		}
 
 		public CameraParameters CameraParameters
 		{
 			get { return m_CameraParameters; }
-			set
-			{
-				m_CameraParameters = value;
-				if (m_UndistortMapX != null)
-				{
-					m_UndistortMapX.Dispose();
-					m_UndistortMapX = null;
-				}
-				if (m_UndistortMapY != null)
-				{
-					m_UndistortMapY.Dispose();
-					m_UndistortMapY = null;
-				}
-			}
+            //set
+            //{
+            //    m_CameraParameters = value;
+            //    if (m_UndistortMapX != null)
+            //    {
+            //        m_UndistortMapX.Dispose();
+            //        m_UndistortMapX = null;
+            //    }
+            //    if (m_UndistortMapY != null)
+            //    {
+            //        m_UndistortMapY.Dispose();
+            //        m_UndistortMapY = null;
+            //    }
+            //}
 		}
 
 		public OpticalFlow OpticalFlow
@@ -78,6 +76,11 @@ namespace VisualOdometry
 				m_ThresholdForFeatureRepopulation = int.MaxValue;
 			}
 		}
+
+        public RotationAnalyzer RotationAnalyzer
+        {
+            get { return m_RotationAnalyzer; }
+        }
 
 		/// <summary>
 		/// Top of the ground region in screen coordinates.
@@ -121,16 +124,6 @@ namespace VisualOdometry
 			}
 		}
 
-		public double CumulativeRotationRad
-		{
-			get { return m_CumulativeRotationRad; }
-		}
-
-		public double CumulativeRotationDegree
-		{
-			get { return m_CumulativeRotationRad * s_RadToDegree; }
-		}
-
 		public void ProcessFrame()
 		{
 			m_RawImage = m_Capture.QueryFrame();
@@ -150,9 +143,8 @@ namespace VisualOdometry
 			if (previousGrayImage == null)
 			{
 				// This occurs the first time we process a frame.
-				//m_CenterX = m_RawImage.Width / 2.0;
-				int upperLimitFeaturesCount = (int)(m_RawImage.Width * m_RawImage.Height / m_OpticalFlow.MinDistance / m_OpticalFlow.MinDistance) * 4;
-				m_RotationIncrements = new List<double>(upperLimitFeaturesCount);
+                //int upperLimitFeaturesCount = (int)(m_RawImage.Width * m_RawImage.Height / m_OpticalFlow.MinDistance / m_OpticalFlow.MinDistance) * 4;
+                //m_RotationIncrements = new List<double>(upperLimitFeaturesCount);
 
 				this.CurrentImage = m_RawImage.Clone();
 			}
@@ -163,7 +155,14 @@ namespace VisualOdometry
 			if (previousGrayImage != null)
 			{
 				TrackFeatures(previousGrayImage);
-			}
+
+                m_RotationAnalyzer.CalculateRotation();
+
+                if (m_TrackedFeatures.Count < m_ThresholdForFeatureRepopulation)
+                {
+                    RepopulateFeaturePoints();
+                }
+            }
 		}
 
 		private void InitializeUndistortMap(Image<Bgr, Byte> image)
@@ -253,13 +252,6 @@ namespace VisualOdometry
 				// Consensus not smooth; not downgrading unsmooth features.
 				Debug.WriteLine("Consensus: Is not smooth");
 			}
-
-			CalculateRotation();
-
-			if (m_TrackedFeatures.Count < m_ThresholdForFeatureRepopulation)
-			{
-				RepopulateFeaturePoints();
-			}
 		}
 
 		private void RemoveTrackedFeature(int index)
@@ -285,47 +277,6 @@ namespace VisualOdometry
 			Debug.WriteLine("Number of unsmooth features weeded out: " + unsmoothFeaturesOutCount);
 		}
 
-		private void CalculateRotation()
-		{
-			m_RotationIncrements.Clear();
-			double focalLengthX = m_CameraParameters.Intrinsic.Fx;
-            double centerX = m_CameraParameters.Intrinsic.Cx;
-			//double maxAbsDeltaX = Double.MinValue;
-
-			for (int i = 0; i < m_TrackedFeatures.Count; i++)
-			{
-				TrackedFeature trackedFeature = m_TrackedFeatures[i];
-				if (trackedFeature.Count < 2)
-				{
-					continue;
-				}
-				PointF previousFeatureLocation = trackedFeature[-1];
-				PointF currentFeatureLocation = trackedFeature[0];
-				//double absDeltaX = Math.Abs(currentFeatureLocation.X - previousFeatureLocation.X);
-				//if (absDeltaX > maxAbsDeltaX)
-				//{
-				//    maxAbsDeltaX = absDeltaX;
-				//}
-
-				if (currentFeatureLocation.Y <= m_SkyRegionBottom)
-				{
-                    double previousAngularPlacement = Math.Atan2(previousFeatureLocation.X - centerX, focalLengthX);
-                    double currentAngularPlacement = Math.Atan2(currentFeatureLocation.X - centerX, focalLengthX);
-					double rotationIncrement = previousAngularPlacement - currentAngularPlacement;
-					//Debug.WriteLine(headingChange * 180.0 / Math.PI);
-					m_RotationIncrements.Add(rotationIncrement);
-				}
-			}
-
-			//Debug.WriteLine("Max delta x: " + maxAbsDeltaX);
-			if (m_RotationIncrements.Count > 0)
-			{
-                m_RotationIncrements.Sort();
-				double meanRotationIncrement = m_RotationIncrements[m_RotationIncrements.Count / 2];
-				m_CumulativeRotationRad += meanRotationIncrement;
-			}
-		}
-
 		public List<TrackedFeature> TrackedFeatures
 		{
 			get { return m_TrackedFeatures; }
@@ -334,11 +285,6 @@ namespace VisualOdometry
 		public int NotTrackedFeaturesCount
 		{
 			get { return m_NotTrackedFeaturesCount; }
-		}
-
-		public List<double> HeadingChanges
-		{
-			get { return m_RotationIncrements; }
 		}
 
 		private void RaiseChangedEvent()
