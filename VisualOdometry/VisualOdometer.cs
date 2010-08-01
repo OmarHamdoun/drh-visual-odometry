@@ -32,7 +32,7 @@ namespace VisualOdometry
 		public int InitialFeaturesCount { get; private set; }
 		private int m_ThresholdForFeatureRepopulation;
 
-		private double m_CenterX;
+		//private double m_CenterX;
 		private List<double> m_RotationIncrements;
 		private double m_CumulativeRotationRad;
 
@@ -150,7 +150,7 @@ namespace VisualOdometry
 			if (previousGrayImage == null)
 			{
 				// This occurs the first time we process a frame.
-				m_CenterX = m_RawImage.Width / 2.0;
+				//m_CenterX = m_RawImage.Width / 2.0;
 				int upperLimitFeaturesCount = (int)(m_RawImage.Width * m_RawImage.Height / m_OpticalFlow.MinDistance / m_OpticalFlow.MinDistance) * 4;
 				m_RotationIncrements = new List<double>(upperLimitFeaturesCount);
 
@@ -289,6 +289,7 @@ namespace VisualOdometry
 		{
 			m_RotationIncrements.Clear();
 			double focalLengthX = m_CameraParameters.Intrinsic.Fx;
+            double centerX = m_CameraParameters.Intrinsic.Cx;
 			//double maxAbsDeltaX = Double.MinValue;
 
 			for (int i = 0; i < m_TrackedFeatures.Count; i++)
@@ -308,8 +309,8 @@ namespace VisualOdometry
 
 				if (currentFeatureLocation.Y <= m_SkyRegionBottom)
 				{
-					double previousAngularPlacement = Math.Atan2(previousFeatureLocation.X - m_CenterX, focalLengthX);
-					double currentAngularPlacement = Math.Atan2(currentFeatureLocation.X - m_CenterX, focalLengthX);
+                    double previousAngularPlacement = Math.Atan2(previousFeatureLocation.X - centerX, focalLengthX);
+                    double currentAngularPlacement = Math.Atan2(currentFeatureLocation.X - centerX, focalLengthX);
 					double rotationIncrement = previousAngularPlacement - currentAngularPlacement;
 					//Debug.WriteLine(headingChange * 180.0 / Math.PI);
 					m_RotationIncrements.Add(rotationIncrement);
@@ -319,6 +320,7 @@ namespace VisualOdometry
 			//Debug.WriteLine("Max delta x: " + maxAbsDeltaX);
 			if (m_RotationIncrements.Count > 0)
 			{
+                m_RotationIncrements.Sort();
 				double meanRotationIncrement = m_RotationIncrements[m_RotationIncrements.Count / 2];
 				m_CumulativeRotationRad += meanRotationIncrement;
 			}
