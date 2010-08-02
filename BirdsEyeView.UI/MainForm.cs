@@ -23,15 +23,15 @@ namespace BirdsEyeView.UI
 		public ChessBoard ChessBoard { get; private set; }
 		private Matrix<float> m_UndistortMapX;
 		private Matrix<float> m_UndistortMapY;
-		private HomographyMatrix m_HomographyMatrixForUI;
-		private HomographyMatrix m_HomographyMatrixForCalculation;
+		private HomographyMatrix m_BirdsEyeViewTransformationForUI;
+		private HomographyMatrix m_BirdsEyeViewTransformationForCalculation;
 
 		public MainForm()
 		{
 			InitializeComponent();
 			m_CameraParameters = CameraParameters.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\MicrosoftCinemaFocus12_1280x720.txt");
 
-			m_RawImage = new Image<Bgr, byte>(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12.jpg");
+			m_RawImage = new Image<Bgr, byte>(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\Focus12.jpg");
 			this.CurrentImage = m_RawImage.Clone();
 			this.BirdsEyeImage = m_RawImage.Clone();
 
@@ -52,30 +52,19 @@ namespace BirdsEyeView.UI
 			outerCorners[3] = foundCorners[this.ChessBoard.PatternSize.Width * this.ChessBoard.PatternSize.Height - 1];
 			DrawOuterCorners(this.CurrentImage, outerCorners);
 
-			float centerX = (float)m_CameraParameters.Intrinsic.Cx;
-			//for (int i = 0; i < 4; i++)
-			//{
-			//    outerCorners[i] = Recenter(outerCorners[i], centerX);
-			//}
-
-			//outerCorners[0] = foundCorners[0];
-			//outerCorners[1] = foundCorners[this.ChessBoard.PatternSize.Width - 1];
-			//outerCorners[2] = foundCorners[this.ChessBoard.PatternSize.Width * this.ChessBoard.PatternSize.Height - this.ChessBoard.PatternSize.Width];
-			//outerCorners[3] = foundCorners[this.ChessBoard.PatternSize.Width * this.ChessBoard.PatternSize.Height - 1];
-
-
-
 			PointF[] physicalPointsForUI = new PointF[4];
 
 			float side = 3f;
 			float bottom = 710.0f;
+			float centerX = (float)m_CameraParameters.Intrinsic.Cx;
 
 			physicalPointsForUI[0] = new PointF(-3 * side + centerX, bottom - 8 * side);
 			physicalPointsForUI[1] = new PointF(+3 * side + centerX, bottom - 8 * side);
 			physicalPointsForUI[2] = new PointF(-3 * side + centerX, bottom);
 			physicalPointsForUI[3] = new PointF(+3 * side + centerX, bottom);
 
-			m_HomographyMatrixForUI = CameraCalibration.GetPerspectiveTransform(outerCorners, physicalPointsForUI);
+			m_BirdsEyeViewTransformationForUI = CameraCalibration.GetPerspectiveTransform(outerCorners, physicalPointsForUI);
+			HomographyMatrixSupport.Save(m_BirdsEyeViewTransformationForUI, "BirdsEyeViewTransformationForUI.txt");
 
 			PointF[] physicalPointsForCalculation = new PointF[4];
 
@@ -87,16 +76,12 @@ namespace BirdsEyeView.UI
 			physicalPointsForCalculation[2] = new PointF(-3 * side, bottom);
 			physicalPointsForCalculation[3] = new PointF(+3 * side, bottom);
 
-			m_HomographyMatrixForCalculation = CameraCalibration.GetPerspectiveTransform(outerCorners, physicalPointsForCalculation);
+			m_BirdsEyeViewTransformationForCalculation = CameraCalibration.GetPerspectiveTransform(outerCorners, physicalPointsForCalculation);
+			HomographyMatrixSupport.Save(m_BirdsEyeViewTransformationForUI, "BirdsEyeViewTransformationForCalculation.txt");
 
-			m_HomographyMatrixForCalculation.ProjectPoints(outerCorners);
+			//m_BirdsEyeViewTransformationForCalculation.ProjectPoints(outerCorners);
 
 			CreateAndDrawBirdsEyeView();
-		}
-
-		private PointF Recenter(PointF point, float centerX)
-		{
-			return new PointF(point.X - centerX, point.Y);
 		}
 
 		private void InitializeUndistortMap(Image<Bgr, Byte> image)
@@ -167,12 +152,12 @@ namespace BirdsEyeView.UI
 			double z = Double.Parse(m_ZTextBox.Text);
 
 			//Debug.WriteLine(m_HomographyMatrix[2, 2]);
-			m_HomographyMatrixForUI[2, 2] = z;
+			m_BirdsEyeViewTransformationForUI[2, 2] = z;
 
 			CvInvoke.cvWarpPerspective(
 				this.CurrentImage.Ptr,
 				this.BirdsEyeImage.Ptr,
-				m_HomographyMatrixForUI.Ptr,
+				m_BirdsEyeViewTransformationForUI.Ptr,
 				//(int)Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR | (int)Emgu.CV.CvEnum.WARP.CV_WARP_INVERSE_MAP | (int)Emgu.CV.CvEnum.WARP.CV_WARP_FILL_OUTLIERS,
 				(int)Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR | (int)Emgu.CV.CvEnum.WARP.CV_WARP_FILL_OUTLIERS,
 				new MCvScalar());

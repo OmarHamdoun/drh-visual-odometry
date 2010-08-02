@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChessBoard.cs" />
+    <Compile Include="HomographyMatrixSupport.cs" />
     <Compile Include="IntrinsicParametersSupport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
