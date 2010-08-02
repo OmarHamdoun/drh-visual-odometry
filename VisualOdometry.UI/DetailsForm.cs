@@ -49,6 +49,7 @@ namespace VisualOdometry.UI
 			m_HistogramSeries["PointWidth"] = "1.0";
 			m_HistogramSeries["BarLabelStyle"] = "Center";
 
+			// This series is solely used for anchoring the annotation that indicates the current heading change
 			m_CurrentHeadingChangeSeries = m_AnglesChart.Series.Add(c_CurrentHeadingChangeSeriesName);
 			m_CurrentHeadingChangeSeries.ChartType = SeriesChartType.Point;
 			m_CurrentHeadingChangeSeries.ChartArea = m_HistogramSeries.ChartArea;
@@ -60,35 +61,17 @@ namespace VisualOdometry.UI
 			chartArea.AxisX.Minimum = m_Histogram.Min;
 			chartArea.AxisX.Maximum = m_Histogram.Max;
 
-			//// Set axis interval based on the histogram class interval
-			//// and do not allow more than 10 labels on the axis.
-			//double axisInterval = m_Histogram.BinWidth;
-			//while ((m_Histogram.Max - m_Histogram.Min) / axisInterval > 10.0)
-			//{
-			//    axisInterval *= 2.0;
-			//}
-			//chartArea.AxisX.Interval = axisInterval;
-
 			chartArea.AxisX.Interval = 0.5;
 			chartArea.AxisX.MajorGrid.Interval = 0.5;
 			chartArea.AxisX.MajorTickMark.Interval = 0.1;
-			//chartArea.AxisX.MinorGrid.Interval = 0.1;
-			//chartArea.AxisX.MinorTickMark.Interval = 0.1;
-
-			//chartArea.AxisX..Interval = 0.1;
 
 			m_CurrentHeadingChangeAnnotation = new VerticalLineAnnotation();
 
-			//m_CurrentHeadingChangeAnnotation.AnchorX = 50;
-			//m_CurrentHeadingChangeAnnotation.AnchorY = 25;
 			m_CurrentHeadingChangeAnnotation.Height = -100;
 			m_CurrentHeadingChangeAnnotation.LineWidth = 2;
 			m_CurrentHeadingChangeAnnotation.LineColor = Color.Red;
-			//annotation.StartCap = LineAnchorCapStyle.Arrow;
-			//annotation.EndCap = LineAnchorCapStyle.Arrow;
 
 			m_AnglesChart.Annotations.Add(m_CurrentHeadingChangeAnnotation);
-
 		}
 
 		internal void Update(VisualOdometer visualOdometer)
@@ -111,7 +94,6 @@ namespace VisualOdometry.UI
 			}
 
 			m_Histogram.Fill(degreeAngles);
-			//m_AnglesChart.Series.Clear();
 			m_HistogramSeries.Points.Clear();
 
 			for (int i = 0; i < m_Histogram.BinsCount; i++)
