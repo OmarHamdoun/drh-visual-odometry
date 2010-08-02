@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using VisualOdometry.UI.Properties;
 using Emgu.CV;
 using Emgu.CV.Structure;
+using CameraCalibrator.Support;
 
 namespace VisualOdometry.UI
 {
@@ -35,7 +36,11 @@ namespace VisualOdometry.UI
 			}
 
 			CameraParameters cameraParameters = CameraParameters.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\MicrosoftCinemaFocus12_1280x720.txt");
-			m_VisualOdometer = new VisualOdometer(m_Capture, cameraParameters, new OpticalFlow());
+
+			HomographyMatrix birdsEyeViewTransformation = HomographyMatrixSupport.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\BirdsEyeViewTransformationForCalculation.txt");
+			HomographyMatrix birdsEyeViewTransformationForUI = HomographyMatrixSupport.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\BirdsEyeViewTransformationForUI.txt");
+
+			m_VisualOdometer = new VisualOdometer(m_Capture, cameraParameters, birdsEyeViewTransformation, new OpticalFlow());
 
 			UpdateFromModel();
 
@@ -94,7 +99,7 @@ namespace VisualOdometry.UI
 				m_FlowImageBox.ImageBox.Image = m_VisualOdometer.OpticalFlow.MaskImage;
 			}
 
-			m_CumulativeRotationTextBox.Text = m_VisualOdometer.RotationAnalyzer.CumulativeRotationDegree.ToString();
+			m_CumulativeRotationTextBox.Text = m_VisualOdometer.RotationAnalyzer.HeadingDegree.ToString();
 
 			if (!m_DetailsForm.IsDisposed)
 			{

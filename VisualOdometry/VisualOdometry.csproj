@@ -68,6 +68,9 @@
     </Compile>
     <Compile Include="RotationAnalyzer.cs" />
     <Compile Include="TrackedFeature.cs" />
+    <Compile Include="TranslationAnalyzer.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Utilities\CircularBuffer.cs" />
     <Compile Include="Utilities\HistoryBuffer.cs" />
     <Compile Include="VisualOdometer.cs" />

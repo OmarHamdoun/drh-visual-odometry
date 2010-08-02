@@ -97,6 +97,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CameraCalibration.Support\CameraCalibrator.Support.csproj">
+      <Project>{A50DD7C7-A8BE-4EA0-BF96-A10CC03A4D3C}</Project>
+      <Name>CameraCalibrator.Support</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Vision.WinFormSupport\Vision.WinFormSupport.csproj">
       <Project>{0A0678B7-E7FB-43A0-96A6-58ACD3A408CE}</Project>
       <Name>Vision.WinFormSupport</Name>

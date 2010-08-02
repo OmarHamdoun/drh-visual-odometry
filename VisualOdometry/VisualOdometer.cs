@@ -30,12 +30,13 @@ namespace VisualOdometry
 		private Image<Gray, Byte> m_CurrentGrayImage;
 		private OpticalFlow m_OpticalFlow;
 		private RotationAnalyzer m_RotationAnalyzer;
+		private TranslationAnalyzer m_TranslationAnalyzer;
 		public int InitialFeaturesCount { get; private set; }
 		private int m_ThresholdForFeatureRepopulation;
 
 		public event EventHandler Changed;
 
-		public VisualOdometer(Capture capture, CameraParameters cameraParameters, OpticalFlow opticalFlow)
+		public VisualOdometer(Capture capture, CameraParameters cameraParameters, HomographyMatrix birdsEyeViewTransformation, OpticalFlow opticalFlow)
 		{
 			m_Capture = capture;
 			m_CameraParameters = cameraParameters;
@@ -45,6 +46,7 @@ namespace VisualOdometry
 
 			this.OpticalFlow = opticalFlow;
 			m_RotationAnalyzer = new RotationAnalyzer(this);
+			m_TranslationAnalyzer = new TranslationAnalyzer(this, birdsEyeViewTransformation);
 		}
 
 		public CameraParameters CameraParameters
@@ -80,6 +82,11 @@ namespace VisualOdometry
 		public RotationAnalyzer RotationAnalyzer
 		{
 			get { return m_RotationAnalyzer; }
+		}
+
+		public TranslationAnalyzer TranslationAnalyzer
+		{
+			get { return m_TranslationAnalyzer; }
 		}
 
 		/// <summary>
@@ -152,16 +159,19 @@ namespace VisualOdometry
 			Undistort(m_RawImage, this.CurrentImage);
 			m_CurrentGrayImage = this.CurrentImage.Convert<Gray, Byte>();
 
-			if (previousGrayImage != null)
+			if (previousGrayImage == null)
 			{
-				TrackFeatures(previousGrayImage);
+				return;
+			}
 
-				m_RotationAnalyzer.CalculateRotation();
+			TrackFeatures(previousGrayImage);
 
-				if (m_TrackedFeatures.Count < m_ThresholdForFeatureRepopulation)
-				{
-					RepopulateFeaturePoints();
-				}
+			m_RotationAnalyzer.CalculateRotation();
+			m_TranslationAnalyzer.CalculateTranslation(m_RotationAnalyzer.CurrentRotationIncrement);
+
+			if (m_TrackedFeatures.Count < m_ThresholdForFeatureRepopulation)
+			{
+				RepopulateFeaturePoints();
 			}
 		}
 
