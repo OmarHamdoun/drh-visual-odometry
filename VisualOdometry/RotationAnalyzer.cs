@@ -13,6 +13,7 @@ namespace VisualOdometry
 		private double m_CenterX;
 
 		private double m_HeadingRad;
+		private double m_CurrentHeadingChangeRad;
 		private List<double> m_RotationIncrements;
 
 		internal RotationAnalyzer(VisualOdometer visualOdometer)
@@ -24,7 +25,15 @@ namespace VisualOdometry
 			m_RotationIncrements = new List<double>();
 		}
 
-		public double CurrentRotationIncrement { get; private set; }
+		public double CurrentHeadingChangeRad
+		{
+			get { return m_CurrentHeadingChangeRad; }
+		}
+
+		public double CurrentHeadingChangeDegree
+		{
+			get { return m_CurrentHeadingChangeRad * VisualOdometer.RadToDegree; }
+		}
 
 		public double HeadingRad
 		{
@@ -76,7 +85,7 @@ namespace VisualOdometry
 			{
 				double meanRotationIncrement = DetermineBestRotationIncrement();
 				m_HeadingRad += meanRotationIncrement;
-				this.CurrentRotationIncrement = meanRotationIncrement;
+				m_CurrentHeadingChangeRad = meanRotationIncrement;
 			}
 		}
 

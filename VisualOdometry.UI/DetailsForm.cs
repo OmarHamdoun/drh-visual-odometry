@@ -17,7 +17,10 @@ namespace VisualOdometry.UI
 
 		private Histogram m_Histogram;
 		private const string c_HistogramSeriesName = "Histogram";
+		private const string c_CurrentHeadingChangeSeriesName = "CurrentHeading";
 		private Series m_HistogramSeries;
+		private Series m_CurrentHeadingChangeSeries;
+		private VerticalLineAnnotation m_CurrentHeadingChangeAnnotation;
 
 		public DetailsForm()
 		{
@@ -29,7 +32,7 @@ namespace VisualOdometry.UI
 
 		private void InitializeHistogram()
 		{
-			m_Histogram = new Histogram(-5.0, 5.0, 200);
+			m_Histogram = new Histogram(-2.0, 2.0, 200);
 			InitializeHistogramChart();
 		}
 
@@ -46,38 +49,46 @@ namespace VisualOdometry.UI
 			m_HistogramSeries["PointWidth"] = "1.0";
 			m_HistogramSeries["BarLabelStyle"] = "Center";
 
+			m_CurrentHeadingChangeSeries = m_AnglesChart.Series.Add(c_CurrentHeadingChangeSeriesName);
+			m_CurrentHeadingChangeSeries.ChartType = SeriesChartType.Point;
+			m_CurrentHeadingChangeSeries.ChartArea = m_HistogramSeries.ChartArea;
+			m_CurrentHeadingChangeSeries.MarkerSize = 0;
+
 			// Adjust chart area
 			ChartArea chartArea = m_AnglesChart.ChartAreas[m_HistogramSeries.ChartArea];
 			chartArea.AxisY.Title = "Frequency";
 			chartArea.AxisX.Minimum = m_Histogram.Min;
 			chartArea.AxisX.Maximum = m_Histogram.Max;
 
-			// Set axis interval based on the histogram class interval
-			// and do not allow more than 10 labels on the axis.
-			double axisInterval = m_Histogram.BinWidth;
-			while ((m_Histogram.Max - m_Histogram.Min) / axisInterval > 10.0)
-			{
-				axisInterval *= 2.0;
-			}
-			chartArea.AxisX.Interval = axisInterval;
-			//chartArea.AxisX.MajorGrid = new Grid(.IsStartedFromZero = true;
-
-			//// Set chart area secondary Y axis
-			//chartArea.AxisY2.Enabled = AxisEnabled.Auto;
-			//if (this.ShowPercentOnSecondaryYAxis)
+			//// Set axis interval based on the histogram class interval
+			//// and do not allow more than 10 labels on the axis.
+			//double axisInterval = m_Histogram.BinWidth;
+			//while ((m_Histogram.Max - m_Histogram.Min) / axisInterval > 10.0)
 			//{
-			//    chartArea.RecalculateAxesScale();
-
-			//    chartArea.AxisY2.Enabled = AxisEnabled.True;
-			//    chartArea.AxisY2.LabelStyle.Format = "P0";
-			//    chartArea.AxisY2.MajorGrid.Enabled = false;
-			//    chartArea.AxisY2.Title = "Percent of Total";
-
-			//    chartArea.AxisY2.Minimum = 0;
-			//    chartArea.AxisY2.Maximum = chartArea.AxisY.Maximum / (pointCount / 100.0);
-			//    double minStep = (chartArea.AxisY2.Maximum > 20.0) ? 5.0 : 1.0;
-			//    chartArea.AxisY2.Interval = Math.Ceiling((chartArea.AxisY2.Maximum / 5.0 / minStep)) * minStep;
+			//    axisInterval *= 2.0;
 			//}
+			//chartArea.AxisX.Interval = axisInterval;
+
+			chartArea.AxisX.Interval = 0.5;
+			chartArea.AxisX.MajorGrid.Interval = 0.5;
+			chartArea.AxisX.MajorTickMark.Interval = 0.1;
+			//chartArea.AxisX.MinorGrid.Interval = 0.1;
+			//chartArea.AxisX.MinorTickMark.Interval = 0.1;
+
+			//chartArea.AxisX..Interval = 0.1;
+
+			m_CurrentHeadingChangeAnnotation = new VerticalLineAnnotation();
+
+			//m_CurrentHeadingChangeAnnotation.AnchorX = 50;
+			//m_CurrentHeadingChangeAnnotation.AnchorY = 25;
+			m_CurrentHeadingChangeAnnotation.Height = -100;
+			m_CurrentHeadingChangeAnnotation.LineWidth = 2;
+			m_CurrentHeadingChangeAnnotation.LineColor = Color.Red;
+			//annotation.StartCap = LineAnchorCapStyle.Arrow;
+			//annotation.EndCap = LineAnchorCapStyle.Arrow;
+
+			m_AnglesChart.Annotations.Add(m_CurrentHeadingChangeAnnotation);
+
 		}
 
 		internal void Update(VisualOdometer visualOdometer)
@@ -102,6 +113,7 @@ namespace VisualOdometry.UI
 			m_Histogram.Fill(degreeAngles);
 			//m_AnglesChart.Series.Clear();
 			m_HistogramSeries.Points.Clear();
+
 			for (int i = 0; i < m_Histogram.BinsCount; i++)
 			{
 				HistogramBin bin = m_Histogram[i];
@@ -109,6 +121,10 @@ namespace VisualOdometry.UI
 				double x = (bin.Min + bin.Max) / 2.0;
 				m_HistogramSeries.Points.AddXY(x, bin.Count);
 			}
+
+			m_CurrentHeadingChangeSeries.Points.Clear();
+			m_CurrentHeadingChangeSeries.Points.AddXY(visualOdometer.RotationAnalyzer.CurrentHeadingChangeDegree, 0);
+			m_CurrentHeadingChangeAnnotation.AnchorDataPoint = m_CurrentHeadingChangeSeries.Points[0];
 		}
 	}
 }

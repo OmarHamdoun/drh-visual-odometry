@@ -167,7 +167,7 @@ namespace VisualOdometry
 			TrackFeatures(previousGrayImage);
 
 			m_RotationAnalyzer.CalculateRotation();
-			m_TranslationAnalyzer.CalculateTranslation(m_RotationAnalyzer.CurrentRotationIncrement);
+			m_TranslationAnalyzer.CalculateTranslation(m_RotationAnalyzer.CurrentHeadingChangeRad);
 
 			if (m_TrackedFeatures.Count < m_ThresholdForFeatureRepopulation)
 			{
