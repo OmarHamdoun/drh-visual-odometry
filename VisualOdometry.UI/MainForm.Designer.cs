@@ -30,7 +30,6 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			this.m_TopPanel = new System.Windows.Forms.Panel();
-			this.m_DrawFeaturesCheckBox = new System.Windows.Forms.CheckBox();
 			this.m_ApplyButton = new System.Windows.Forms.Button();
 			this.m_GroundTopTextBox = new System.Windows.Forms.TextBox();
 			this.label8 = new System.Windows.Forms.Label();
@@ -44,12 +43,17 @@
 			this.label2 = new System.Windows.Forms.Label();
 			this.m_MaxFeatureCountTextBox = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
+			this.m_DrawFeaturesCheckBox = new System.Windows.Forms.CheckBox();
 			this.m_BottomPanel = new System.Windows.Forms.Panel();
-			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.m_OtherViewsButton = new System.Windows.Forms.Button();
-			this.m_CumulativeRotationTextBox = new System.Windows.Forms.TextBox();
+			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.m_LocationTextBox = new System.Windows.Forms.TextBox();
+			this.label11 = new System.Windows.Forms.Label();
+			this.m_HeadingTextBox = new System.Windows.Forms.TextBox();
 			this.label10 = new System.Windows.Forms.Label();
+			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.m_OtherViewsButton = new System.Windows.Forms.Button();
 			this.m_DetailsButton = new System.Windows.Forms.Button();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.m_NotTrackedFeaturesCount = new System.Windows.Forms.TextBox();
 			this.label7 = new System.Windows.Forms.Label();
 			this.m_TrackedFeaturesCountTextBox = new System.Windows.Forms.TextBox();
@@ -57,14 +61,14 @@
 			this.m_FoundFeaturesCountTextBox = new System.Windows.Forms.TextBox();
 			this.label5 = new System.Windows.Forms.Label();
 			this.m_Timer = new System.Windows.Forms.Timer(this.components);
-			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.m_ImageBox = new Emgu.CV.UI.ImageBox();
+			this.m_LocationChangeTextBox = new System.Windows.Forms.TextBox();
+			this.label12 = new System.Windows.Forms.Label();
 			this.m_TopPanel.SuspendLayout();
 			this.m_BottomPanel.SuspendLayout();
-			this.groupBox1.SuspendLayout();
-			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
+			this.groupBox2.SuspendLayout();
+			this.groupBox1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.m_ImageBox)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -88,18 +92,6 @@
 			this.m_TopPanel.Name = "m_TopPanel";
 			this.m_TopPanel.Size = new System.Drawing.Size(892, 83);
 			this.m_TopPanel.TabIndex = 1;
-			// 
-			// m_DrawFeaturesCheckBox
-			// 
-			this.m_DrawFeaturesCheckBox.AutoSize = true;
-			this.m_DrawFeaturesCheckBox.Checked = true;
-			this.m_DrawFeaturesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.m_DrawFeaturesCheckBox.Location = new System.Drawing.Point(14, 25);
-			this.m_DrawFeaturesCheckBox.Name = "m_DrawFeaturesCheckBox";
-			this.m_DrawFeaturesCheckBox.Size = new System.Drawing.Size(122, 21);
-			this.m_DrawFeaturesCheckBox.TabIndex = 13;
-			this.m_DrawFeaturesCheckBox.Text = "Draw Features";
-			this.m_DrawFeaturesCheckBox.UseVisualStyleBackColor = true;
 			// 
 			// m_ApplyButton
 			// 
@@ -207,6 +199,18 @@
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Max Feature Count:";
 			// 
+			// m_DrawFeaturesCheckBox
+			// 
+			this.m_DrawFeaturesCheckBox.AutoSize = true;
+			this.m_DrawFeaturesCheckBox.Checked = true;
+			this.m_DrawFeaturesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.m_DrawFeaturesCheckBox.Location = new System.Drawing.Point(14, 25);
+			this.m_DrawFeaturesCheckBox.Name = "m_DrawFeaturesCheckBox";
+			this.m_DrawFeaturesCheckBox.Size = new System.Drawing.Size(122, 21);
+			this.m_DrawFeaturesCheckBox.TabIndex = 13;
+			this.m_DrawFeaturesCheckBox.Text = "Draw Features";
+			this.m_DrawFeaturesCheckBox.UseVisualStyleBackColor = true;
+			// 
 			// m_BottomPanel
 			// 
 			this.m_BottomPanel.Controls.Add(this.groupBox3);
@@ -217,6 +221,89 @@
 			this.m_BottomPanel.Name = "m_BottomPanel";
 			this.m_BottomPanel.Size = new System.Drawing.Size(892, 117);
 			this.m_BottomPanel.TabIndex = 2;
+			// 
+			// groupBox3
+			// 
+			this.groupBox3.Controls.Add(this.m_LocationChangeTextBox);
+			this.groupBox3.Controls.Add(this.label12);
+			this.groupBox3.Controls.Add(this.m_LocationTextBox);
+			this.groupBox3.Controls.Add(this.label11);
+			this.groupBox3.Controls.Add(this.m_HeadingTextBox);
+			this.groupBox3.Controls.Add(this.label10);
+			this.groupBox3.Dock = System.Windows.Forms.DockStyle.Left;
+			this.groupBox3.Location = new System.Drawing.Point(355, 0);
+			this.groupBox3.Name = "groupBox3";
+			this.groupBox3.Size = new System.Drawing.Size(278, 117);
+			this.groupBox3.TabIndex = 10;
+			this.groupBox3.TabStop = false;
+			this.groupBox3.Text = "Odometry";
+			// 
+			// m_LocationTextBox
+			// 
+			this.m_LocationTextBox.Location = new System.Drawing.Point(83, 51);
+			this.m_LocationTextBox.Name = "m_LocationTextBox";
+			this.m_LocationTextBox.ReadOnly = true;
+			this.m_LocationTextBox.Size = new System.Drawing.Size(184, 22);
+			this.m_LocationTextBox.TabIndex = 14;
+			// 
+			// label11
+			// 
+			this.label11.AutoSize = true;
+			this.label11.Location = new System.Drawing.Point(12, 54);
+			this.label11.Name = "label11";
+			this.label11.Size = new System.Drawing.Size(66, 17);
+			this.label11.TabIndex = 13;
+			this.label11.Text = "Location:";
+			// 
+			// m_HeadingTextBox
+			// 
+			this.m_HeadingTextBox.Location = new System.Drawing.Point(83, 23);
+			this.m_HeadingTextBox.Name = "m_HeadingTextBox";
+			this.m_HeadingTextBox.ReadOnly = true;
+			this.m_HeadingTextBox.Size = new System.Drawing.Size(68, 22);
+			this.m_HeadingTextBox.TabIndex = 12;
+			// 
+			// label10
+			// 
+			this.label10.AutoSize = true;
+			this.label10.Location = new System.Drawing.Point(12, 26);
+			this.label10.Name = "label10";
+			this.label10.Size = new System.Drawing.Size(65, 17);
+			this.label10.TabIndex = 11;
+			this.label10.Text = "Heading:";
+			// 
+			// groupBox2
+			// 
+			this.groupBox2.Controls.Add(this.m_OtherViewsButton);
+			this.groupBox2.Controls.Add(this.m_DrawFeaturesCheckBox);
+			this.groupBox2.Controls.Add(this.m_DetailsButton);
+			this.groupBox2.Dock = System.Windows.Forms.DockStyle.Left;
+			this.groupBox2.Location = new System.Drawing.Point(203, 0);
+			this.groupBox2.Name = "groupBox2";
+			this.groupBox2.Size = new System.Drawing.Size(152, 117);
+			this.groupBox2.TabIndex = 9;
+			this.groupBox2.TabStop = false;
+			this.groupBox2.Text = "View";
+			// 
+			// m_OtherViewsButton
+			// 
+			this.m_OtherViewsButton.Location = new System.Drawing.Point(14, 79);
+			this.m_OtherViewsButton.Name = "m_OtherViewsButton";
+			this.m_OtherViewsButton.Size = new System.Drawing.Size(108, 23);
+			this.m_OtherViewsButton.TabIndex = 13;
+			this.m_OtherViewsButton.Text = "Other Views ...";
+			this.m_OtherViewsButton.UseVisualStyleBackColor = true;
+			this.m_OtherViewsButton.Click += new System.EventHandler(this.OnOtherViewsButtonClicked);
+			// 
+			// m_DetailsButton
+			// 
+			this.m_DetailsButton.Location = new System.Drawing.Point(14, 53);
+			this.m_DetailsButton.Name = "m_DetailsButton";
+			this.m_DetailsButton.Size = new System.Drawing.Size(108, 23);
+			this.m_DetailsButton.TabIndex = 10;
+			this.m_DetailsButton.Text = "Rotation ...";
+			this.m_DetailsButton.UseVisualStyleBackColor = true;
+			this.m_DetailsButton.Click += new System.EventHandler(this.OnDetailsButtonClicked);
 			// 
 			// groupBox1
 			// 
@@ -233,43 +320,6 @@
 			this.groupBox1.TabIndex = 8;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Features";
-			// 
-			// m_OtherViewsButton
-			// 
-			this.m_OtherViewsButton.Location = new System.Drawing.Point(14, 79);
-			this.m_OtherViewsButton.Name = "m_OtherViewsButton";
-			this.m_OtherViewsButton.Size = new System.Drawing.Size(108, 23);
-			this.m_OtherViewsButton.TabIndex = 13;
-			this.m_OtherViewsButton.Text = "Other Views ...";
-			this.m_OtherViewsButton.UseVisualStyleBackColor = true;
-			this.m_OtherViewsButton.Click += new System.EventHandler(this.OnOtherViewsButtonClicked);
-			// 
-			// m_CumulativeRotationTextBox
-			// 
-			this.m_CumulativeRotationTextBox.Location = new System.Drawing.Point(83, 23);
-			this.m_CumulativeRotationTextBox.Name = "m_CumulativeRotationTextBox";
-			this.m_CumulativeRotationTextBox.ReadOnly = true;
-			this.m_CumulativeRotationTextBox.Size = new System.Drawing.Size(68, 22);
-			this.m_CumulativeRotationTextBox.TabIndex = 12;
-			// 
-			// label10
-			// 
-			this.label10.AutoSize = true;
-			this.label10.Location = new System.Drawing.Point(12, 26);
-			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(65, 17);
-			this.label10.TabIndex = 11;
-			this.label10.Text = "Heading:";
-			// 
-			// m_DetailsButton
-			// 
-			this.m_DetailsButton.Location = new System.Drawing.Point(14, 53);
-			this.m_DetailsButton.Name = "m_DetailsButton";
-			this.m_DetailsButton.Size = new System.Drawing.Size(108, 23);
-			this.m_DetailsButton.TabIndex = 10;
-			this.m_DetailsButton.Text = "Rotation ...";
-			this.m_DetailsButton.UseVisualStyleBackColor = true;
-			this.m_DetailsButton.Click += new System.EventHandler(this.OnDetailsButtonClicked);
 			// 
 			// m_NotTrackedFeaturesCount
 			// 
@@ -326,31 +376,6 @@
 			// 
 			this.m_Timer.Tick += new System.EventHandler(this.OnTimerTick);
 			// 
-			// groupBox2
-			// 
-			this.groupBox2.Controls.Add(this.m_OtherViewsButton);
-			this.groupBox2.Controls.Add(this.m_DrawFeaturesCheckBox);
-			this.groupBox2.Controls.Add(this.m_DetailsButton);
-			this.groupBox2.Dock = System.Windows.Forms.DockStyle.Left;
-			this.groupBox2.Location = new System.Drawing.Point(203, 0);
-			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(152, 117);
-			this.groupBox2.TabIndex = 9;
-			this.groupBox2.TabStop = false;
-			this.groupBox2.Text = "View";
-			// 
-			// groupBox3
-			// 
-			this.groupBox3.Controls.Add(this.m_CumulativeRotationTextBox);
-			this.groupBox3.Controls.Add(this.label10);
-			this.groupBox3.Dock = System.Windows.Forms.DockStyle.Left;
-			this.groupBox3.Location = new System.Drawing.Point(355, 0);
-			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(200, 117);
-			this.groupBox3.TabIndex = 10;
-			this.groupBox3.TabStop = false;
-			this.groupBox3.Text = "Odometry";
-			// 
 			// m_ImageBox
 			// 
 			this.m_ImageBox.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -359,6 +384,23 @@
 			this.m_ImageBox.Size = new System.Drawing.Size(892, 453);
 			this.m_ImageBox.TabIndex = 2;
 			this.m_ImageBox.TabStop = false;
+			// 
+			// m_LocationChangeTextBox
+			// 
+			this.m_LocationChangeTextBox.Location = new System.Drawing.Point(83, 79);
+			this.m_LocationChangeTextBox.Name = "m_LocationChangeTextBox";
+			this.m_LocationChangeTextBox.ReadOnly = true;
+			this.m_LocationChangeTextBox.Size = new System.Drawing.Size(184, 22);
+			this.m_LocationChangeTextBox.TabIndex = 16;
+			// 
+			// label12
+			// 
+			this.label12.AutoSize = true;
+			this.label12.Location = new System.Drawing.Point(12, 82);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(66, 17);
+			this.label12.TabIndex = 15;
+			this.label12.Text = "Location:";
 			// 
 			// MainForm
 			// 
@@ -373,12 +415,12 @@
 			this.m_TopPanel.ResumeLayout(false);
 			this.m_TopPanel.PerformLayout();
 			this.m_BottomPanel.ResumeLayout(false);
-			this.groupBox1.ResumeLayout(false);
-			this.groupBox1.PerformLayout();
-			this.groupBox2.ResumeLayout(false);
-			this.groupBox2.PerformLayout();
 			this.groupBox3.ResumeLayout(false);
 			this.groupBox3.PerformLayout();
+			this.groupBox2.ResumeLayout(false);
+			this.groupBox2.PerformLayout();
+			this.groupBox1.ResumeLayout(false);
+			this.groupBox1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.m_ImageBox)).EndInit();
 			this.ResumeLayout(false);
 
@@ -410,13 +452,17 @@
 		private System.Windows.Forms.Button m_ApplyButton;
 		private System.Windows.Forms.Timer m_Timer;
 		private System.Windows.Forms.Button m_DetailsButton;
-		private System.Windows.Forms.TextBox m_CumulativeRotationTextBox;
+		private System.Windows.Forms.TextBox m_HeadingTextBox;
 		private System.Windows.Forms.Label label10;
         private System.Windows.Forms.CheckBox m_DrawFeaturesCheckBox;
 		private System.Windows.Forms.Button m_OtherViewsButton;
 		private System.Windows.Forms.GroupBox groupBox3;
 		private System.Windows.Forms.GroupBox groupBox2;
 		private Emgu.CV.UI.ImageBox m_ImageBox;
+		private System.Windows.Forms.TextBox m_LocationTextBox;
+		private System.Windows.Forms.Label label11;
+		private System.Windows.Forms.TextBox m_LocationChangeTextBox;
+		private System.Windows.Forms.Label label12;
 	}
 }
 

@@ -33,6 +33,7 @@ namespace VisualOdometry
 		private TranslationAnalyzer m_TranslationAnalyzer;
 		public int InitialFeaturesCount { get; private set; }
 		private int m_ThresholdForFeatureRepopulation;
+		private Pose m_RobotPose = new Pose();
 
 		public event EventHandler Changed;
 
@@ -167,7 +168,8 @@ namespace VisualOdometry
 			TrackFeatures(previousGrayImage);
 
 			m_RotationAnalyzer.CalculateRotation();
-			m_TranslationAnalyzer.CalculateTranslation(m_RotationAnalyzer.CurrentHeadingChangeRad);
+			m_TranslationAnalyzer.CalculateTranslation(m_RotationAnalyzer.HeadingChange);
+			UpdateRobotPose();
 
 			if (m_TrackedFeatures.Count < m_ThresholdForFeatureRepopulation)
 			{
@@ -287,6 +289,11 @@ namespace VisualOdometry
 			Debug.WriteLine("Number of unsmooth features weeded out: " + unsmoothFeaturesOutCount);
 		}
 
+		private void UpdateRobotPose()
+		{
+			m_RobotPose.Heading = m_RobotPose.Heading + m_RotationAnalyzer.HeadingChange;
+		}
+
 		public List<TrackedFeature> TrackedFeatures
 		{
 			get { return m_TrackedFeatures; }
@@ -295,6 +302,11 @@ namespace VisualOdometry
 		public int NotTrackedFeaturesCount
 		{
 			get { return m_NotTrackedFeaturesCount; }
+		}
+
+		public Pose RobotPose
+		{
+			get { return m_RobotPose; }
 		}
 
 		private void RaiseChangedEvent()

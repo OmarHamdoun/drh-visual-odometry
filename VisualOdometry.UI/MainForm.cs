@@ -96,7 +96,9 @@ namespace VisualOdometry.UI
 			}
 			m_ImageBox.Image = m_VisualOdometer.CurrentImage;
 
-			m_CumulativeRotationTextBox.Text = m_VisualOdometer.RotationAnalyzer.HeadingDegree.ToString();
+			m_HeadingTextBox.Text = m_VisualOdometer.RobotPose.Heading.Degrees.ToString();
+			m_LocationTextBox.Text = m_VisualOdometer.RobotPose.Location.ToString();
+			m_LocationChangeTextBox.Text = m_VisualOdometer.TranslationAnalyzer.LocationChange.ToString();
 
 			if (!m_RotationAnalysisForm.IsDisposed)
 			{

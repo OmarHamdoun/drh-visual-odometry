@@ -12,8 +12,7 @@ namespace VisualOdometry
 		private double m_FocalLengthX;
 		private double m_CenterX;
 
-		private double m_HeadingRad;
-		private double m_CurrentHeadingChangeRad;
+		private Angle m_HeadingChange;
 		private List<double> m_RotationIncrements;
 
 		internal RotationAnalyzer(VisualOdometer visualOdometer)
@@ -25,27 +24,12 @@ namespace VisualOdometry
 			m_RotationIncrements = new List<double>();
 		}
 
-		public double CurrentHeadingChangeRad
+		public Angle HeadingChange
 		{
-			get { return m_CurrentHeadingChangeRad; }
+			get { return m_HeadingChange; }
 		}
 
-		public double CurrentHeadingChangeDegree
-		{
-			get { return m_CurrentHeadingChangeRad * VisualOdometer.RadToDegree; }
-		}
-
-		public double HeadingRad
-		{
-			get { return m_HeadingRad; }
-		}
-
-		public double HeadingDegree
-		{
-			get { return m_HeadingRad * VisualOdometer.RadToDegree; }
-		}
-
-		public List<double> HeadingChanges
+		public List<double> MeasuredRotationIncrements
 		{
 			get { return m_RotationIncrements; }
 		}
@@ -74,7 +58,7 @@ namespace VisualOdometry
 				{
 					double previousAngularPlacement = Math.Atan2(previousFeatureLocation.X - m_CenterX, m_FocalLengthX);
 					double currentAngularPlacement = Math.Atan2(currentFeatureLocation.X - m_CenterX, m_FocalLengthX);
-					double rotationIncrement = previousAngularPlacement - currentAngularPlacement;
+					double rotationIncrement = currentAngularPlacement - previousAngularPlacement;
 					//Debug.WriteLine(headingChange * 180.0 / Math.PI);
 					m_RotationIncrements.Add(rotationIncrement);
 				}
@@ -84,8 +68,7 @@ namespace VisualOdometry
 			if (m_RotationIncrements.Count > 0)
 			{
 				double meanRotationIncrement = DetermineBestRotationIncrement();
-				m_HeadingRad += meanRotationIncrement;
-				m_CurrentHeadingChangeRad = meanRotationIncrement;
+				m_HeadingChange = Angle.FromRads(meanRotationIncrement);
 			}
 		}
 

@@ -81,7 +81,7 @@ namespace VisualOdometry.UI
 				return;
 			}
 
-			List<double> headingChanges = visualOdometer.RotationAnalyzer.HeadingChanges;
+			List<double> headingChanges = visualOdometer.RotationAnalyzer.MeasuredRotationIncrements;
 			if (headingChanges.Count == 0)
 			{
 				return;
@@ -105,7 +105,7 @@ namespace VisualOdometry.UI
 			}
 
 			m_CurrentHeadingChangeSeries.Points.Clear();
-			m_CurrentHeadingChangeSeries.Points.AddXY(visualOdometer.RotationAnalyzer.CurrentHeadingChangeDegree, 0);
+			m_CurrentHeadingChangeSeries.Points.AddXY(visualOdometer.RotationAnalyzer.HeadingChange.Degrees, 0);
 			m_CurrentHeadingChangeAnnotation.AnchorDataPoint = m_CurrentHeadingChangeSeries.Points[0];
 		}
 	}
