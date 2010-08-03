@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace VisualOdometry.UI
 {
-	public partial class DetailsForm : Form
+	public partial class RotationAnalysisForm : Form
 	{
 		private static readonly double s_RadToDegree = 180.0 / Math.PI;
 
@@ -22,7 +22,7 @@ namespace VisualOdometry.UI
 		private Series m_CurrentHeadingChangeSeries;
 		private VerticalLineAnnotation m_CurrentHeadingChangeAnnotation;
 
-		public DetailsForm()
+		public RotationAnalysisForm()
 		{
 			InitializeComponent();
 			this.ShowInTaskbar = false;

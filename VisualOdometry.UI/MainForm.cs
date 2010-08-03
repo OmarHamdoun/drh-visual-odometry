@@ -17,7 +17,7 @@ namespace VisualOdometry.UI
 	{
 		private Capture m_Capture;
 		private VisualOdometer m_VisualOdometer;
-		private DetailsForm m_DetailsForm = new DetailsForm();
+		private RotationAnalysisForm m_RotationAnalysisForm = new RotationAnalysisForm();
 		private AuxiliaryViewsForm m_AuxiliaryViewsForm;
 		private HomographyMatrix m_BirdsEyeViewTransformationForUI;
 
@@ -98,9 +98,9 @@ namespace VisualOdometry.UI
 
 			m_CumulativeRotationTextBox.Text = m_VisualOdometer.RotationAnalyzer.HeadingDegree.ToString();
 
-			if (!m_DetailsForm.IsDisposed)
+			if (!m_RotationAnalysisForm.IsDisposed)
 			{
-				m_DetailsForm.Update(m_VisualOdometer);
+				m_RotationAnalysisForm.Update(m_VisualOdometer);
 			}
 			if (!(m_AuxiliaryViewsForm == null || m_AuxiliaryViewsForm.IsDisposed))
 			{
@@ -232,11 +232,11 @@ namespace VisualOdometry.UI
 
 		private void OnDetailsButtonClicked(object sender, EventArgs e)
 		{
-			if (m_DetailsForm.IsDisposed)
+			if (m_RotationAnalysisForm.IsDisposed)
 			{
-				m_DetailsForm = new DetailsForm();
+				m_RotationAnalysisForm = new RotationAnalysisForm();
 			}
-			m_DetailsForm.Show(this);
+			m_RotationAnalysisForm.Show(this);
 		}
 
 		private void OnOtherViewsButtonClicked(object sender, EventArgs e)

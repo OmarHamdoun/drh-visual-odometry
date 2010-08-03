@@ -1,6 +1,6 @@
 ﻿namespace VisualOdometry.UI
 {
-	partial class DetailsForm
+	partial class RotationAnalysisForm
 	{
 		/// <summary>
 		/// Required designer variable.
