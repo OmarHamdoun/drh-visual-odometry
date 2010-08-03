@@ -18,6 +18,8 @@ namespace VisualOdometry.UI
 		private Capture m_Capture;
 		private VisualOdometer m_VisualOdometer;
 		private DetailsForm m_DetailsForm = new DetailsForm();
+		private AuxiliaryViewsForm m_AuxiliaryViewsForm;
+		private HomographyMatrix m_BirdsEyeViewTransformationForUI;
 
 		public MainForm()
 		{
@@ -38,7 +40,7 @@ namespace VisualOdometry.UI
 			CameraParameters cameraParameters = CameraParameters.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\MicrosoftCinemaFocus12_1280x720.txt");
 
 			HomographyMatrix birdsEyeViewTransformation = HomographyMatrixSupport.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\BirdsEyeViewTransformationForCalculation.txt");
-			HomographyMatrix birdsEyeViewTransformationForUI = HomographyMatrixSupport.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\BirdsEyeViewTransformationForUI.txt");
+			m_BirdsEyeViewTransformationForUI = HomographyMatrixSupport.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\BirdsEyeViewTransformationForUI.txt");
 
 			m_VisualOdometer = new VisualOdometer(m_Capture, cameraParameters, birdsEyeViewTransformation, new OpticalFlow());
 
@@ -92,18 +94,17 @@ namespace VisualOdometry.UI
 			{
 				DrawFeatureLocationsPreviousAndCurrent();
 			}
-			m_FeaturesImageBox.ImageBox.Image = m_VisualOdometer.CurrentImage;
-
-			if (m_DrawNewFeaturesMaskCheckBox.Checked)
-			{
-				m_FlowImageBox.ImageBox.Image = m_VisualOdometer.OpticalFlow.MaskImage;
-			}
+			m_ImageBox.Image = m_VisualOdometer.CurrentImage;
 
 			m_CumulativeRotationTextBox.Text = m_VisualOdometer.RotationAnalyzer.HeadingDegree.ToString();
 
 			if (!m_DetailsForm.IsDisposed)
 			{
 				m_DetailsForm.Update(m_VisualOdometer);
+			}
+			if (!(m_AuxiliaryViewsForm == null || m_AuxiliaryViewsForm.IsDisposed))
+			{
+				m_AuxiliaryViewsForm.Update(m_VisualOdometer);
 			}
 		}
 
@@ -236,6 +237,15 @@ namespace VisualOdometry.UI
 				m_DetailsForm = new DetailsForm();
 			}
 			m_DetailsForm.Show(this);
+		}
+
+		private void OnOtherViewsButtonClicked(object sender, EventArgs e)
+		{
+			if (m_AuxiliaryViewsForm == null || m_AuxiliaryViewsForm.IsDisposed)
+			{
+				m_AuxiliaryViewsForm = new AuxiliaryViewsForm(m_BirdsEyeViewTransformationForUI);
+			}
+			m_AuxiliaryViewsForm.Show(this);		
 		}
 	}
 }
