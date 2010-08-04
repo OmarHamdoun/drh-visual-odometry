@@ -54,8 +54,8 @@ namespace BirdsEyeView.UI
 
 			PointF[] physicalPointsForUI = new PointF[4];
 
-			float side = 3f;
-			float bottom = 710.0f;
+			float side = 16f;
+			float bottom = 700.0f;
 			float centerX = (float)m_CameraParameters.Intrinsic.Cx;
 
 			physicalPointsForUI[0] = new PointF(-3 * side + centerX, bottom - 8 * side);
