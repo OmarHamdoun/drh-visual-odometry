@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Emgu.CV;
 using Emgu.CV.Structure;
-using System.Drawing;
 using System.Diagnostics;
 
 namespace VisualOdometry
@@ -34,6 +33,7 @@ namespace VisualOdometry
 		public int InitialFeaturesCount { get; private set; }
 		private int m_ThresholdForFeatureRepopulation;
 		private Pose m_RobotPose = new Pose();
+		private double m_DistanceTraveled = 0;
 
 		public event EventHandler Changed;
 
@@ -193,7 +193,7 @@ namespace VisualOdometry
 
 		private void RepopulateFeaturePoints()
 		{
-			PointF[] newTrackedFeaturePoints = this.OpticalFlow.FindFeaturesToTrack(
+			System.Drawing.PointF[] newTrackedFeaturePoints = this.OpticalFlow.FindFeaturesToTrack(
 				m_CurrentGrayImage,
 				m_TrackedFeatures,
 				m_SkyRegionBottom,
@@ -220,7 +220,7 @@ namespace VisualOdometry
 
 		private void TrackFeatures(Image<Gray, Byte> previousGrayImage)
 		{
-			PointF[] trackedFeaturePoints = new PointF[m_TrackedFeatures.Count];
+			System.Drawing.PointF[] trackedFeaturePoints = new System.Drawing.PointF[m_TrackedFeatures.Count];
 			for (int i = 0; i < trackedFeaturePoints.Length; i++)
 			{
 				trackedFeaturePoints[i] = m_TrackedFeatures[i][0];
@@ -291,7 +291,27 @@ namespace VisualOdometry
 
 		private void UpdateRobotPose()
 		{
-			m_RobotPose.Heading = m_RobotPose.Heading + m_RotationAnalyzer.HeadingChange;
+			double headingChangeRad = m_RotationAnalyzer.HeadingChange.Rads;
+
+			m_RobotPose.Heading = m_RobotPose.Heading + m_RotationAnalyzer.HeadingChange / 2;
+
+			double cosHeading = Math.Cos(m_RobotPose.Heading.Rads);
+			double sinHeading = Math.Sin(m_RobotPose.Heading.Rads);
+
+			System.Windows.Point locationChangeRobot = m_TranslationAnalyzer.LocationChange;
+			// The x coordinate of the location change in the robot's coordinate system is perpendicular to the robot's heading
+			// in the global coordinate system; the y coordinate is parallel to the robot's heading.
+
+			double deltaXGlobal = locationChangeRobot.X * cosHeading - locationChangeRobot.Y * sinHeading;
+			double deltaYGlobal = locationChangeRobot.X * sinHeading + locationChangeRobot.Y * cosHeading;
+
+			m_RobotPose.Location = new System.Windows.Point(
+				m_RobotPose.Location.X + deltaXGlobal,
+				m_RobotPose.Location.Y + deltaYGlobal);
+
+			m_RobotPose.Heading = m_RobotPose.Heading + m_RotationAnalyzer.HeadingChange / 2;
+
+			m_DistanceTraveled += Math.Sqrt(deltaXGlobal * deltaXGlobal + deltaYGlobal * deltaXGlobal);
 		}
 
 		public List<TrackedFeature> TrackedFeatures

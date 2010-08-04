@@ -76,6 +76,16 @@ namespace VisualOdometry
 			return new Angle(a1.Rads - a2.Rads);
 		}
 
+		public static Angle operator /(Angle a1, double value)
+		{
+			return new Angle(a1.Rads / value);
+		}
+
+		public static Angle operator *(Angle a1, double value)
+		{
+			return new Angle(a1.Rads * value);
+		}
+
 		private Angle(double rad)
 		{
 			Rads = NormalizeRad(rad);

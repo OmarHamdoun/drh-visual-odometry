@@ -13,17 +13,21 @@ namespace VisualOdometry.UI
 {
 	public partial class AuxiliaryViewsForm : Form
 	{
-		private HomographyMatrix m_BirdsEyeViewTransformation;
-		private Image<Bgr, Byte> m_BirdsEyeViewImage;
+		private MainForm m_MainForm;
+		private VisualOdometer m_VisualOdometer;
+		private HomographyMatrix m_GroundProjectionTransformation;
+		private Image<Bgr, Byte> m_GroundProjectionImage;
 
-		public AuxiliaryViewsForm(HomographyMatrix birdsEyeViewTransformation)
+		public AuxiliaryViewsForm(MainForm mainForm, VisualOdometer visualOdometer, HomographyMatrix groundProjectionTransformation)
 		{
 			InitializeComponent();
 			this.ShowInTaskbar = false;
-			m_BirdsEyeViewTransformation = birdsEyeViewTransformation;
+			m_MainForm = mainForm;
+			m_VisualOdometer = visualOdometer;
+			m_GroundProjectionTransformation = groundProjectionTransformation;
 		}
 
-		internal void Update(VisualOdometer visualOdometer)
+		internal void Update(bool drawFeatures)
 		{
 			if (!this.Created)
 			{
@@ -32,22 +36,79 @@ namespace VisualOdometry.UI
 
 			if (m_FeaturesMaskRadioButton.Checked)
 			{
-				m_ImageBox.Image = visualOdometer.OpticalFlow.MaskImage.Clone();
+				m_ImageBox.Image = m_VisualOdometer.OpticalFlow.MaskImage.Clone();
 			}
-			if (m_BirdsEyeViewRadioButton.Checked)
+			if (m_GroundProjectionRadioButton.Checked)
 			{
-				if (m_BirdsEyeViewImage == null)
+				if (m_GroundProjectionImage == null)
 				{
-					m_BirdsEyeViewImage = visualOdometer.CurrentImage.Clone();
+					m_GroundProjectionImage = m_VisualOdometer.CurrentImage.Clone();
 				}
 				CvInvoke.cvWarpPerspective(
-					visualOdometer.CurrentImage.Ptr,
-					m_BirdsEyeViewImage.Ptr,
-					m_BirdsEyeViewTransformation.Ptr,
+					m_VisualOdometer.CurrentImage.Ptr,
+					m_GroundProjectionImage.Ptr,
+					m_GroundProjectionTransformation.Ptr,
 					(int)Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR | (int)Emgu.CV.CvEnum.WARP.CV_WARP_FILL_OUTLIERS,
 					new MCvScalar());
 
-				m_ImageBox.Image = m_BirdsEyeViewImage;
+				if (drawFeatures)
+				{
+					DrawFeatures();
+				}
+
+				m_ImageBox.Image = m_GroundProjectionImage;
+			}
+		}
+
+		private void DrawFeatures()
+		{
+			List<TrackedFeature> trackedFeatures = m_VisualOdometer.TrackedFeatures;
+			System.Drawing.PointF[] featurePointPair = new System.Drawing.PointF[2];
+			for (int i = 0; i < trackedFeatures.Count; i++)
+			{
+				TrackedFeature trackedFeature = trackedFeatures[i];
+				if (trackedFeature.Count < 2)
+				{
+					continue;
+				}
+
+				// previous and current feature points need to be in the ground region
+				if (!(trackedFeature[-1].Y > m_VisualOdometer.GroundRegionTop && trackedFeature[0].Y > m_VisualOdometer.GroundRegionTop))
+				{
+					continue;
+				}
+
+				featurePointPair[0] = trackedFeature[-1]; // previous feature location
+				featurePointPair[1] = trackedFeature[0];  // current featue location
+
+				m_GroundProjectionTransformation.ProjectPoints(featurePointPair);
+				m_MainForm.DrawPreviousFeatureLocation(featurePointPair[0], trackedFeature.HasFullHistory, m_GroundProjectionImage);
+
+				Angle headingChange = m_VisualOdometer.RotationAnalyzer.HeadingChange;
+
+				if (m_RemoveRotationEffectCheckBox.Checked)
+				{
+					PointF rotationCorrectedEndpoint = m_VisualOdometer.TranslationAnalyzer.RemoveRotationEffect(
+						headingChange, featurePointPair[1]);
+					m_MainForm.DrawCurrentFeatureLocation(rotationCorrectedEndpoint, trackedFeature.HasFullHistory, m_GroundProjectionImage);
+				}
+				else
+				{
+					m_MainForm.DrawCurrentFeatureLocation(featurePointPair[1], trackedFeature.HasFullHistory, m_GroundProjectionImage);
+				}
+
+				//// Remove rotation effect on current feature location. The center of the rotation is (0,0) on the ground plane
+				//Point rotationCorrectedEndPoint = new Point(
+				//    c * featurePointPair[1].X - s * featurePointPair[1].Y,
+				//    s * featurePointPair[1].X + c * featurePointPair[1].Y);
+
+				//Point translationIncrement = new Point(
+				//    rotationCorrectedEndPoint.X - featurePointPair[0].X,
+				//    rotationCorrectedEndPoint.Y - featurePointPair[0].Y);
+
+				//m_TranslationIncrements.Add(translationIncrement);
+				//sumX += translationIncrement.X;
+				//sumY += translationIncrement.Y;
 			}
 		}
 	}

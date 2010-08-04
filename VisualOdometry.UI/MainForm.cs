@@ -19,7 +19,7 @@ namespace VisualOdometry.UI
 		private VisualOdometer m_VisualOdometer;
 		private RotationAnalysisForm m_RotationAnalysisForm = new RotationAnalysisForm();
 		private AuxiliaryViewsForm m_AuxiliaryViewsForm;
-		private HomographyMatrix m_BirdsEyeViewTransformationForUI;
+		private HomographyMatrix m_GroundProjectionTransformationForUI;
 
 		public MainForm()
 		{
@@ -39,10 +39,10 @@ namespace VisualOdometry.UI
 
 			CameraParameters cameraParameters = CameraParameters.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\MicrosoftCinemaFocus12_1280x720.txt");
 
-			HomographyMatrix birdsEyeViewTransformation = HomographyMatrixSupport.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\BirdsEyeViewTransformationForCalculation.txt");
-			m_BirdsEyeViewTransformationForUI = HomographyMatrixSupport.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\BirdsEyeViewTransformationForUI.txt");
+			HomographyMatrix GroundProjectionTransformation = HomographyMatrixSupport.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\BirdsEyeViewTransformationForCalculation.txt");
+			m_GroundProjectionTransformationForUI = HomographyMatrixSupport.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\BirdsEyeViewTransformationForUI.txt");
 
-			m_VisualOdometer = new VisualOdometer(m_Capture, cameraParameters, birdsEyeViewTransformation, new OpticalFlow());
+			m_VisualOdometer = new VisualOdometer(m_Capture, cameraParameters, GroundProjectionTransformation, new OpticalFlow());
 
 			UpdateFromModel();
 
@@ -90,15 +90,14 @@ namespace VisualOdometry.UI
 
 			DrawRegionBounderies();
 
-			if (m_DrawFeaturesCheckBox.Checked)
-			{
-				DrawFeatureLocationsPreviousAndCurrent();
-			}
 			m_ImageBox.Image = m_VisualOdometer.CurrentImage;
 
-			m_HeadingTextBox.Text = m_VisualOdometer.RobotPose.Heading.Degrees.ToString();
-			m_LocationTextBox.Text = m_VisualOdometer.RobotPose.Location.ToString();
-			m_LocationChangeTextBox.Text = m_VisualOdometer.TranslationAnalyzer.LocationChange.ToString();
+			m_HeadingTextBox.Text = String.Format(
+				"{0:0.00}", m_VisualOdometer.RobotPose.Heading.Degrees);
+			m_LocationTextBox.Text = String.Format(
+				"x: {0:0.0}  y: {0:0.0}", m_VisualOdometer.RobotPose.Location.X, m_VisualOdometer.RobotPose.Location.X);
+			m_LocationChangeTextBox.Text = String.Format(
+				"x: {0:0.000}  y: {0:0.000}", m_VisualOdometer.TranslationAnalyzer.LocationChange.X, m_VisualOdometer.TranslationAnalyzer.LocationChange.Y);
 
 			if (!m_RotationAnalysisForm.IsDisposed)
 			{
@@ -106,7 +105,11 @@ namespace VisualOdometry.UI
 			}
 			if (!(m_AuxiliaryViewsForm == null || m_AuxiliaryViewsForm.IsDisposed))
 			{
-				m_AuxiliaryViewsForm.Update(m_VisualOdometer);
+				m_AuxiliaryViewsForm.Update(m_DrawFeaturesCheckBox.Checked);
+			}
+			if (m_DrawFeaturesCheckBox.Checked)
+			{
+				DrawAllFeatureLocationsPreviousAndCurrent();
 			}
 		}
 
@@ -130,7 +133,7 @@ namespace VisualOdometry.UI
 		private Bgr m_FeatureColorPreviousFullHistory = new Bgr(Color.Lime);
 		private Bgr m_FeatureColorCurrentFullHistory = new Bgr(Color.Red);
 
-		private void DrawFeatureLocationsPreviousAndCurrent()
+		private void DrawAllFeatureLocationsPreviousAndCurrent()
 		{
 			List<TrackedFeature> trackedFeatures = m_VisualOdometer.TrackedFeatures;
 			// draw previous location
@@ -140,15 +143,7 @@ namespace VisualOdometry.UI
 				if (trackedFeature.Count > 1)
 				{
 					// We have a previous value
-					CircleF circle = new CircleF(trackedFeature[-1], 3.0f);
-					if (!trackedFeature.HasFullHistory)
-					{
-						m_VisualOdometer.CurrentImage.Draw(circle, m_FeatureColorPreviousPartialHistory, 2);
-					}
-					else
-					{
-						m_VisualOdometer.CurrentImage.Draw(circle, m_FeatureColorPreviousFullHistory, 2);
-					}
+					DrawPreviousFeatureLocation(trackedFeature[-1], trackedFeature.HasFullHistory, m_VisualOdometer.CurrentImage);
 				}
 			}
 
@@ -156,15 +151,33 @@ namespace VisualOdometry.UI
 			for (int i = 0; i < trackedFeatures.Count; i++)
 			{
 				TrackedFeature trackedFeature = trackedFeatures[i];
-				CircleF circle = new CircleF(trackedFeature[0], 3.0f);
-				if (!trackedFeature.HasFullHistory)
-				{
-					m_VisualOdometer.CurrentImage.Draw(circle, m_FeatureColorCurrentPartialHistory, 2);
-				}
-				else
-				{
-					m_VisualOdometer.CurrentImage.Draw(circle, m_FeatureColorCurrentFullHistory, 2);
-				}
+				DrawCurrentFeatureLocation(trackedFeature[0], trackedFeature.HasFullHistory, m_VisualOdometer.CurrentImage);
+			}
+		}
+
+		internal void DrawPreviousFeatureLocation(PointF previousFeatureLocation, bool hasFullHistory, Image<Bgr, Byte> image)
+		{
+			CircleF circle = new CircleF(previousFeatureLocation, 3.0f);
+			if (!hasFullHistory)
+			{
+				image.Draw(circle, m_FeatureColorPreviousPartialHistory, 2);
+			}
+			else
+			{
+				image.Draw(circle, m_FeatureColorPreviousFullHistory, 2);
+			}
+		}
+
+		internal void DrawCurrentFeatureLocation(PointF currentFeatureLocation, bool hasFullHistory, Image<Bgr, Byte> image)
+		{
+			CircleF circle = new CircleF(currentFeatureLocation, 3.0f);
+			if (!hasFullHistory)
+			{
+				image.Draw(circle, m_FeatureColorCurrentPartialHistory, 2);
+			}
+			else
+			{
+				image.Draw(circle, m_FeatureColorCurrentFullHistory, 2);
 			}
 		}
 
@@ -245,7 +258,7 @@ namespace VisualOdometry.UI
 		{
 			if (m_AuxiliaryViewsForm == null || m_AuxiliaryViewsForm.IsDisposed)
 			{
-				m_AuxiliaryViewsForm = new AuxiliaryViewsForm(m_BirdsEyeViewTransformationForUI);
+				m_AuxiliaryViewsForm = new AuxiliaryViewsForm(this, m_VisualOdometer, m_GroundProjectionTransformationForUI);
 			}
 			m_AuxiliaryViewsForm.Show(this);		
 		}

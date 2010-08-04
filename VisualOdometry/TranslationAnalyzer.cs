@@ -75,6 +75,16 @@ namespace VisualOdometry
 			}
 		}
 
+		public System.Drawing.PointF RemoveRotationEffect(Angle headingChange, System.Drawing.PointF point)
+		{
+			float s = (float)Math.Sin(headingChange.Rads);
+			float c = (float)Math.Cos(headingChange.Rads);
+
+			return new System.Drawing.PointF(
+				c * point.X - s * point.Y,
+				s * point.X + c * point.Y);
+		}
+
 		private void ProjectOnFloor(System.Drawing.PointF[] featurePoints)
 		{
 			m_GroundProjectionTransformation.ProjectPoints(featurePoints);
