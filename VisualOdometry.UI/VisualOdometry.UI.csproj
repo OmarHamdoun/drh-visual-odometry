@@ -63,6 +63,12 @@
     <Compile Include="AuxiliaryViewsForm.Designer.cs">
       <DependentUpon>AuxiliaryViewsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MapForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MapForm.Designer.cs">
+      <DependentUpon>MapForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="RotationAnalysisForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -79,6 +85,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AuxiliaryViewsForm.resx">
       <DependentUpon>AuxiliaryViewsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MapForm.resx">
+      <DependentUpon>MapForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="RotationAnalysisForm.resx">
       <DependentUpon>RotationAnalysisForm.cs</DependentUpon>

@@ -46,6 +46,8 @@
 			this.m_DrawFeaturesCheckBox = new System.Windows.Forms.CheckBox();
 			this.m_BottomPanel = new System.Windows.Forms.Panel();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.m_LocationChangeTextBox = new System.Windows.Forms.TextBox();
+			this.label12 = new System.Windows.Forms.Label();
 			this.m_LocationTextBox = new System.Windows.Forms.TextBox();
 			this.label11 = new System.Windows.Forms.Label();
 			this.m_HeadingTextBox = new System.Windows.Forms.TextBox();
@@ -62,8 +64,7 @@
 			this.label5 = new System.Windows.Forms.Label();
 			this.m_Timer = new System.Windows.Forms.Timer(this.components);
 			this.m_ImageBox = new Emgu.CV.UI.ImageBox();
-			this.m_LocationChangeTextBox = new System.Windows.Forms.TextBox();
-			this.label12 = new System.Windows.Forms.Label();
+			this.m_MapButton = new System.Windows.Forms.Button();
 			this.m_TopPanel.SuspendLayout();
 			this.m_BottomPanel.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -231,12 +232,29 @@
 			this.groupBox3.Controls.Add(this.m_HeadingTextBox);
 			this.groupBox3.Controls.Add(this.label10);
 			this.groupBox3.Dock = System.Windows.Forms.DockStyle.Left;
-			this.groupBox3.Location = new System.Drawing.Point(355, 0);
+			this.groupBox3.Location = new System.Drawing.Point(448, 0);
 			this.groupBox3.Name = "groupBox3";
 			this.groupBox3.Size = new System.Drawing.Size(278, 117);
 			this.groupBox3.TabIndex = 10;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Odometry";
+			// 
+			// m_LocationChangeTextBox
+			// 
+			this.m_LocationChangeTextBox.Location = new System.Drawing.Point(83, 79);
+			this.m_LocationChangeTextBox.Name = "m_LocationChangeTextBox";
+			this.m_LocationChangeTextBox.ReadOnly = true;
+			this.m_LocationChangeTextBox.Size = new System.Drawing.Size(184, 22);
+			this.m_LocationChangeTextBox.TabIndex = 16;
+			// 
+			// label12
+			// 
+			this.label12.AutoSize = true;
+			this.label12.Location = new System.Drawing.Point(12, 82);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(66, 17);
+			this.label12.TabIndex = 15;
+			this.label12.Text = "Location:";
 			// 
 			// m_LocationTextBox
 			// 
@@ -274,13 +292,14 @@
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.Controls.Add(this.m_MapButton);
 			this.groupBox2.Controls.Add(this.m_OtherViewsButton);
 			this.groupBox2.Controls.Add(this.m_DrawFeaturesCheckBox);
 			this.groupBox2.Controls.Add(this.m_DetailsButton);
 			this.groupBox2.Dock = System.Windows.Forms.DockStyle.Left;
 			this.groupBox2.Location = new System.Drawing.Point(203, 0);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(152, 117);
+			this.groupBox2.Size = new System.Drawing.Size(245, 117);
 			this.groupBox2.TabIndex = 9;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "View";
@@ -385,22 +404,15 @@
 			this.m_ImageBox.TabIndex = 2;
 			this.m_ImageBox.TabStop = false;
 			// 
-			// m_LocationChangeTextBox
+			// m_MapButton
 			// 
-			this.m_LocationChangeTextBox.Location = new System.Drawing.Point(83, 79);
-			this.m_LocationChangeTextBox.Name = "m_LocationChangeTextBox";
-			this.m_LocationChangeTextBox.ReadOnly = true;
-			this.m_LocationChangeTextBox.Size = new System.Drawing.Size(184, 22);
-			this.m_LocationChangeTextBox.TabIndex = 16;
-			// 
-			// label12
-			// 
-			this.label12.AutoSize = true;
-			this.label12.Location = new System.Drawing.Point(12, 82);
-			this.label12.Name = "label12";
-			this.label12.Size = new System.Drawing.Size(66, 17);
-			this.label12.TabIndex = 15;
-			this.label12.Text = "Location:";
+			this.m_MapButton.Location = new System.Drawing.Point(128, 79);
+			this.m_MapButton.Name = "m_MapButton";
+			this.m_MapButton.Size = new System.Drawing.Size(70, 23);
+			this.m_MapButton.TabIndex = 14;
+			this.m_MapButton.Text = "Map ...";
+			this.m_MapButton.UseVisualStyleBackColor = true;
+			this.m_MapButton.Click += new System.EventHandler(this.OnMapButtonClicked);
 			// 
 			// MainForm
 			// 
@@ -463,6 +475,7 @@
 		private System.Windows.Forms.Label label11;
 		private System.Windows.Forms.TextBox m_LocationChangeTextBox;
 		private System.Windows.Forms.Label label12;
+		private System.Windows.Forms.Button m_MapButton;
 	}
 }
 

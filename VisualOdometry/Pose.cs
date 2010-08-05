@@ -26,6 +26,12 @@ namespace VisualOdometry
 			this.Heading = heading;
 		}
 
+		public Pose(Pose pose)
+		{
+			this.Location = pose.Location;
+			this.Heading = pose.Heading; ;
+		}
+
 		public Point Location { get; set; }
 
 		public double X

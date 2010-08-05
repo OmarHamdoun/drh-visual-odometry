@@ -20,6 +20,8 @@ namespace VisualOdometry.UI
 		private RotationAnalysisForm m_RotationAnalysisForm = new RotationAnalysisForm();
 		private AuxiliaryViewsForm m_AuxiliaryViewsForm;
 		private HomographyMatrix m_GroundProjectionTransformationForUI;
+		private RobotPath m_RobotPath = new RobotPath();
+		private MapForm m_MapForm;
 
 		public MainForm()
 		{
@@ -99,13 +101,20 @@ namespace VisualOdometry.UI
 			m_LocationChangeTextBox.Text = String.Format(
 				"x: {0:0.000}  y: {0:0.000}", m_VisualOdometer.TranslationAnalyzer.LocationChange.X, m_VisualOdometer.TranslationAnalyzer.LocationChange.Y);
 
+			Pose newPose = new Pose(m_VisualOdometer.RobotPose);
+			m_RobotPath.Add(newPose);
+
 			if (!m_RotationAnalysisForm.IsDisposed)
 			{
 				m_RotationAnalysisForm.Update(m_VisualOdometer);
 			}
-			if (!(m_AuxiliaryViewsForm == null || m_AuxiliaryViewsForm.IsDisposed))
+			if (m_AuxiliaryViewsForm != null && !m_AuxiliaryViewsForm.IsDisposed)
 			{
 				m_AuxiliaryViewsForm.Update(m_DrawFeaturesCheckBox.Checked);
+			}
+			if (m_MapForm != null && !m_MapForm.IsDisposed)
+			{
+				m_MapForm.UpdateMap();
 			}
 			if (m_DrawFeaturesCheckBox.Checked)
 			{
@@ -261,6 +270,15 @@ namespace VisualOdometry.UI
 				m_AuxiliaryViewsForm = new AuxiliaryViewsForm(this, m_VisualOdometer, m_GroundProjectionTransformationForUI);
 			}
 			m_AuxiliaryViewsForm.Show(this);		
+		}
+
+		private void OnMapButtonClicked(object sender, EventArgs e)
+		{
+			if (m_MapForm == null || m_MapForm.IsDisposed)
+			{
+				m_MapForm = new MapForm(m_RobotPath);
+			}
+			m_MapForm.Show(this);
 		}
 	}
 }

@@ -312,7 +312,22 @@ namespace VisualOdometry
 			m_RobotPose.Heading = m_RobotPose.Heading + m_RotationAnalyzer.HeadingChange / 2;
 
 			m_DistanceTraveled += Math.Sqrt(deltaXGlobal * deltaXGlobal + deltaYGlobal * deltaXGlobal);
+
+			RaiseNewPoseEvent();
 		}
+
+		private void RaiseNewPoseEvent()
+		{
+			var handler = NewPose;
+			if (handler != null)
+			{
+				Pose newPose = new Pose(m_RobotPose.Location, m_RobotPose.Heading);
+				var e = new PoseEventArgs(newPose);
+				handler(this, e);
+			}
+		}
+
+		public event EventHandler<PoseEventArgs> NewPose;
 
 		public List<TrackedFeature> TrackedFeatures
 		{
