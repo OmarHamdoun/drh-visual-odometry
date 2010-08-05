@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using VisualOdometry;
 using System.Drawing.Drawing2D;
+using System.Diagnostics;
 
 namespace Playground.UI
 {
@@ -69,7 +70,6 @@ namespace Playground.UI
 		{
 			m_Bitmap = new Bitmap(m_PictureBox.Width, m_PictureBox.Height);
 			m_Graphics = Graphics.FromImage(m_Bitmap);
-			m_Graphics.Clear(Color.White);
 
 			Matrix matrix = new Matrix();
 			matrix.Scale(1, -1);
@@ -80,6 +80,8 @@ namespace Playground.UI
 
 		private void DrawFullPath()
 		{
+			Debug.WriteLine("Drawing full path");
+			m_Graphics.Clear(Color.White);
 			for (int i = 0; i < m_RobotPath.Poses.Count; i++)
 			{
 				DrawPose(i);
@@ -130,6 +132,45 @@ namespace Playground.UI
 			base.OnResize(e);
 
 			InitializeMapImage();
+		}
+
+		bool m_Dragging = false;
+		Point m_LastPosition;
+
+		private void OnMouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Button == System.Windows.Forms.MouseButtons.Left)
+			{
+				m_Dragging = true;
+				m_LastPosition = e.Location;
+				Debug.WriteLine("Dragging start");
+			}
+		}
+
+		private void OnMouseUp(object sender, MouseEventArgs e)
+		{
+			m_Dragging = false;
+			Debug.WriteLine("Dragging end");
+		}
+
+		private void OnMouseMove(object sender, MouseEventArgs e)
+		{
+			if (m_Dragging)
+			{
+				Point currentLocation = e.Location;
+
+				float deltaX = (float)(currentLocation.X - m_LastPosition.X);
+				float deltaY = (float)(currentLocation.Y - m_LastPosition.Y);
+
+				Matrix matrix = m_Graphics.Transform;
+				matrix.Translate(deltaX, -deltaY);
+				m_Graphics.Transform = matrix;
+				
+				DrawFullPath();
+				Refresh();
+
+				m_LastPosition = e.Location;
+			}
 		}
 	}
 }
