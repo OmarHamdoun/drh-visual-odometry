@@ -52,12 +52,27 @@ namespace BirdsEyeView.UI
 			outerCorners[3] = foundCorners[this.ChessBoard.PatternSize.Width * this.ChessBoard.PatternSize.Height - 1];
 			DrawOuterCorners(this.CurrentImage, outerCorners);
 
+			float side;
+			float bottom;
+			float centerX;
+
+			side = 25.0f;
+			bottom = 310.0f;
+
+			PointF[] physicalPointsForCalculation = new PointF[4];
+			physicalPointsForCalculation[0] = new PointF(-3 * side, bottom + 8 * side);
+			physicalPointsForCalculation[1] = new PointF(+3 * side, bottom + 8 * side);
+			physicalPointsForCalculation[2] = new PointF(-3 * side, bottom);
+			physicalPointsForCalculation[3] = new PointF(+3 * side, bottom);
+
+			m_BirdsEyeViewTransformationForCalculation = CameraCalibration.GetPerspectiveTransform(outerCorners, physicalPointsForCalculation);
+			HomographyMatrixSupport.Save(m_BirdsEyeViewTransformationForCalculation, "BirdsEyeViewTransformationForCalculation.txt");
+
+			side = 50f;
+			bottom = 600.0f;
+			centerX = (float)m_CameraParameters.Intrinsic.Cx;
+
 			PointF[] physicalPointsForUI = new PointF[4];
-
-			float side = 16f;
-			float bottom = 700.0f;
-			float centerX = (float)m_CameraParameters.Intrinsic.Cx;
-
 			physicalPointsForUI[0] = new PointF(-3 * side + centerX, bottom - 8 * side);
 			physicalPointsForUI[1] = new PointF(+3 * side + centerX, bottom - 8 * side);
 			physicalPointsForUI[2] = new PointF(-3 * side + centerX, bottom);
@@ -65,19 +80,6 @@ namespace BirdsEyeView.UI
 
 			m_BirdsEyeViewTransformationForUI = CameraCalibration.GetPerspectiveTransform(outerCorners, physicalPointsForUI);
 			HomographyMatrixSupport.Save(m_BirdsEyeViewTransformationForUI, "BirdsEyeViewTransformationForUI.txt");
-
-			PointF[] physicalPointsForCalculation = new PointF[4];
-
-			side = 25.0f;
-			bottom = 310.0f;
-
-			physicalPointsForCalculation[0] = new PointF(-3 * side, bottom + 8 * side);
-			physicalPointsForCalculation[1] = new PointF(+3 * side, bottom + 8 * side);
-			physicalPointsForCalculation[2] = new PointF(-3 * side, bottom);
-			physicalPointsForCalculation[3] = new PointF(+3 * side, bottom);
-
-			m_BirdsEyeViewTransformationForCalculation = CameraCalibration.GetPerspectiveTransform(outerCorners, physicalPointsForCalculation);
-			HomographyMatrixSupport.Save(m_BirdsEyeViewTransformationForUI, "BirdsEyeViewTransformationForCalculation.txt");
 
 			//m_BirdsEyeViewTransformationForCalculation.ProjectPoints(outerCorners);
 

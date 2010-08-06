@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Emgu.CV;
 using System.Windows;
+using System.Diagnostics;
 
 namespace VisualOdometry
 {
@@ -53,16 +54,30 @@ namespace VisualOdometry
 
 				featurePointPair[0] = trackedFeature[-1]; // previous feature location
 				featurePointPair[1] = trackedFeature[0];  // current featue location
+				//Debug.WriteLine("Raw:");
+				//Debug.WriteLine("\tPrevious dx_r: {0:0.000}  dy_r: {1:0.000}", featurePointPair[0].X, featurePointPair[0].Y);
+				//Debug.WriteLine("\tCurrent  dx_r: {0:0.000}  dy_r: {1:0.000}", featurePointPair[1].X, featurePointPair[1].Y);
 
 				ProjectOnFloor(featurePointPair);
-				// Remove rotation effect on current feature location. The center of the rotation is (0,0) on the ground plane
+				//Debug.WriteLine("Ground:");
+				//Debug.WriteLine("\tPrevious dx_r: {0:0.000}  dy_r: {1:0.000}", featurePointPair[0].X, featurePointPair[0].Y);
+				//Debug.WriteLine("\tCurrent  dx_r: {0:0.000}  dy_r: {1:0.000}", featurePointPair[1].X, featurePointPair[1].Y);
+
+	
+				// Remove rotation effect on current feature location. The center of the rotation is the previous feature location
+				//Point rotationCorrectedEndPoint = new Point(
+				//    c * featurePointPair[1].X - s * featurePointPair[1].Y,
+				//    s * featurePointPair[1].X + c * featurePointPair[1].Y);
+
 				Point rotationCorrectedEndPoint = new Point(
-					c * featurePointPair[1].X - s * featurePointPair[1].Y,
-					s * featurePointPair[1].X + c * featurePointPair[1].Y);
+					featurePointPair[1].X,
+					featurePointPair[1].Y);
 
 				Point translationIncrement = new Point(
-					rotationCorrectedEndPoint.X - featurePointPair[0].X,
-					rotationCorrectedEndPoint.Y - featurePointPair[0].Y);
+					featurePointPair[0].X - rotationCorrectedEndPoint.X,
+					featurePointPair[0].Y - rotationCorrectedEndPoint.Y);
+
+				//Debug.WriteLine("Delta: dx_r: {0:0.000}  dy_r: {1:0.000}", translationIncrement.X, translationIncrement.Y);
 
 				m_TranslationIncrements.Add(translationIncrement);
 				sumX += translationIncrement.X;
@@ -73,6 +88,7 @@ namespace VisualOdometry
 			{
 				m_CurrentLocationChange = new Point(sumX / m_TranslationIncrements.Count, sumY / m_TranslationIncrements.Count);
 			}
+			//Debug.WriteLine("Average: dx_r: {0:0.000}  dy_r: {1:0.000}", m_CurrentLocationChange.X, m_CurrentLocationChange.Y);
 		}
 
 		public System.Drawing.PointF RemoveRotationEffect(Angle headingChange, System.Drawing.PointF point)

@@ -34,6 +34,7 @@ namespace VisualOdometry
 		private int m_ThresholdForFeatureRepopulation;
 		private Pose m_RobotPose = new Pose();
 		private double m_DistanceTraveled = 0;
+		private int m_FrameNumber = 0;
 
 		public event EventHandler Changed;
 
@@ -135,12 +136,17 @@ namespace VisualOdometry
 		public void ProcessFrame()
 		{
 			m_RawImage = m_Capture.QueryFrame();
+			//for (int i = 0; i < 3; i++)
+			//{
+			//    m_RawImage = m_Capture.QueryFrame();
+			//}
 			if (m_RawImage == null)
 			{
 				// This occurs if we operate against a previously recorded video and the video has ended.
 				return;
 			}
 
+			m_FrameNumber++;
 			if (m_UndistortMapX == null)
 			{
 				InitializeUndistortMap(m_RawImage);
@@ -302,6 +308,8 @@ namespace VisualOdometry
 			// The x coordinate of the location change in the robot's coordinate system is perpendicular to the robot's heading
 			// in the global coordinate system; the y coordinate is parallel to the robot's heading.
 
+			//Debug.WriteLine("dx_r: {0:0.000}  dy_r: {1:0.000}", locationChangeRobot.X, locationChangeRobot.Y);
+
 			double deltaXGlobal = locationChangeRobot.X * cosHeading - locationChangeRobot.Y * sinHeading;
 			double deltaYGlobal = locationChangeRobot.X * sinHeading + locationChangeRobot.Y * cosHeading;
 
@@ -325,6 +333,11 @@ namespace VisualOdometry
 				var e = new PoseEventArgs(newPose);
 				handler(this, e);
 			}
+		}
+
+		public int FrameNumber
+		{
+			get { return m_FrameNumber; }
 		}
 
 		public event EventHandler<PoseEventArgs> NewPose;

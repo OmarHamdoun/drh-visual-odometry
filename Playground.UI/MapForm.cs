@@ -21,6 +21,7 @@ namespace Playground.UI
 		private Pen m_PathPen = new Pen(Color.Black);
 
 		private int m_CircleRadius = 6;
+		private float m_ZoomFactor = 1;
 
 		public MapForm()
 		{
@@ -72,7 +73,7 @@ namespace Playground.UI
 			m_Graphics = Graphics.FromImage(m_Bitmap);
 
 			Matrix matrix = new Matrix();
-			matrix.Scale(1, -1);
+			matrix.Scale(m_ZoomFactor, -m_ZoomFactor);
 			matrix.Translate(m_PictureBox.Width / 2, -m_PictureBox.Height / 2);
 
 			m_Graphics.Transform = matrix;
@@ -163,7 +164,7 @@ namespace Playground.UI
 				float deltaY = (float)(currentLocation.Y - m_LastPosition.Y);
 
 				Matrix matrix = m_Graphics.Transform;
-				matrix.Translate(deltaX, -deltaY);
+				matrix.Translate(deltaX / m_ZoomFactor, -deltaY / m_ZoomFactor);
 				m_Graphics.Transform = matrix;
 				
 				DrawFullPath();

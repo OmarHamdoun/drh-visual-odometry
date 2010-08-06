@@ -86,6 +86,7 @@ namespace VisualOdometry.UI
 			{
 				return;
 			}
+
 			m_FoundFeaturesCountTextBox.Text = m_VisualOdometer.InitialFeaturesCount.ToString();
 			m_TrackedFeaturesCountTextBox.Text = m_VisualOdometer.TrackedFeatures.Count.ToString();
 			m_NotTrackedFeaturesCount.Text = m_VisualOdometer.NotTrackedFeaturesCount.ToString();
@@ -97,9 +98,9 @@ namespace VisualOdometry.UI
 			m_HeadingTextBox.Text = String.Format(
 				"{0:0.00}", m_VisualOdometer.RobotPose.Heading.Degrees);
 			m_LocationTextBox.Text = String.Format(
-				"x: {0:0.0}  y: {0:0.0}", m_VisualOdometer.RobotPose.Location.X, m_VisualOdometer.RobotPose.Location.X);
+				"x_g: {0:0.0}  y_g: {1:0.0}", m_VisualOdometer.RobotPose.Location.X, m_VisualOdometer.RobotPose.Location.Y);
 			m_LocationChangeTextBox.Text = String.Format(
-				"x: {0:0.000}  y: {0:0.000}", m_VisualOdometer.TranslationAnalyzer.LocationChange.X, m_VisualOdometer.TranslationAnalyzer.LocationChange.Y);
+				"dx_r: {0:0.000}  dy_r: {1:0.000}", m_VisualOdometer.TranslationAnalyzer.LocationChange.X, m_VisualOdometer.TranslationAnalyzer.LocationChange.Y);
 
 			Pose newPose = new Pose(m_VisualOdometer.RobotPose);
 			m_RobotPath.Add(newPose);
