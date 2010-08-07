@@ -14,12 +14,20 @@ namespace VisualOdometry
 		private HomographyMatrix m_GroundProjectionTransformation;
 		private List<Point> m_TranslationIncrements;
 		private Point m_CurrentLocationChange;
+		private Angle m_AcceptedDirectionMisalignment;
 
 		internal TranslationAnalyzer(VisualOdometer visualOdometer, HomographyMatrix groundProjectionTransformation)
 		{
 			m_VisualOdometer = visualOdometer;
 			m_GroundProjectionTransformation = groundProjectionTransformation;
 			m_TranslationIncrements = new List<Point>();
+			m_AcceptedDirectionMisalignment = Angle.FromDegrees(10);
+		}
+
+		public Angle AcceptedDirectionMisalignment
+		{
+			get { return m_AcceptedDirectionMisalignment; }
+			set { m_AcceptedDirectionMisalignment = value; }
 		}
 
 		public Point LocationChange
@@ -32,7 +40,7 @@ namespace VisualOdometry
 			double s = Math.Sin(headingChange.Rads);
 			double c = Math.Cos(headingChange.Rads);
 
-			double acceptedDirectionMisaligment = 10 * Math.PI / 180;
+			double acceptedDirectionMisaligment = m_AcceptedDirectionMisalignment.Rads;
 
 			m_TranslationIncrements.Clear();
 			System.Drawing.PointF[] featurePointPair = new System.Drawing.PointF[2];
@@ -74,10 +82,6 @@ namespace VisualOdometry
 					c * featurePointPair[1].X - s * featurePointPair[1].Y,
 					s * featurePointPair[1].X + c * featurePointPair[1].Y);
 
-				//Point rotationCorrectedEndPoint = new Point(
-				//    featurePointPair[1].X,
-				//    featurePointPair[1].Y);
-
 				Point translationIncrement = new Point(
 					featurePointPair[0].X - rotationCorrectedEndPoint.X,
 					featurePointPair[0].Y - rotationCorrectedEndPoint.Y);
@@ -88,8 +92,6 @@ namespace VisualOdometry
 				{
 					continue;
 				}
-
-				//Debug.WriteLine("Delta: dx_r: {0:0.000}  dy_r: {1:0.000}", translationIncrement.X, translationIncrement.Y);
 
 				m_TranslationIncrements.Add(translationIncrement);
 				sumX += translationIncrement.X;
