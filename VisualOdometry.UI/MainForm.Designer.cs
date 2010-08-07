@@ -53,6 +53,8 @@
 			this.m_HeadingTextBox = new System.Windows.Forms.TextBox();
 			this.label10 = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.m_ShowGroundFeaturesCheckBox = new System.Windows.Forms.CheckBox();
+			this.m_MapButton = new System.Windows.Forms.Button();
 			this.m_OtherViewsButton = new System.Windows.Forms.Button();
 			this.m_DetailsButton = new System.Windows.Forms.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -64,7 +66,7 @@
 			this.label5 = new System.Windows.Forms.Label();
 			this.m_Timer = new System.Windows.Forms.Timer(this.components);
 			this.m_ImageBox = new Emgu.CV.UI.ImageBox();
-			this.m_MapButton = new System.Windows.Forms.Button();
+			this.m_ShowImageCheckBox = new System.Windows.Forms.CheckBox();
 			this.m_TopPanel.SuspendLayout();
 			this.m_BottomPanel.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -205,11 +207,11 @@
 			this.m_DrawFeaturesCheckBox.AutoSize = true;
 			this.m_DrawFeaturesCheckBox.Checked = true;
 			this.m_DrawFeaturesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.m_DrawFeaturesCheckBox.Location = new System.Drawing.Point(14, 25);
+			this.m_DrawFeaturesCheckBox.Location = new System.Drawing.Point(14, 53);
 			this.m_DrawFeaturesCheckBox.Name = "m_DrawFeaturesCheckBox";
-			this.m_DrawFeaturesCheckBox.Size = new System.Drawing.Size(122, 21);
+			this.m_DrawFeaturesCheckBox.Size = new System.Drawing.Size(86, 21);
 			this.m_DrawFeaturesCheckBox.TabIndex = 13;
-			this.m_DrawFeaturesCheckBox.Text = "Draw Features";
+			this.m_DrawFeaturesCheckBox.Text = "Features";
 			this.m_DrawFeaturesCheckBox.UseVisualStyleBackColor = true;
 			// 
 			// m_BottomPanel
@@ -232,7 +234,7 @@
 			this.groupBox3.Controls.Add(this.m_HeadingTextBox);
 			this.groupBox3.Controls.Add(this.label10);
 			this.groupBox3.Dock = System.Windows.Forms.DockStyle.Left;
-			this.groupBox3.Location = new System.Drawing.Point(448, 0);
+			this.groupBox3.Location = new System.Drawing.Point(492, 0);
 			this.groupBox3.Name = "groupBox3";
 			this.groupBox3.Size = new System.Drawing.Size(278, 117);
 			this.groupBox3.TabIndex = 10;
@@ -292,6 +294,8 @@
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.Controls.Add(this.m_ShowImageCheckBox);
+			this.groupBox2.Controls.Add(this.m_ShowGroundFeaturesCheckBox);
 			this.groupBox2.Controls.Add(this.m_MapButton);
 			this.groupBox2.Controls.Add(this.m_OtherViewsButton);
 			this.groupBox2.Controls.Add(this.m_DrawFeaturesCheckBox);
@@ -299,14 +303,34 @@
 			this.groupBox2.Dock = System.Windows.Forms.DockStyle.Left;
 			this.groupBox2.Location = new System.Drawing.Point(203, 0);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(245, 117);
+			this.groupBox2.Size = new System.Drawing.Size(289, 117);
 			this.groupBox2.TabIndex = 9;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "View";
 			// 
+			// m_ShowGroundFeaturesCheckBox
+			// 
+			this.m_ShowGroundFeaturesCheckBox.AutoSize = true;
+			this.m_ShowGroundFeaturesCheckBox.Location = new System.Drawing.Point(14, 81);
+			this.m_ShowGroundFeaturesCheckBox.Name = "m_ShowGroundFeaturesCheckBox";
+			this.m_ShowGroundFeaturesCheckBox.Size = new System.Drawing.Size(138, 21);
+			this.m_ShowGroundFeaturesCheckBox.TabIndex = 15;
+			this.m_ShowGroundFeaturesCheckBox.Text = "Ground Features";
+			this.m_ShowGroundFeaturesCheckBox.UseVisualStyleBackColor = true;
+			// 
+			// m_MapButton
+			// 
+			this.m_MapButton.Location = new System.Drawing.Point(168, 79);
+			this.m_MapButton.Name = "m_MapButton";
+			this.m_MapButton.Size = new System.Drawing.Size(108, 23);
+			this.m_MapButton.TabIndex = 14;
+			this.m_MapButton.Text = "Map ...";
+			this.m_MapButton.UseVisualStyleBackColor = true;
+			this.m_MapButton.Click += new System.EventHandler(this.OnMapButtonClicked);
+			// 
 			// m_OtherViewsButton
 			// 
-			this.m_OtherViewsButton.Location = new System.Drawing.Point(14, 79);
+			this.m_OtherViewsButton.Location = new System.Drawing.Point(168, 51);
 			this.m_OtherViewsButton.Name = "m_OtherViewsButton";
 			this.m_OtherViewsButton.Size = new System.Drawing.Size(108, 23);
 			this.m_OtherViewsButton.TabIndex = 13;
@@ -316,7 +340,7 @@
 			// 
 			// m_DetailsButton
 			// 
-			this.m_DetailsButton.Location = new System.Drawing.Point(14, 53);
+			this.m_DetailsButton.Location = new System.Drawing.Point(168, 23);
 			this.m_DetailsButton.Name = "m_DetailsButton";
 			this.m_DetailsButton.Size = new System.Drawing.Size(108, 23);
 			this.m_DetailsButton.TabIndex = 10;
@@ -404,15 +428,17 @@
 			this.m_ImageBox.TabIndex = 2;
 			this.m_ImageBox.TabStop = false;
 			// 
-			// m_MapButton
+			// m_ShowImageCheckBox
 			// 
-			this.m_MapButton.Location = new System.Drawing.Point(128, 79);
-			this.m_MapButton.Name = "m_MapButton";
-			this.m_MapButton.Size = new System.Drawing.Size(70, 23);
-			this.m_MapButton.TabIndex = 14;
-			this.m_MapButton.Text = "Map ...";
-			this.m_MapButton.UseVisualStyleBackColor = true;
-			this.m_MapButton.Click += new System.EventHandler(this.OnMapButtonClicked);
+			this.m_ShowImageCheckBox.AutoSize = true;
+			this.m_ShowImageCheckBox.Checked = true;
+			this.m_ShowImageCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.m_ShowImageCheckBox.Location = new System.Drawing.Point(14, 25);
+			this.m_ShowImageCheckBox.Name = "m_ShowImageCheckBox";
+			this.m_ShowImageCheckBox.Size = new System.Drawing.Size(68, 21);
+			this.m_ShowImageCheckBox.TabIndex = 16;
+			this.m_ShowImageCheckBox.Text = "Image";
+			this.m_ShowImageCheckBox.UseVisualStyleBackColor = true;
 			// 
 			// MainForm
 			// 
@@ -476,6 +502,8 @@
 		private System.Windows.Forms.TextBox m_LocationChangeTextBox;
 		private System.Windows.Forms.Label label12;
 		private System.Windows.Forms.Button m_MapButton;
+		private System.Windows.Forms.CheckBox m_ShowGroundFeaturesCheckBox;
+		private System.Windows.Forms.CheckBox m_ShowImageCheckBox;
 	}
 }
 

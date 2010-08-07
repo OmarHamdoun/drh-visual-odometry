@@ -135,11 +135,11 @@ namespace VisualOdometry
 
 		public void ProcessFrame()
 		{
-			m_RawImage = m_Capture.QueryFrame();
-			//for (int i = 0; i < 3; i++)
-			//{
-			//    m_RawImage = m_Capture.QueryFrame();
-			//}
+			//m_RawImage = m_Capture.QueryFrame();
+			for (int i = 0; i < 1; i++)
+			{
+				m_RawImage = m_Capture.QueryFrame();
+			}
 			if (m_RawImage == null)
 			{
 				// This occurs if we operate against a previously recorded video and the video has ended.
@@ -262,13 +262,13 @@ namespace VisualOdometry
 			if (unsmoothFeaturesCount < fullHistoryFeaturesCount / 2)
 			{
 				// The majority of features is smooth. We downgrade unsmooth features
-				Debug.WriteLine("Consensus: Is smooth");
+				//Debug.WriteLine("Consensus: Is smooth");
 				ApplyUnsmoothGrades();
 			}
 			else
 			{
 				// Consensus not smooth; not downgrading unsmooth features.
-				Debug.WriteLine("Consensus: Is not smooth");
+				//Debug.WriteLine("Consensus: Is not smooth");
 			}
 		}
 
@@ -292,7 +292,7 @@ namespace VisualOdometry
 				}
 			}
 
-			Debug.WriteLine("Number of unsmooth features weeded out: " + unsmoothFeaturesOutCount);
+			//Debug.WriteLine("Number of unsmooth features weeded out: " + unsmoothFeaturesOutCount);
 		}
 
 		private void UpdateRobotPose()

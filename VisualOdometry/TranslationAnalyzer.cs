@@ -12,6 +12,7 @@ namespace VisualOdometry
 	{
 		private VisualOdometer m_VisualOdometer;
 		private HomographyMatrix m_GroundProjectionTransformation;
+		private List<TrackedFeature> m_UsedGroundFeatures;
 		private List<Point> m_TranslationIncrements;
 		private Point m_CurrentLocationChange;
 		private Angle m_AcceptedDirectionMisalignment;
@@ -20,8 +21,9 @@ namespace VisualOdometry
 		{
 			m_VisualOdometer = visualOdometer;
 			m_GroundProjectionTransformation = groundProjectionTransformation;
+			m_UsedGroundFeatures = new List<TrackedFeature>();
 			m_TranslationIncrements = new List<Point>();
-			m_AcceptedDirectionMisalignment = Angle.FromDegrees(10);
+			m_AcceptedDirectionMisalignment = Angle.FromDegrees(45);
 		}
 
 		public Angle AcceptedDirectionMisalignment
@@ -37,6 +39,8 @@ namespace VisualOdometry
 
 		internal void CalculateTranslation(Angle headingChange)
 		{
+			m_UsedGroundFeatures.Clear();
+
 			double s = Math.Sin(headingChange.Rads);
 			double c = Math.Cos(headingChange.Rads);
 
@@ -93,12 +97,13 @@ namespace VisualOdometry
 					continue;
 				}
 
+				m_UsedGroundFeatures.Add(trackedFeature);
 				m_TranslationIncrements.Add(translationIncrement);
 				sumX += translationIncrement.X;
 				sumY += translationIncrement.Y;
 			}
 
-			Debug.WriteLine("Used ground features %: " + ((double)m_TranslationIncrements.Count/(double)groundFeatureCount).ToString());
+			//Debug.WriteLine("Used ground features %: " + ((double)m_TranslationIncrements.Count/(double)groundFeatureCount).ToString());
 
 			if (m_TranslationIncrements.Count > 0)
 			{
@@ -120,6 +125,11 @@ namespace VisualOdometry
 		private void ProjectOnFloor(System.Drawing.PointF[] featurePoints)
 		{
 			m_GroundProjectionTransformation.ProjectPoints(featurePoints);
+		}
+
+		public List<TrackedFeature> UsedGroundFeatures
+		{
+			get { return m_UsedGroundFeatures; }
 		}
 	}
 }

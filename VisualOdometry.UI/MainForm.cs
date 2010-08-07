@@ -91,16 +91,18 @@ namespace VisualOdometry.UI
 			m_TrackedFeaturesCountTextBox.Text = m_VisualOdometer.TrackedFeatures.Count.ToString();
 			m_NotTrackedFeaturesCount.Text = m_VisualOdometer.NotTrackedFeaturesCount.ToString();
 
-			DrawRegionBounderies();
-
-			m_ImageBox.Image = m_VisualOdometer.CurrentImage;
-
 			m_HeadingTextBox.Text = String.Format(
 				"{0:0.00}", m_VisualOdometer.RobotPose.Heading.Degrees);
 			m_LocationTextBox.Text = String.Format(
 				"x_g: {0:0.0}  y_g: {1:0.0}", m_VisualOdometer.RobotPose.Location.X, m_VisualOdometer.RobotPose.Location.Y);
 			m_LocationChangeTextBox.Text = String.Format(
 				"dx_r: {0:0.000}  dy_r: {1:0.000}", m_VisualOdometer.TranslationAnalyzer.LocationChange.X, m_VisualOdometer.TranslationAnalyzer.LocationChange.Y);
+
+			if (m_ShowImageCheckBox.Checked)
+			{
+				DrawRegionBounderies();
+				m_ImageBox.Image = m_VisualOdometer.CurrentImage;
+			}
 
 			Pose newPose = new Pose(m_VisualOdometer.RobotPose);
 			m_RobotPath.Add(newPose);
@@ -143,6 +145,8 @@ namespace VisualOdometry.UI
 		private Bgr m_FeatureColorPreviousFullHistory = new Bgr(Color.Lime);
 		private Bgr m_FeatureColorCurrentFullHistory = new Bgr(Color.Red);
 
+		private Bgr m_UsedGroundFeatureColor = new Bgr(Color.Blue);
+
 		private void DrawAllFeatureLocationsPreviousAndCurrent()
 		{
 			List<TrackedFeature> trackedFeatures = m_VisualOdometer.TrackedFeatures;
@@ -162,6 +166,11 @@ namespace VisualOdometry.UI
 			{
 				TrackedFeature trackedFeature = trackedFeatures[i];
 				DrawCurrentFeatureLocation(trackedFeature[0], trackedFeature.HasFullHistory, m_VisualOdometer.CurrentImage);
+			}
+
+			if (m_ShowGroundFeaturesCheckBox.Checked)
+			{
+				DrawUsedGroundFeatures();
 			}
 		}
 
@@ -188,6 +197,18 @@ namespace VisualOdometry.UI
 			else
 			{
 				image.Draw(circle, m_FeatureColorCurrentFullHistory, 2);
+			}
+		}
+
+		private void DrawUsedGroundFeatures()
+		{
+			List<TrackedFeature> usedGroundFeatures = m_VisualOdometer.TranslationAnalyzer.UsedGroundFeatures;
+			// draw previous location
+			for (int i = 0; i < usedGroundFeatures.Count; i++)
+			{
+				TrackedFeature usedGroundFeature = usedGroundFeatures[i];
+				CircleF circle = new CircleF(usedGroundFeature[0], 6.0f);
+				m_VisualOdometer.CurrentImage.Draw(circle, m_UsedGroundFeatureColor, 4);
 			}
 		}
 

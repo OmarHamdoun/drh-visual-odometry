@@ -58,7 +58,7 @@ namespace VisualOdometry.UI
 
 		private void DrawFullPath()
 		{
-			Debug.WriteLine("Drawing full path");
+			//Debug.WriteLine("Drawing full path");
 			m_Graphics.Clear(Color.White);
 			for (int i = 0; i < m_RobotPath.Poses.Count; i++)
 			{
@@ -159,14 +159,14 @@ namespace VisualOdometry.UI
 			{
 				m_Dragging = true;
 				m_LastPosition = e.Location;
-				Debug.WriteLine("Dragging start");
+				//Debug.WriteLine("Dragging start");
 			}
 		}
 
 		private void OnMouseUp(object sender, MouseEventArgs e)
 		{
 			m_Dragging = false;
-			Debug.WriteLine("Dragging end");
+			//Debug.WriteLine("Dragging end");
 		}
 
 		private void OnMouseMove(object sender, MouseEventArgs e)
