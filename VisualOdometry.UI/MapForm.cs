@@ -17,11 +17,12 @@ namespace VisualOdometry.UI
 		private RobotPath m_RobotPath = new RobotPath();
 		private Bitmap m_Bitmap;
 		private Graphics m_Graphics;
+		//private Matrix m_InverseTransform; // world coordinates to pixel coordinates
+
 		private Pen m_RobotPen = new Pen(Color.Blue);
 		private Pen m_PathPen = new Pen(Color.Black);
 
 		private int m_CircleRadius = 6;
-		private float m_ZoomFactor = 1;
 
 		public MapForm(RobotPath robotPath)
 		{
@@ -44,10 +45,14 @@ namespace VisualOdometry.UI
 			m_Graphics = Graphics.FromImage(m_Bitmap);
 
 			Matrix matrix = new Matrix();
-			matrix.Scale(m_ZoomFactor, -m_ZoomFactor);
+			float zoomFactor = 1.0f;
+			matrix.Scale(zoomFactor, -zoomFactor);
 			matrix.Translate(m_PictureBox.Width / 2, -m_PictureBox.Height / 2);
 
 			m_Graphics.Transform = matrix;
+
+			//m_InverseTransform = matrix.Clone();
+			//m_InverseTransform.Invert();
 		}
 
 		private void DrawFullPath()
@@ -62,6 +67,24 @@ namespace VisualOdometry.UI
 
 		private void DrawPose(int index)
 		{
+			if (m_AutoScaleCheckBox.Checked)
+			{
+				PointF lowerLeftBound = new PointF((float)m_RobotPath.MinX, (float)m_RobotPath.MinY);
+				PointF upperRightBound = new PointF((float)m_RobotPath.MaxX, (float)m_RobotPath.MaxY);
+				
+				PointF[] points = new PointF[] { lowerLeftBound, upperRightBound };
+
+				m_Graphics.Transform.TransformPoints(points);
+
+				PointF lowerLeftPixel = points[0];
+				PointF upperRightPixel = points[1];
+				if (lowerLeftPixel.X < 0 || lowerLeftPixel.Y > m_Bitmap.Height || upperRightPixel.X > m_Bitmap.Width || upperRightPixel.Y < 0)
+				{
+					ZoomOut();
+					return;
+				}
+			}
+
 			Pose pose = m_RobotPath.Poses[index];
 			if (index % 5 == 0)
 			{
@@ -101,6 +124,24 @@ namespace VisualOdometry.UI
 			return (int)(value + 0.5);
 		}
 
+		private void ZoomIn()
+		{
+			Zoom(1.25f);
+		}
+
+		private void ZoomOut()
+		{
+			Zoom(0.75f);
+		}
+
+		private void Zoom(float zoomFactor)
+		{
+			Matrix matrix = m_Graphics.Transform;
+			matrix.Scale(zoomFactor, zoomFactor);
+			m_Graphics.Transform = matrix;
+			DrawFullPath();
+		}
+
 		protected override void OnResize(EventArgs e)
 		{
 			base.OnResize(e);
@@ -137,7 +178,8 @@ namespace VisualOdometry.UI
 				float deltaY = (float)(currentLocation.Y - m_LastPosition.Y);
 
 				Matrix matrix = m_Graphics.Transform;
-				matrix.Translate(deltaX / m_ZoomFactor, -deltaY / m_ZoomFactor);
+				float zoomFactor = matrix.Elements[0];
+				matrix.Translate(deltaX / zoomFactor, -deltaY / zoomFactor);
 				m_Graphics.Transform = matrix;
 				
 				DrawFullPath();
@@ -147,9 +189,23 @@ namespace VisualOdometry.UI
 			}
 		}
 
+		private void OnZoomOutButtonClicked(object sender, EventArgs e)
+		{
+			m_AutoScaleCheckBox.Checked = false;
+			ZoomOut();
+			Refresh();
+		}
+
 		internal void UpdateMap()
 		{
 			DrawPose(m_RobotPath.Poses.Count - 1);
+			Refresh();
+		}
+
+		private void OnZoomInButtonClicked(object sender, EventArgs e)
+		{
+			m_AutoScaleCheckBox.Checked = false;
+			ZoomIn();
 			Refresh();
 		}
 	}
