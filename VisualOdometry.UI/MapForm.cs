@@ -23,6 +23,7 @@ namespace VisualOdometry.UI
 		private Pen m_PathPen = new Pen(Color.Black);
 
 		private int m_CircleRadius = 6;
+		private float m_ZoomFactor = 1.0f;
 
 		public MapForm(RobotPath robotPath)
 		{
@@ -45,9 +46,9 @@ namespace VisualOdometry.UI
 			m_Graphics = Graphics.FromImage(m_Bitmap);
 
 			Matrix matrix = new Matrix();
-			float zoomFactor = 1.0f;
-			matrix.Scale(zoomFactor, -zoomFactor);
+			matrix.Scale(1.0f, -1.0f);
 			matrix.Translate(m_PictureBox.Width / 2, -m_PictureBox.Height / 2);
+			matrix.Scale(m_ZoomFactor, m_ZoomFactor);
 
 			m_Graphics.Transform = matrix;
 
@@ -134,10 +135,11 @@ namespace VisualOdometry.UI
 			Zoom(0.75f);
 		}
 
-		private void Zoom(float zoomFactor)
+		private void Zoom(float factor)
 		{
 			Matrix matrix = m_Graphics.Transform;
-			matrix.Scale(zoomFactor, zoomFactor);
+			matrix.Scale(factor, factor);
+			m_ZoomFactor = matrix.Elements[0];
 			m_Graphics.Transform = matrix;
 			DrawFullPath();
 		}
@@ -145,7 +147,6 @@ namespace VisualOdometry.UI
 		protected override void OnResize(EventArgs e)
 		{
 			base.OnResize(e);
-
 			InitializeMapImage();
 		}
 
@@ -178,8 +179,7 @@ namespace VisualOdometry.UI
 				float deltaY = (float)(currentLocation.Y - m_LastPosition.Y);
 
 				Matrix matrix = m_Graphics.Transform;
-				float zoomFactor = matrix.Elements[0];
-				matrix.Translate(deltaX / zoomFactor, -deltaY / zoomFactor);
+				matrix.Translate(deltaX / m_ZoomFactor, -deltaY / m_ZoomFactor);
 				m_Graphics.Transform = matrix;
 				
 				DrawFullPath();
@@ -187,13 +187,6 @@ namespace VisualOdometry.UI
 
 				m_LastPosition = e.Location;
 			}
-		}
-
-		private void OnZoomOutButtonClicked(object sender, EventArgs e)
-		{
-			m_AutoScaleCheckBox.Checked = false;
-			ZoomOut();
-			Refresh();
 		}
 
 		internal void UpdateMap()
@@ -206,6 +199,13 @@ namespace VisualOdometry.UI
 		{
 			m_AutoScaleCheckBox.Checked = false;
 			ZoomIn();
+			Refresh();
+		}
+
+		private void OnZoomOutButtonClicked(object sender, EventArgs e)
+		{
+			m_AutoScaleCheckBox.Checked = false;
+			ZoomOut();
 			Refresh();
 		}
 	}
