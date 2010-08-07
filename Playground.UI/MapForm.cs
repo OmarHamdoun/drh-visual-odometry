@@ -17,11 +17,17 @@ namespace Playground.UI
 		private RobotPath m_RobotPath = new RobotPath();
 		private Bitmap m_Bitmap;
 		private Graphics m_Graphics;
+		private Matrix m_InverseTransform; // world coordinates to pixel coordinates
+
 		private Pen m_RobotPen = new Pen(Color.Blue);
 		private Pen m_PathPen = new Pen(Color.Black);
 
 		private int m_CircleRadius = 6;
-		private float m_ZoomFactor = 1;
+		//private float m_ZoomFactor = 1;
+
+		//private int m_MinBorderWidth = 5;
+		//private double m_StepFactor = 0.25;
+		//private PointF m_LowerLeft, m_UpperRight;
 
 		public MapForm()
 		{
@@ -73,10 +79,24 @@ namespace Playground.UI
 			m_Graphics = Graphics.FromImage(m_Bitmap);
 
 			Matrix matrix = new Matrix();
-			matrix.Scale(m_ZoomFactor, -m_ZoomFactor);
+			float zoomFactor = 1.0f;
+			matrix.Scale(zoomFactor, -zoomFactor);
 			matrix.Translate(m_PictureBox.Width / 2, -m_PictureBox.Height / 2);
 
 			m_Graphics.Transform = matrix;
+
+			m_InverseTransform = matrix.Clone();
+			m_InverseTransform.Invert();
+
+			//m_LowerLeft = new PointF(0, m_PictureBox.Height);
+			//m_UpperRight = new PointF(m_PictureBox.Width, 0);
+
+			//PointF[] points = new PointF[] { m_LowerLeft, m_UpperRight };
+
+			//m_InverseTransform.TransformPoints(points);
+			//m_LowerLeft = points[0];
+			//m_UpperRight = points[1];
+			//matrix.TransformPoints(points);
 		}
 
 		private void DrawFullPath()
@@ -91,6 +111,24 @@ namespace Playground.UI
 
 		private void DrawPose(int index)
 		{
+			if (m_AutoScaleCheckBox.Checked)
+			{
+				PointF lowerLeftBound = new PointF((float)m_RobotPath.MinX, (float)m_RobotPath.MinY);
+				PointF upperRightBound = new PointF((float)m_RobotPath.MaxX, (float)m_RobotPath.MaxY);
+				
+				PointF[] points = new PointF[] { lowerLeftBound, upperRightBound };
+
+				m_Graphics.Transform.TransformPoints(points);
+
+				PointF lowerLeftPixel = points[0];
+				PointF upperRightPixel = points[1];
+				if (lowerLeftPixel.X < 0 || lowerLeftPixel.Y > m_Bitmap.Height || upperRightPixel.X > m_Bitmap.Width || upperRightPixel.Y < 0)
+				{
+					ZoomOut();
+					return;
+				}
+			}
+
 			Pose pose = m_RobotPath.Poses[index];
 			if (index % 5 == 0)
 			{
@@ -126,6 +164,24 @@ namespace Playground.UI
 		private int RoundToInt(double value)
 		{
 			return (int)(value + 0.5);
+		}
+
+		private void ZoomIn()
+		{
+			Zoom(1.25f);
+		}
+
+		private void ZoomOut()
+		{
+			Zoom(0.75f);
+		}
+
+		private void Zoom(float zoomFactor)
+		{
+			Matrix matrix = m_Graphics.Transform;
+			matrix.Scale(zoomFactor, zoomFactor);
+			m_Graphics.Transform = matrix;
+			DrawFullPath();
 		}
 
 		protected override void OnResize(EventArgs e)
@@ -164,7 +220,8 @@ namespace Playground.UI
 				float deltaY = (float)(currentLocation.Y - m_LastPosition.Y);
 
 				Matrix matrix = m_Graphics.Transform;
-				matrix.Translate(deltaX / m_ZoomFactor, -deltaY / m_ZoomFactor);
+				float zoomFactor = matrix.Elements[0];
+				matrix.Translate(deltaX / zoomFactor, -deltaY / zoomFactor);
 				m_Graphics.Transform = matrix;
 				
 				DrawFullPath();
@@ -172,6 +229,20 @@ namespace Playground.UI
 
 				m_LastPosition = e.Location;
 			}
+		}
+
+		private void OnZoomOutButtonClicked(object sender, EventArgs e)
+		{
+			m_AutoScaleCheckBox.Checked = false;
+			ZoomOut();
+			Refresh();
+		}
+
+		private void OnZoomInButtonClicked(object sender, EventArgs e)
+		{
+			m_AutoScaleCheckBox.Checked = false;
+			ZoomIn();
+			Refresh();
 		}
 	}
 }
