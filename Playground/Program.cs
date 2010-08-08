@@ -12,6 +12,9 @@ namespace Playground
 		{
 			try
 			{
+
+
+
 				HistoryBuffer<int> history = new HistoryBuffer<int>(7);
 				history.PrintContent("Empty -------");
 				history.Add(1);

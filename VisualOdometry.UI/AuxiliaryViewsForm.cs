@@ -82,7 +82,7 @@ namespace VisualOdometry.UI
 				featurePointPair[1] = trackedFeature[0];  // current featue location
 
 				m_GroundProjectionTransformation.ProjectPoints(featurePointPair);
-				m_MainForm.DrawPreviousFeatureLocation(featurePointPair[0], trackedFeature.HasFullHistory, m_GroundProjectionImage);
+				m_MainForm.DrawPreviousFeatureLocation(featurePointPair[0], trackedFeature.IsFull, m_GroundProjectionImage);
 
 				Angle headingChange = m_VisualOdometer.RotationAnalyzer.HeadingChange;
 
@@ -90,11 +90,11 @@ namespace VisualOdometry.UI
 				{
 					PointF rotationCorrectedEndpoint = m_VisualOdometer.TranslationAnalyzer.RemoveRotationEffect(
 						headingChange, featurePointPair[1]);
-					m_MainForm.DrawCurrentFeatureLocation(rotationCorrectedEndpoint, trackedFeature.HasFullHistory, m_GroundProjectionImage);
+					m_MainForm.DrawCurrentFeatureLocation(rotationCorrectedEndpoint, trackedFeature.IsFull, m_GroundProjectionImage);
 				}
 				else
 				{
-					m_MainForm.DrawCurrentFeatureLocation(featurePointPair[1], trackedFeature.HasFullHistory, m_GroundProjectionImage);
+					m_MainForm.DrawCurrentFeatureLocation(featurePointPair[1], trackedFeature.IsFull, m_GroundProjectionImage);
 				}
 
 				//// Remove rotation effect on current feature location. The center of the rotation is (0,0) on the ground plane

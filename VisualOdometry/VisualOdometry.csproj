@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="Angle.cs" />
     <Compile Include="CameraParameters.cs" />
+    <Compile Include="FramesCounter.cs" />
     <Compile Include="Histogram.cs" />
     <Compile Include="HistogramBin.cs" />
     <Compile Include="OpticalFlow.cs" />

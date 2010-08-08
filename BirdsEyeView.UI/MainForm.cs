@@ -68,8 +68,8 @@ namespace BirdsEyeView.UI
 			m_BirdsEyeViewTransformationForCalculation = CameraCalibration.GetPerspectiveTransform(outerCorners, physicalPointsForCalculation);
 			HomographyMatrixSupport.Save(m_BirdsEyeViewTransformationForCalculation, "BirdsEyeViewTransformationForCalculation.txt");
 
-			side = 50f;
-			bottom = 600.0f;
+			side = 8f;
+			bottom = 700.0f;
 			centerX = (float)m_CameraParameters.Intrinsic.Cx;
 
 			PointF[] physicalPointsForUI = new PointF[4];

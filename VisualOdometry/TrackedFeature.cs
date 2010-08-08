@@ -26,7 +26,7 @@ namespace VisualOdometry
 		public override void Add(PointF featurePoint)
 		{
 			base.Add(featurePoint);
-			if (this.HasFullHistory)
+			if (this.IsFull)
 			{
 				GradeSmoothness();
 			}
@@ -118,7 +118,7 @@ namespace VisualOdometry
 		{
 			get
 			{
-				if (!this.HasFullHistory)
+				if (!this.IsFull)
 				{
 					throw new InvalidOperationException("Full history is required to determine smoothness.");
 				}

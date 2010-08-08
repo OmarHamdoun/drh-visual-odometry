@@ -101,6 +101,9 @@ namespace VisualOdometry.UI
 			m_TrackedFeaturesCountTextBox.Text = m_VisualOdometer.TrackedFeatures.Count.ToString();
 			m_NotTrackedFeaturesCount.Text = m_VisualOdometer.NotTrackedFeaturesCount.ToString();
 
+			m_FrameTextBox.Text = m_VisualOdometer.FramesCounter.FrameNumber.ToString();
+			m_FramesPerSecondTextBox.Text = String.Format("{0:0.0}", m_VisualOdometer.FramesCounter.FramesPerSecond);
+
 			m_HeadingTextBox.Text = String.Format(
 				"{0:0.000}", m_VisualOdometer.RobotPose.Heading.Degrees);
 			m_LocationTextBox.Text = String.Format(
@@ -170,7 +173,7 @@ namespace VisualOdometry.UI
 				if (trackedFeature.Count > 1)
 				{
 					// We have a previous value
-					DrawPreviousFeatureLocation(trackedFeature[-1], trackedFeature.HasFullHistory, m_VisualOdometer.CurrentImage);
+					DrawPreviousFeatureLocation(trackedFeature[-1], trackedFeature.IsFull, m_VisualOdometer.CurrentImage);
 				}
 			}
 
@@ -178,7 +181,7 @@ namespace VisualOdometry.UI
 			for (int i = 0; i < trackedFeatures.Count; i++)
 			{
 				TrackedFeature trackedFeature = trackedFeatures[i];
-				DrawCurrentFeatureLocation(trackedFeature[0], trackedFeature.HasFullHistory, m_VisualOdometer.CurrentImage);
+				DrawCurrentFeatureLocation(trackedFeature[0], trackedFeature.IsFull, m_VisualOdometer.CurrentImage);
 			}
 
 			if (m_ShowGroundFeaturesCheckBox.Checked)

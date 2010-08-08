@@ -71,6 +71,10 @@
 			this.m_ShowGroundFeaturesCheckBox = new System.Windows.Forms.CheckBox();
 			this.label12 = new System.Windows.Forms.Label();
 			this.m_UnitsComboBox = new System.Windows.Forms.ComboBox();
+			this.m_FrameTextBox = new System.Windows.Forms.TextBox();
+			this.label15 = new System.Windows.Forms.Label();
+			this.m_FramesPerSecondTextBox = new System.Windows.Forms.TextBox();
+			this.label16 = new System.Windows.Forms.Label();
 			this.m_TopPanel.SuspendLayout();
 			this.m_BottomPanel.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -224,9 +228,9 @@
 			this.m_BottomPanel.Controls.Add(this.groupBox2);
 			this.m_BottomPanel.Controls.Add(this.groupBox1);
 			this.m_BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.m_BottomPanel.Location = new System.Drawing.Point(0, 536);
+			this.m_BottomPanel.Location = new System.Drawing.Point(0, 514);
 			this.m_BottomPanel.Name = "m_BottomPanel";
-			this.m_BottomPanel.Size = new System.Drawing.Size(892, 117);
+			this.m_BottomPanel.Size = new System.Drawing.Size(892, 139);
 			this.m_BottomPanel.TabIndex = 2;
 			// 
 			// groupBox3
@@ -244,7 +248,7 @@
 			this.groupBox3.Dock = System.Windows.Forms.DockStyle.Left;
 			this.groupBox3.Location = new System.Drawing.Point(492, 0);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(388, 117);
+			this.groupBox3.Size = new System.Drawing.Size(388, 139);
 			this.groupBox3.TabIndex = 10;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Odometry";
@@ -268,6 +272,10 @@
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.Controls.Add(this.m_FramesPerSecondTextBox);
+			this.groupBox2.Controls.Add(this.label16);
+			this.groupBox2.Controls.Add(this.m_FrameTextBox);
+			this.groupBox2.Controls.Add(this.label15);
 			this.groupBox2.Controls.Add(this.m_ShowGroundFeaturesCheckBox);
 			this.groupBox2.Controls.Add(this.m_ShowImageCheckBox);
 			this.groupBox2.Controls.Add(this.m_MapButton);
@@ -277,7 +285,7 @@
 			this.groupBox2.Dock = System.Windows.Forms.DockStyle.Left;
 			this.groupBox2.Location = new System.Drawing.Point(203, 0);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(289, 117);
+			this.groupBox2.Size = new System.Drawing.Size(289, 139);
 			this.groupBox2.TabIndex = 9;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "View";
@@ -323,7 +331,7 @@
 			this.groupBox1.Dock = System.Windows.Forms.DockStyle.Left;
 			this.groupBox1.Location = new System.Drawing.Point(0, 0);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(203, 117);
+			this.groupBox1.Size = new System.Drawing.Size(203, 139);
 			this.groupBox1.TabIndex = 8;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Features";
@@ -388,7 +396,7 @@
 			this.m_ImageBox.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.m_ImageBox.Location = new System.Drawing.Point(0, 83);
 			this.m_ImageBox.Name = "m_ImageBox";
-			this.m_ImageBox.Size = new System.Drawing.Size(892, 453);
+			this.m_ImageBox.Size = new System.Drawing.Size(892, 431);
 			this.m_ImageBox.TabIndex = 2;
 			this.m_ImageBox.TabStop = false;
 			// 
@@ -489,6 +497,40 @@
 			this.m_UnitsComboBox.TabIndex = 3;
 			this.m_UnitsComboBox.SelectedIndexChanged += new System.EventHandler(this.OnSelectedUnitChanged);
 			// 
+			// m_FrameTextBox
+			// 
+			this.m_FrameTextBox.Location = new System.Drawing.Point(69, 108);
+			this.m_FrameTextBox.Name = "m_FrameTextBox";
+			this.m_FrameTextBox.ReadOnly = true;
+			this.m_FrameTextBox.Size = new System.Drawing.Size(83, 22);
+			this.m_FrameTextBox.TabIndex = 11;
+			// 
+			// label15
+			// 
+			this.label15.AutoSize = true;
+			this.label15.Location = new System.Drawing.Point(11, 111);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(52, 17);
+			this.label15.TabIndex = 10;
+			this.label15.Text = "Frame:";
+			// 
+			// m_FpsTextBox
+			// 
+			this.m_FramesPerSecondTextBox.Location = new System.Drawing.Point(208, 108);
+			this.m_FramesPerSecondTextBox.Name = "m_FpsTextBox";
+			this.m_FramesPerSecondTextBox.ReadOnly = true;
+			this.m_FramesPerSecondTextBox.Size = new System.Drawing.Size(68, 22);
+			this.m_FramesPerSecondTextBox.TabIndex = 19;
+			// 
+			// label16
+			// 
+			this.label16.AutoSize = true;
+			this.label16.Location = new System.Drawing.Point(165, 111);
+			this.label16.Name = "label16";
+			this.label16.Size = new System.Drawing.Size(31, 17);
+			this.label16.TabIndex = 18;
+			this.label16.Text = "fps:";
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -557,6 +599,10 @@
 		private System.Windows.Forms.CheckBox m_ShowGroundFeaturesCheckBox;
 		private System.Windows.Forms.Label label12;
 		private System.Windows.Forms.ComboBox m_UnitsComboBox;
+		private System.Windows.Forms.TextBox m_FramesPerSecondTextBox;
+		private System.Windows.Forms.Label label16;
+		private System.Windows.Forms.TextBox m_FrameTextBox;
+		private System.Windows.Forms.Label label15;
 	}
 }
 

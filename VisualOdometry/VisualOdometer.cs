@@ -13,27 +13,29 @@ namespace VisualOdometry
 		internal static readonly double RadToDegree = 180.0 / Math.PI;
 
 		private Capture m_Capture;
-		private CameraParameters m_CameraParameters;
 
+		private FramesCounter m_FramesCounter = new FramesCounter();
+
+		private CameraParameters m_CameraParameters;
 		private Matrix<float> m_UndistortMapX;
 		private Matrix<float> m_UndistortMapY;
-
-		private int m_GroundRegionTop;
-		private int m_SkyRegionBottom;
-
-		private List<TrackedFeature> m_TrackedFeatures;
-		private int m_NotTrackedFeaturesCount;
 
 		private Image<Bgr, Byte> m_RawImage;
 		public Image<Bgr, Byte> CurrentImage { get; private set; }
 		private Image<Gray, Byte> m_CurrentGrayImage;
+
 		private OpticalFlow m_OpticalFlow;
-		private RotationAnalyzer m_RotationAnalyzer;
-		private TranslationAnalyzer m_TranslationAnalyzer;
+		private List<TrackedFeature> m_TrackedFeatures;
+		private int m_NotTrackedFeaturesCount;
 		public int InitialFeaturesCount { get; private set; }
 		private int m_ThresholdForFeatureRepopulation;
+
+		private int m_GroundRegionTop;
+		private int m_SkyRegionBottom;
+
+		private RotationAnalyzer m_RotationAnalyzer;
+		private TranslationAnalyzer m_TranslationAnalyzer;
 		private Pose m_RobotPose = new Pose();
-		private int m_FrameNumber = 0;
 
 		public event EventHandler Changed;
 
@@ -53,20 +55,6 @@ namespace VisualOdometry
 		public CameraParameters CameraParameters
 		{
 			get { return m_CameraParameters; }
-			//set
-			//{
-			//    m_CameraParameters = value;
-			//    if (m_UndistortMapX != null)
-			//    {
-			//        m_UndistortMapX.Dispose();
-			//        m_UndistortMapX = null;
-			//    }
-			//    if (m_UndistortMapY != null)
-			//    {
-			//        m_UndistortMapY.Dispose();
-			//        m_UndistortMapY = null;
-			//    }
-			//}
 		}
 
 		public OpticalFlow OpticalFlow
@@ -134,18 +122,18 @@ namespace VisualOdometry
 
 		public void ProcessFrame()
 		{
-			//m_RawImage = m_Capture.QueryFrame();
-			for (int i = 0; i < 1; i++)
-			{
-				m_RawImage = m_Capture.QueryFrame();
-			}
+			m_RawImage = m_Capture.QueryFrame();
+			//for (int i = 0; i < 1; i++)
+			//{
+			//    m_RawImage = m_Capture.QueryFrame();
+			//}
 			if (m_RawImage == null)
 			{
 				// This occurs if we operate against a previously recorded video and the video has ended.
 				return;
 			}
 
-			m_FrameNumber++;
+			m_FramesCounter.Update();
 			if (m_UndistortMapX == null)
 			{
 				InitializeUndistortMap(m_RawImage);
@@ -238,7 +226,7 @@ namespace VisualOdometry
 					TrackedFeature trackedFeature = m_TrackedFeatures[i];
 					trackedFeature.Add(trackedFeaturePoints[i]);
 
-					if (trackedFeature.HasFullHistory)
+					if (trackedFeature.IsFull)
 					{
 						fullHistoryFeaturesCount++;
 						if (!trackedFeature.IsSmooth)
@@ -327,9 +315,9 @@ namespace VisualOdometry
 			}
 		}
 
-		public int FrameNumber
+		public FramesCounter FramesCounter
 		{
-			get { return m_FrameNumber; }
+			get { return m_FramesCounter; }
 		}
 
 		public event EventHandler<PoseEventArgs> NewPose;

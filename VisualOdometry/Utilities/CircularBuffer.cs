@@ -40,7 +40,7 @@ namespace VisualOdometry.Utilities
 			m_IndexForNextValue = (m_IndexForNextValue + 1) % m_Size;
 		}
 
-		public bool HasFullHistory
+		public bool IsFull
 		{
 			get { return (m_Count == m_Size); }
 		}
@@ -61,7 +61,7 @@ namespace VisualOdometry.Utilities
 			{
 				Debug.WriteLine("{0}: {1}", i, this[i]);
 			}
-			Debug.WriteLine("Is full: " + this.HasFullHistory.ToString());
+			Debug.WriteLine("Is full: " + this.IsFull.ToString());
 		}
 	}
 }

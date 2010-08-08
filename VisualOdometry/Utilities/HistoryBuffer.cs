@@ -36,7 +36,7 @@ namespace VisualOdometry.Utilities
 			{
 				Debug.WriteLine("{0}: {1}", i, this[i]);
 			}
-			Debug.WriteLine("Is full: " + this.HasFullHistory.ToString());
+			Debug.WriteLine("Is full: " + this.IsFull.ToString());
 		}
 	}
 }
