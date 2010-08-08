@@ -23,7 +23,12 @@ namespace Playground.UI
 		private Pen m_PathPen = new Pen(Color.Black);
 
 		private int m_CircleRadius = 6;
-		//private float m_ZoomFactor = 1;
+		private float m_ZoomFactor = 1.0f;
+		private float m_OriginX;
+		private float m_OriginY;
+
+		private float m_TranslationX = 0.0f;
+		private float m_TranslationY = 0.0f;
 
 		//private int m_MinBorderWidth = 5;
 		//private double m_StepFactor = 0.25;
@@ -37,6 +42,9 @@ namespace Playground.UI
 			{
 				m_RobotPath.Add(CreatePose(i));
 			}
+
+			m_OriginX = m_PictureBox.Width / 2.0f;
+			m_OriginY = -m_PictureBox.Height / 2.0f;
 
 			InitializeMapImage();
 
@@ -79,9 +87,10 @@ namespace Playground.UI
 			m_Graphics = Graphics.FromImage(m_Bitmap);
 
 			Matrix matrix = new Matrix();
-			float zoomFactor = 1.0f;
-			matrix.Scale(zoomFactor, -zoomFactor);
-			matrix.Translate(m_PictureBox.Width / 2, -m_PictureBox.Height / 2);
+			matrix.Scale(1.0f, -1.0f);
+			matrix.Translate(m_OriginX, m_OriginY);
+			matrix.Translate(m_TranslationX, m_TranslationY);
+			matrix.Scale(m_ZoomFactor, m_ZoomFactor);
 
 			m_Graphics.Transform = matrix;
 
@@ -176,14 +185,15 @@ namespace Playground.UI
 			Zoom(0.75f);
 		}
 
-		private void Zoom(float zoomFactor)
+		private void Zoom(float factor)
 		{
 			Matrix matrix = m_Graphics.Transform;
-			matrix.Scale(zoomFactor, zoomFactor);
+			matrix.Scale(factor, factor);
+			m_ZoomFactor = matrix.Elements[0];
 			m_Graphics.Transform = matrix;
 			DrawFullPath();
 		}
-
+	
 		protected override void OnResize(EventArgs e)
 		{
 			base.OnResize(e);
@@ -216,12 +226,14 @@ namespace Playground.UI
 			{
 				Point currentLocation = e.Location;
 
-				float deltaX = (float)(currentLocation.X - m_LastPosition.X);
-				float deltaY = (float)(currentLocation.Y - m_LastPosition.Y);
+				float dX = (float)(currentLocation.X - m_LastPosition.X);
+				float dY = -(float)(currentLocation.Y - m_LastPosition.Y);
+
+				m_TranslationX += dX;
+				m_TranslationY += dY;
 
 				Matrix matrix = m_Graphics.Transform;
-				float zoomFactor = matrix.Elements[0];
-				matrix.Translate(deltaX / zoomFactor, -deltaY / zoomFactor);
+				matrix.Translate(dX / m_ZoomFactor, dY / m_ZoomFactor);
 				m_Graphics.Transform = matrix;
 				
 				DrawFullPath();
