@@ -33,7 +33,6 @@ namespace VisualOdometry
 		public int InitialFeaturesCount { get; private set; }
 		private int m_ThresholdForFeatureRepopulation;
 		private Pose m_RobotPose = new Pose();
-		private double m_DistanceTraveled = 0;
 		private int m_FrameNumber = 0;
 
 		public event EventHandler Changed;
@@ -318,8 +317,6 @@ namespace VisualOdometry
 				m_RobotPose.Location.Y + deltaYGlobal);
 
 			m_RobotPose.Heading = m_RobotPose.Heading + m_RotationAnalyzer.HeadingChange / 2;
-
-			m_DistanceTraveled += Math.Sqrt(deltaXGlobal * deltaXGlobal + deltaYGlobal * deltaXGlobal);
 
 			RaiseNewPoseEvent();
 		}

@@ -11,6 +11,7 @@ namespace VisualOdometry
 		private IList<Pose> m_ReadOnlyPoses;
 		private List<DateTime> m_UtcTimeStamps;
 		private IList<DateTime> m_ReadOnlyUtcTimeStamps;
+		private double m_PathLength;
 
 		private double m_MinX, m_MaxX, m_MinY, m_MaxY;
 
@@ -50,6 +51,14 @@ namespace VisualOdometry
 			{
 				m_MaxY = pose.Y;
 			}
+
+			if (m_Poses.Count > 1)
+			{
+				double dx = m_Poses[m_Poses.Count - 2].X - pose.X;
+				double dy = m_Poses[m_Poses.Count - 2].Y - pose.Y;
+
+				m_PathLength += Math.Sqrt(dx * dx + dy * dy);
+			}
 		}
 
 		public IList<Pose> Poses
@@ -66,5 +75,22 @@ namespace VisualOdometry
 		public double MaxX { get { return m_MaxX; } }
 		public double MinY { get { return m_MinY; } }
 		public double MaxY { get { return m_MaxY; } }
+
+		public double PathLength { get { return m_PathLength; } }
+
+		public double DistanceFromStart
+		{
+			get
+			{
+				if (m_Poses.Count < 2)
+				{
+					return 0;
+				}
+
+				double dx = m_Poses[m_Poses.Count - 1].X - m_Poses[0].X;
+				double dy = m_Poses[m_Poses.Count - 1].Y - m_Poses[0].Y;
+				return Math.Sqrt(dx * dx + dy * dy);
+			}
+		}
 	}
 }

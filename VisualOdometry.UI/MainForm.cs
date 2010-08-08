@@ -22,10 +22,20 @@ namespace VisualOdometry.UI
 		private HomographyMatrix m_GroundProjectionTransformationForUI;
 		private RobotPath m_RobotPath = new RobotPath();
 		private MapForm m_MapForm;
+		private double m_UnitFactor;
+		private double[] m_UnitFactors = new double[]
+		{
+			1.0 / 1000.0, // m
+			1.0 / 10.0,   // cm
+			1.0,          // mm
+			0.0032808399, // ft
+			0.0393700787  // in
+		};
 
 		public MainForm()
 		{
 			InitializeComponent();
+			m_UnitsComboBox.SelectedIndex = 0;
 			bool useCamera = false;
 
 			if (useCamera)
@@ -92,11 +102,14 @@ namespace VisualOdometry.UI
 			m_NotTrackedFeaturesCount.Text = m_VisualOdometer.NotTrackedFeaturesCount.ToString();
 
 			m_HeadingTextBox.Text = String.Format(
-				"{0:0.00}", m_VisualOdometer.RobotPose.Heading.Degrees);
+				"{0:0.000}", m_VisualOdometer.RobotPose.Heading.Degrees);
 			m_LocationTextBox.Text = String.Format(
-				"x_g: {0:0.0}  y_g: {1:0.0}", m_VisualOdometer.RobotPose.Location.X, m_VisualOdometer.RobotPose.Location.Y);
-			m_LocationChangeTextBox.Text = String.Format(
-				"dx_r: {0:0.000}  dy_r: {1:0.000}", m_VisualOdometer.TranslationAnalyzer.LocationChange.X, m_VisualOdometer.TranslationAnalyzer.LocationChange.Y);
+				"({0:0.000}, {1:0.000})", m_VisualOdometer.RobotPose.Location.X * m_UnitFactor, m_VisualOdometer.RobotPose.Location.Y * m_UnitFactor);
+			//m_LocationChangeTextBox.Text = String.Format(
+			//    "dx_r: {0:0.000}  dy_r: {1:0.000}", m_VisualOdometer.TranslationAnalyzer.LocationChange.X, m_VisualOdometer.TranslationAnalyzer.LocationChange.Y);
+
+			m_PathLengthTextBox.Text = String.Format("{0:0.000}", m_RobotPath.PathLength * m_UnitFactor);
+			m_DistanceFromStartTextBox.Text = String.Format("{0:0.000}", m_RobotPath.DistanceFromStart * m_UnitFactor);
 
 			if (m_ShowImageCheckBox.Checked)
 			{
@@ -301,6 +314,16 @@ namespace VisualOdometry.UI
 				m_MapForm = new MapForm(m_RobotPath);
 			}
 			m_MapForm.Show(this);
+		}
+
+		private void OnSelectedUnitChanged(object sender, EventArgs e)
+		{
+			InitializeUnitFactor();
+		}
+
+		private void InitializeUnitFactor()
+		{
+			m_UnitFactor = m_UnitFactors[m_UnitsComboBox.SelectedIndex];
 		}
 	}
 }

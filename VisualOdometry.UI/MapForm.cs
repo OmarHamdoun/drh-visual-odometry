@@ -14,7 +14,7 @@ namespace VisualOdometry.UI
 {
 	public partial class MapForm : Form
 	{
-		private RobotPath m_RobotPath = new RobotPath();
+		private RobotPath m_RobotPath;
 		private Bitmap m_Bitmap;
 		private Graphics m_Graphics;
 		//private Matrix m_InverseTransform; // world coordinates to pixel coordinates
@@ -27,8 +27,8 @@ namespace VisualOdometry.UI
 
 		public MapForm(RobotPath robotPath)
 		{
-			InitializeComponent();
 			m_RobotPath = robotPath;
+			InitializeComponent();
 
 			InitializeMapImage();
 		}

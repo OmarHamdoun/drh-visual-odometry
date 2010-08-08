@@ -46,14 +46,9 @@
 			this.m_DrawFeaturesCheckBox = new System.Windows.Forms.CheckBox();
 			this.m_BottomPanel = new System.Windows.Forms.Panel();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
-			this.m_LocationChangeTextBox = new System.Windows.Forms.TextBox();
-			this.label12 = new System.Windows.Forms.Label();
 			this.m_LocationTextBox = new System.Windows.Forms.TextBox();
 			this.label11 = new System.Windows.Forms.Label();
-			this.m_HeadingTextBox = new System.Windows.Forms.TextBox();
-			this.label10 = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this.m_ShowGroundFeaturesCheckBox = new System.Windows.Forms.CheckBox();
 			this.m_MapButton = new System.Windows.Forms.Button();
 			this.m_OtherViewsButton = new System.Windows.Forms.Button();
 			this.m_DetailsButton = new System.Windows.Forms.Button();
@@ -67,6 +62,15 @@
 			this.m_Timer = new System.Windows.Forms.Timer(this.components);
 			this.m_ImageBox = new Emgu.CV.UI.ImageBox();
 			this.m_ShowImageCheckBox = new System.Windows.Forms.CheckBox();
+			this.m_PathLengthTextBox = new System.Windows.Forms.TextBox();
+			this.m_HeadingTextBox = new System.Windows.Forms.TextBox();
+			this.label10 = new System.Windows.Forms.Label();
+			this.label13 = new System.Windows.Forms.Label();
+			this.label14 = new System.Windows.Forms.Label();
+			this.m_DistanceFromStartTextBox = new System.Windows.Forms.TextBox();
+			this.m_ShowGroundFeaturesCheckBox = new System.Windows.Forms.CheckBox();
+			this.label12 = new System.Windows.Forms.Label();
+			this.m_UnitsComboBox = new System.Windows.Forms.ComboBox();
 			this.m_TopPanel.SuspendLayout();
 			this.m_BottomPanel.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -227,75 +231,45 @@
 			// 
 			// groupBox3
 			// 
-			this.groupBox3.Controls.Add(this.m_LocationChangeTextBox);
+			this.groupBox3.Controls.Add(this.m_UnitsComboBox);
 			this.groupBox3.Controls.Add(this.label12);
-			this.groupBox3.Controls.Add(this.m_LocationTextBox);
-			this.groupBox3.Controls.Add(this.label11);
+			this.groupBox3.Controls.Add(this.label14);
+			this.groupBox3.Controls.Add(this.m_DistanceFromStartTextBox);
+			this.groupBox3.Controls.Add(this.label13);
 			this.groupBox3.Controls.Add(this.m_HeadingTextBox);
 			this.groupBox3.Controls.Add(this.label10);
+			this.groupBox3.Controls.Add(this.m_PathLengthTextBox);
+			this.groupBox3.Controls.Add(this.m_LocationTextBox);
+			this.groupBox3.Controls.Add(this.label11);
 			this.groupBox3.Dock = System.Windows.Forms.DockStyle.Left;
 			this.groupBox3.Location = new System.Drawing.Point(492, 0);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(278, 117);
+			this.groupBox3.Size = new System.Drawing.Size(388, 117);
 			this.groupBox3.TabIndex = 10;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Odometry";
 			// 
-			// m_LocationChangeTextBox
-			// 
-			this.m_LocationChangeTextBox.Location = new System.Drawing.Point(83, 79);
-			this.m_LocationChangeTextBox.Name = "m_LocationChangeTextBox";
-			this.m_LocationChangeTextBox.ReadOnly = true;
-			this.m_LocationChangeTextBox.Size = new System.Drawing.Size(184, 22);
-			this.m_LocationChangeTextBox.TabIndex = 16;
-			// 
-			// label12
-			// 
-			this.label12.AutoSize = true;
-			this.label12.Location = new System.Drawing.Point(12, 82);
-			this.label12.Name = "label12";
-			this.label12.Size = new System.Drawing.Size(66, 17);
-			this.label12.TabIndex = 15;
-			this.label12.Text = "Location:";
-			// 
 			// m_LocationTextBox
 			// 
-			this.m_LocationTextBox.Location = new System.Drawing.Point(83, 51);
+			this.m_LocationTextBox.Location = new System.Drawing.Point(101, 22);
 			this.m_LocationTextBox.Name = "m_LocationTextBox";
 			this.m_LocationTextBox.ReadOnly = true;
-			this.m_LocationTextBox.Size = new System.Drawing.Size(184, 22);
+			this.m_LocationTextBox.Size = new System.Drawing.Size(130, 22);
 			this.m_LocationTextBox.TabIndex = 14;
 			// 
 			// label11
 			// 
 			this.label11.AutoSize = true;
-			this.label11.Location = new System.Drawing.Point(12, 54);
+			this.label11.Location = new System.Drawing.Point(6, 25);
 			this.label11.Name = "label11";
 			this.label11.Size = new System.Drawing.Size(66, 17);
 			this.label11.TabIndex = 13;
 			this.label11.Text = "Location:";
 			// 
-			// m_HeadingTextBox
-			// 
-			this.m_HeadingTextBox.Location = new System.Drawing.Point(83, 23);
-			this.m_HeadingTextBox.Name = "m_HeadingTextBox";
-			this.m_HeadingTextBox.ReadOnly = true;
-			this.m_HeadingTextBox.Size = new System.Drawing.Size(68, 22);
-			this.m_HeadingTextBox.TabIndex = 12;
-			// 
-			// label10
-			// 
-			this.label10.AutoSize = true;
-			this.label10.Location = new System.Drawing.Point(12, 26);
-			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(65, 17);
-			this.label10.TabIndex = 11;
-			this.label10.Text = "Heading:";
-			// 
 			// groupBox2
 			// 
-			this.groupBox2.Controls.Add(this.m_ShowImageCheckBox);
 			this.groupBox2.Controls.Add(this.m_ShowGroundFeaturesCheckBox);
+			this.groupBox2.Controls.Add(this.m_ShowImageCheckBox);
 			this.groupBox2.Controls.Add(this.m_MapButton);
 			this.groupBox2.Controls.Add(this.m_OtherViewsButton);
 			this.groupBox2.Controls.Add(this.m_DrawFeaturesCheckBox);
@@ -307,16 +281,6 @@
 			this.groupBox2.TabIndex = 9;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "View";
-			// 
-			// m_ShowGroundFeaturesCheckBox
-			// 
-			this.m_ShowGroundFeaturesCheckBox.AutoSize = true;
-			this.m_ShowGroundFeaturesCheckBox.Location = new System.Drawing.Point(14, 81);
-			this.m_ShowGroundFeaturesCheckBox.Name = "m_ShowGroundFeaturesCheckBox";
-			this.m_ShowGroundFeaturesCheckBox.Size = new System.Drawing.Size(138, 21);
-			this.m_ShowGroundFeaturesCheckBox.TabIndex = 15;
-			this.m_ShowGroundFeaturesCheckBox.Text = "Ground Features";
-			this.m_ShowGroundFeaturesCheckBox.UseVisualStyleBackColor = true;
 			// 
 			// m_MapButton
 			// 
@@ -440,6 +404,91 @@
 			this.m_ShowImageCheckBox.Text = "Image";
 			this.m_ShowImageCheckBox.UseVisualStyleBackColor = true;
 			// 
+			// m_PathLengthTextBox
+			// 
+			this.m_PathLengthTextBox.Location = new System.Drawing.Point(101, 53);
+			this.m_PathLengthTextBox.Name = "m_PathLengthTextBox";
+			this.m_PathLengthTextBox.ReadOnly = true;
+			this.m_PathLengthTextBox.Size = new System.Drawing.Size(68, 22);
+			this.m_PathLengthTextBox.TabIndex = 16;
+			// 
+			// m_HeadingTextBox
+			// 
+			this.m_HeadingTextBox.Location = new System.Drawing.Point(314, 23);
+			this.m_HeadingTextBox.Name = "m_HeadingTextBox";
+			this.m_HeadingTextBox.ReadOnly = true;
+			this.m_HeadingTextBox.Size = new System.Drawing.Size(68, 22);
+			this.m_HeadingTextBox.TabIndex = 18;
+			// 
+			// label10
+			// 
+			this.label10.AutoSize = true;
+			this.label10.Location = new System.Drawing.Point(243, 26);
+			this.label10.Name = "label10";
+			this.label10.Size = new System.Drawing.Size(65, 17);
+			this.label10.TabIndex = 17;
+			this.label10.Text = "Heading:";
+			// 
+			// label13
+			// 
+			this.label13.AutoSize = true;
+			this.label13.Location = new System.Drawing.Point(6, 56);
+			this.label13.Name = "label13";
+			this.label13.Size = new System.Drawing.Size(89, 17);
+			this.label13.TabIndex = 19;
+			this.label13.Text = "Path Length:";
+			// 
+			// label14
+			// 
+			this.label14.AutoSize = true;
+			this.label14.Location = new System.Drawing.Point(175, 56);
+			this.label14.Name = "label14";
+			this.label14.Size = new System.Drawing.Size(133, 17);
+			this.label14.TabIndex = 21;
+			this.label14.Text = "Distance from Start:";
+			// 
+			// m_DistanceFromStartTextBox
+			// 
+			this.m_DistanceFromStartTextBox.Location = new System.Drawing.Point(314, 53);
+			this.m_DistanceFromStartTextBox.Name = "m_DistanceFromStartTextBox";
+			this.m_DistanceFromStartTextBox.ReadOnly = true;
+			this.m_DistanceFromStartTextBox.Size = new System.Drawing.Size(68, 22);
+			this.m_DistanceFromStartTextBox.TabIndex = 20;
+			// 
+			// m_ShowGroundFeaturesCheckBox
+			// 
+			this.m_ShowGroundFeaturesCheckBox.AutoSize = true;
+			this.m_ShowGroundFeaturesCheckBox.Location = new System.Drawing.Point(14, 81);
+			this.m_ShowGroundFeaturesCheckBox.Name = "m_ShowGroundFeaturesCheckBox";
+			this.m_ShowGroundFeaturesCheckBox.Size = new System.Drawing.Size(138, 21);
+			this.m_ShowGroundFeaturesCheckBox.TabIndex = 17;
+			this.m_ShowGroundFeaturesCheckBox.Text = "Ground Features";
+			this.m_ShowGroundFeaturesCheckBox.UseVisualStyleBackColor = true;
+			// 
+			// label12
+			// 
+			this.label12.AutoSize = true;
+			this.label12.Location = new System.Drawing.Point(6, 82);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(44, 17);
+			this.label12.TabIndex = 27;
+			this.label12.Text = "Units:";
+			// 
+			// m_UnitsComboBox
+			// 
+			this.m_UnitsComboBox.FormattingEnabled = true;
+			this.m_UnitsComboBox.Items.AddRange(new object[] {
+            "m",
+            "cm",
+            "mm",
+            "ft",
+            "in"});
+			this.m_UnitsComboBox.Location = new System.Drawing.Point(101, 79);
+			this.m_UnitsComboBox.Name = "m_UnitsComboBox";
+			this.m_UnitsComboBox.Size = new System.Drawing.Size(68, 24);
+			this.m_UnitsComboBox.TabIndex = 3;
+			this.m_UnitsComboBox.SelectedIndexChanged += new System.EventHandler(this.OnSelectedUnitChanged);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -490,8 +539,6 @@
 		private System.Windows.Forms.Button m_ApplyButton;
 		private System.Windows.Forms.Timer m_Timer;
 		private System.Windows.Forms.Button m_DetailsButton;
-		private System.Windows.Forms.TextBox m_HeadingTextBox;
-		private System.Windows.Forms.Label label10;
         private System.Windows.Forms.CheckBox m_DrawFeaturesCheckBox;
 		private System.Windows.Forms.Button m_OtherViewsButton;
 		private System.Windows.Forms.GroupBox groupBox3;
@@ -499,11 +546,17 @@
 		private Emgu.CV.UI.ImageBox m_ImageBox;
 		private System.Windows.Forms.TextBox m_LocationTextBox;
 		private System.Windows.Forms.Label label11;
-		private System.Windows.Forms.TextBox m_LocationChangeTextBox;
-		private System.Windows.Forms.Label label12;
 		private System.Windows.Forms.Button m_MapButton;
-		private System.Windows.Forms.CheckBox m_ShowGroundFeaturesCheckBox;
 		private System.Windows.Forms.CheckBox m_ShowImageCheckBox;
+		private System.Windows.Forms.Label label14;
+		private System.Windows.Forms.TextBox m_DistanceFromStartTextBox;
+		private System.Windows.Forms.Label label13;
+		private System.Windows.Forms.TextBox m_HeadingTextBox;
+		private System.Windows.Forms.Label label10;
+		private System.Windows.Forms.TextBox m_PathLengthTextBox;
+		private System.Windows.Forms.CheckBox m_ShowGroundFeaturesCheckBox;
+		private System.Windows.Forms.Label label12;
+		private System.Windows.Forms.ComboBox m_UnitsComboBox;
 	}
 }
 
