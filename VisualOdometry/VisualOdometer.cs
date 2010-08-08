@@ -155,10 +155,6 @@ namespace VisualOdometry
 
 			if (previousGrayImage == null)
 			{
-				// This occurs the first time we process a frame.
-				//int upperLimitFeaturesCount = (int)(m_RawImage.Width * m_RawImage.Height / m_OpticalFlow.MinDistance / m_OpticalFlow.MinDistance) * 4;
-				//m_RotationIncrements = new List<double>(upperLimitFeaturesCount);
-
 				this.CurrentImage = m_RawImage.Clone();
 			}
 
@@ -210,7 +206,6 @@ namespace VisualOdometry
 				trackedFeature.Add(newTrackedFeaturePoints[i]);
 				m_TrackedFeatures.Add(trackedFeature);
 			}
-			//this.OpticalFlow.ClearPyramids();
 
 			this.InitialFeaturesCount = m_TrackedFeatures.Count;
 			m_ThresholdForFeatureRepopulation = this.InitialFeaturesCount * 9 / 10;

@@ -17,7 +17,6 @@ namespace VisualOdometry.UI
 		private RobotPath m_RobotPath;
 		private Bitmap m_Bitmap;
 		private Graphics m_Graphics;
-		//private Matrix m_InverseTransform; // world coordinates to pixel coordinates
 
 		private Pen m_RobotPen = new Pen(Color.Blue);
 		private Pen m_PathPen = new Pen(Color.Black);
@@ -25,11 +24,19 @@ namespace VisualOdometry.UI
 		private int m_CircleRadius = 6;
 		private float m_ZoomFactor = 1.0f;
 
+		private float m_OriginX = 0;
+		private float m_OriginY = 0;
+		private float m_TranslationX = 0.0f;
+		private float m_TranslationY = 0.0f;
+
 		public MapForm(RobotPath robotPath)
 		{
-			m_RobotPath = robotPath;
 			InitializeComponent();
 
+			m_OriginX = m_PictureBox.Width / 2.0f;
+			m_OriginY = -m_PictureBox.Height / 2.0f;
+
+			m_RobotPath = robotPath;
 			InitializeMapImage();
 		}
 
@@ -47,13 +54,11 @@ namespace VisualOdometry.UI
 
 			Matrix matrix = new Matrix();
 			matrix.Scale(1.0f, -1.0f);
-			matrix.Translate(m_PictureBox.Width / 2, -m_PictureBox.Height / 2);
+			matrix.Translate(m_OriginX, m_OriginY);
+			matrix.Translate(m_TranslationX, m_TranslationY);
 			matrix.Scale(m_ZoomFactor, m_ZoomFactor);
 
 			m_Graphics.Transform = matrix;
-
-			//m_InverseTransform = matrix.Clone();
-			//m_InverseTransform.Invert();
 		}
 
 		private void DrawFullPath()
@@ -147,7 +152,11 @@ namespace VisualOdometry.UI
 		protected override void OnResize(EventArgs e)
 		{
 			base.OnResize(e);
-			InitializeMapImage();
+
+			if (m_RobotPath != null)
+			{
+				InitializeMapImage();
+			}
 		}
 
 		bool m_Dragging = false;
@@ -175,11 +184,14 @@ namespace VisualOdometry.UI
 			{
 				Point currentLocation = e.Location;
 
-				float deltaX = (float)(currentLocation.X - m_LastPosition.X);
-				float deltaY = (float)(currentLocation.Y - m_LastPosition.Y);
+				float dX = (float)(currentLocation.X - m_LastPosition.X);
+				float dY = -(float)(currentLocation.Y - m_LastPosition.Y);
+
+				m_TranslationX += dX;
+				m_TranslationY += dY;
 
 				Matrix matrix = m_Graphics.Transform;
-				matrix.Translate(deltaX / m_ZoomFactor, -deltaY / m_ZoomFactor);
+				matrix.Translate(dX / m_ZoomFactor, dY / m_ZoomFactor);
 				m_Graphics.Transform = matrix;
 				
 				DrawFullPath();
