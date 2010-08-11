@@ -25,34 +25,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using VisualOdometry.Utilities;
+using System.Windows.Forms;
 
-namespace VisualOdometry
+namespace VideoRecorder
 {
-	public class FramesCounter
+	static class Program
 	{
-		private CircularBuffer<DateTime> m_FrameTimesBuffer = new CircularBuffer<DateTime>(10); // used for frames per seconds
-		private double m_TicksPerSecond = (double)TimeSpan.FromSeconds(1).Ticks;
-
-		internal FramesCounter()
+		/// <summary>
+		/// The main entry point for the application.
+		/// </summary>
+		[STAThread]
+		static void Main()
 		{
-			this.FrameNumber = 0;
-			this.FramesPerSecond = 0;
+			Application.EnableVisualStyles();
+			Application.SetCompatibleTextRenderingDefault(false);
+			Application.Run(new MainForm());
 		}
-
-		internal void Update()
-		{
-			m_FrameTimesBuffer.Add(DateTime.UtcNow);
-			this.FrameNumber++;
-
-			if (this.FrameNumber > 1)
-			{
-				this.FramesPerSecond = m_FrameTimesBuffer.Count * m_TicksPerSecond / (double)(m_FrameTimesBuffer[m_FrameTimesBuffer.Count - 1].Ticks - m_FrameTimesBuffer[0].Ticks);
-			}
-		}
-
-		public int FrameNumber { get; private set; }
-		public double FramesPerSecond { get; private set; }
 	}
 }
