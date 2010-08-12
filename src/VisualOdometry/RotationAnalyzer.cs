@@ -72,11 +72,6 @@ namespace VisualOdometry
 				}
 				PointF previousFeatureLocation = trackedFeature[-1];
 				PointF currentFeatureLocation = trackedFeature[0];
-				//double absDeltaX = Math.Abs(currentFeatureLocation.X - previousFeatureLocation.X);
-				//if (absDeltaX > maxAbsDeltaX)
-				//{
-				//    maxAbsDeltaX = absDeltaX;
-				//}
 
 				if (currentFeatureLocation.Y <= m_VisualOdometer.SkyRegionBottom)
 				{

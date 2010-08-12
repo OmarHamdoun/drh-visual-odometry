@@ -56,18 +56,6 @@ namespace VisualOdometry
 			}
 		}
 
-		//internal void Add(PointF featurePoint, bool isTracked)
-		//{
-		//    base.Add(featurePoint);
-		//    if (!isTracked)
-		//    {
-		//        m_Score += 1000;
-		//    }
-		//    else
-		//    {
-		//    }
-		//}
-
 		private void GradeSmoothness()
 		{
 			PointF point0 = this[0];

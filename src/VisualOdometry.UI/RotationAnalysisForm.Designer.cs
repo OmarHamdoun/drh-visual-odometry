@@ -44,14 +44,14 @@
 			this.m_AnglesChart.TabIndex = 0;
 			this.m_AnglesChart.Text = "Angles";
 			// 
-			// DetailsForm
+			// RotationAnalysisForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(371, 316);
 			this.Controls.Add(this.m_AnglesChart);
-			this.Name = "DetailsForm";
-			this.Text = "DetailsForm";
+			this.Name = "RotationAnalysisForm";
+			this.Text = "Rotation Analysis";
 			((System.ComponentModel.ISupportInitialize)(this.m_AnglesChart)).EndInit();
 			this.ResumeLayout(false);
 
