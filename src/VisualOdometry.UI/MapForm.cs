@@ -244,5 +244,10 @@ namespace VisualOdometry.UI
 			ZoomOut();
 			Refresh();
 		}
+
+		public void RedrawMap()
+		{
+			InitializeMapImage();
+		}
 	}
 }

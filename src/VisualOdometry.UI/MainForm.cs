@@ -60,11 +60,13 @@ namespace VisualOdometry.UI
 		{
 			InitializeComponent();
 			m_UnitsComboBox.SelectedIndex = 0;
-			bool useCamera = false;
+			bool useCamera = true;
 
 			if (useCamera)
 			{
 				m_Capture = new Capture();
+				m_Capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FRAME_WIDTH, 1280);
+				m_Capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FRAME_HEIGHT, 720);
 			}
 			else
 			{
@@ -73,10 +75,10 @@ namespace VisualOdometry.UI
 				m_Timer.Enabled = true;
 			}
 
-			CameraParameters cameraParameters = CameraParameters.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\MicrosoftCinemaFocus12_1280x720.txt");
+			CameraParameters cameraParameters = CameraParameters.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus14\1280x720\MicrosoftCinemaFocus14_1280x720.txt");
 
-			HomographyMatrix GroundProjectionTransformation = HomographyMatrixSupport.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\BirdsEyeViewTransformationForCalculation.txt");
-			m_GroundProjectionTransformationForUI = HomographyMatrixSupport.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\BirdsEyeViewTransformationForUI.txt");
+			HomographyMatrix GroundProjectionTransformation = HomographyMatrixSupport.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus14\1280x720\BirdsEyeViewTransformationForCalculation.txt");
+			m_GroundProjectionTransformationForUI = HomographyMatrixSupport.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus14\1280x720\BirdsEyeViewTransformationForUI.txt");
 
 			m_VisualOdometer = new VisualOdometer(m_Capture, cameraParameters, GroundProjectionTransformation, new OpticalFlow());
 
@@ -351,6 +353,16 @@ namespace VisualOdometry.UI
 		private void InitializeUnitFactor()
 		{
 			m_UnitFactor = m_UnitFactors[m_UnitsComboBox.SelectedIndex];
+		}
+
+		private void OnResetButtonClicked(object sender, EventArgs e)
+		{
+			m_VisualOdometer.ResetOdometer();
+			m_RobotPath.Clear();
+			if (m_MapForm != null && !m_MapForm.IsDisposed)
+			{
+				m_MapForm.RedrawMap();
+			}
 		}
 	}
 }

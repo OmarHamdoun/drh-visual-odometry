@@ -29,6 +29,7 @@ using System.Text;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using System.Diagnostics;
+using System.Drawing;
 
 namespace VisualOdometry
 {
@@ -44,11 +45,11 @@ namespace VisualOdometry
 		private Matrix<float> m_UndistortMapX;
 		private Matrix<float> m_UndistortMapY;
 
-		private Image<Bgr, Byte> m_RawImage;
 		public Image<Bgr, Byte> CurrentImage { get; private set; }
 		private Image<Gray, Byte> m_CurrentGrayImage;
 
 		private OpticalFlow m_OpticalFlow;
+		private List<PointF> m_RawTrackedFeaturePoints = new List<PointF>();
 		private List<TrackedFeature> m_TrackedFeatures;
 		private int m_NotTrackedFeaturesCount;
 		public int InitialFeaturesCount { get; private set; }
@@ -88,6 +89,7 @@ namespace VisualOdometry
 			{
 				m_OpticalFlow = value;
 				m_TrackedFeatures = new List<TrackedFeature>();
+				m_RawTrackedFeaturePoints = new List<PointF>();
 				m_ThresholdForFeatureRepopulation = int.MaxValue;
 			}
 		}
@@ -146,12 +148,8 @@ namespace VisualOdometry
 
 		public void ProcessFrame()
 		{
-			m_RawImage = m_Capture.QueryFrame();
-			//for (int i = 0; i < 1; i++)
-			//{
-			//    m_RawImage = m_Capture.QueryFrame();
-			//}
-			if (m_RawImage == null)
+			this.CurrentImage = m_Capture.QueryFrame();
+			if (this.CurrentImage == null)
 			{
 				// This occurs if we operate against a previously recorded video and the video has ended.
 				return;
@@ -160,21 +158,17 @@ namespace VisualOdometry
 			m_FramesCounter.Update();
 			if (m_UndistortMapX == null)
 			{
-				InitializeUndistortMap(m_RawImage);
+				InitializeUndistortMap(this.CurrentImage);
 			}
 
 			Image<Gray, Byte> previousGrayImage = m_CurrentGrayImage;
 
-			if (previousGrayImage == null)
-			{
-				this.CurrentImage = m_RawImage.Clone();
-			}
-
-			Undistort(m_RawImage, this.CurrentImage);
+			//Undistort(m_RawImage, this.CurrentImage);
 			m_CurrentGrayImage = this.CurrentImage.Convert<Gray, Byte>();
 
 			if (previousGrayImage == null)
 			{
+				RepopulateFeaturePoints();
 				return;
 			}
 
@@ -201,21 +195,31 @@ namespace VisualOdometry
 
 		private void Undistort(Image<Bgr, Byte> sourceImage, Image<Bgr, Byte> targetImage)
 		{
-			CvInvoke.cvRemap(sourceImage.Ptr, targetImage.Ptr, m_UndistortMapX.Ptr, m_UndistortMapY.Ptr, (int)Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR, new MCvScalar());
+			CvInvoke.cvRemap(
+				sourceImage.Ptr,
+				targetImage.Ptr,
+				m_UndistortMapX.Ptr,
+				m_UndistortMapY.Ptr,
+				(int)Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR | (int)Emgu.CV.CvEnum.WARP.CV_WARP_FILL_OUTLIERS,
+				new MCvScalar());
 		}
 
 		private void RepopulateFeaturePoints()
 		{
-			System.Drawing.PointF[] newTrackedFeaturePoints = this.OpticalFlow.FindFeaturesToTrack(
+			System.Drawing.PointF[] newRawTrackedFeaturePoints = this.OpticalFlow.FindFeaturesToTrack(
 				m_CurrentGrayImage,
 				m_TrackedFeatures,
 				m_SkyRegionBottom,
 				m_GroundRegionTop);
 
-			for (int i = 0; i < newTrackedFeaturePoints.Length; i++)
+			m_RawTrackedFeaturePoints.AddRange(newRawTrackedFeaturePoints);
+			System.Drawing.PointF[] undistortedNewFeaturePoints = m_CameraParameters.IntrinsicCameraParameters.Undistort(
+				newRawTrackedFeaturePoints, m_CameraParameters.IntrinsicCameraParameters.IntrinsicMatrix, null);
+
+			for (int i = 0; i < undistortedNewFeaturePoints.Length; i++)
 			{
 				TrackedFeature trackedFeature = new TrackedFeature();
-				trackedFeature.Add(newTrackedFeaturePoints[i]);
+				trackedFeature.Add(undistortedNewFeaturePoints[i]);
 				m_TrackedFeatures.Add(trackedFeature);
 			}
 
@@ -232,23 +236,28 @@ namespace VisualOdometry
 
 		private void TrackFeatures(Image<Gray, Byte> previousGrayImage)
 		{
-			System.Drawing.PointF[] trackedFeaturePoints = new System.Drawing.PointF[m_TrackedFeatures.Count];
-			for (int i = 0; i < trackedFeaturePoints.Length; i++)
+			if (m_RawTrackedFeaturePoints.Count == 0)
 			{
-				trackedFeaturePoints[i] = m_TrackedFeatures[i][0];
+				return;
 			}
-			OpticalFlowResult opticalFlowResult = this.OpticalFlow.CalculateOpticalFlow(previousGrayImage, m_CurrentGrayImage, trackedFeaturePoints);
-			trackedFeaturePoints = opticalFlowResult.TrackedFeaturePoints;
+
+			OpticalFlowResult opticalFlowResult = this.OpticalFlow.CalculateOpticalFlow(previousGrayImage, m_CurrentGrayImage, m_RawTrackedFeaturePoints.ToArray());
+			System.Drawing.PointF[] rawTrackedFeaturePoints = opticalFlowResult.TrackedFeaturePoints;
+			m_RawTrackedFeaturePoints.Clear();
+			m_RawTrackedFeaturePoints.AddRange(rawTrackedFeaturePoints);
+
+			System.Drawing.PointF[] undistortedNewFeaturePoints = m_CameraParameters.IntrinsicCameraParameters.Undistort(
+				rawTrackedFeaturePoints, m_CameraParameters.IntrinsicCameraParameters.IntrinsicMatrix, null);
 
 			int fullHistoryFeaturesCount = 0;
 			int unsmoothFeaturesCount = 0;
-			for (int i = trackedFeaturePoints.Length - 1; i >= 0; i--)
+			for (int i = undistortedNewFeaturePoints.Length - 1; i >= 0; i--)
 			{
 				bool isTracked = opticalFlowResult.TrackingStatusIndicators[i] == 1;
 				if (isTracked)
 				{
 					TrackedFeature trackedFeature = m_TrackedFeatures[i];
-					trackedFeature.Add(trackedFeaturePoints[i]);
+					trackedFeature.Add(undistortedNewFeaturePoints[i]);
 
 					if (trackedFeature.IsFull)
 					{
@@ -282,6 +291,7 @@ namespace VisualOdometry
 		{
 			m_NotTrackedFeaturesCount++;
 			m_TrackedFeatures.RemoveAt(index);
+			m_RawTrackedFeaturePoints.RemoveAt(index);
 		}
 
 		private void ApplyUnsmoothGrades()
@@ -368,6 +378,12 @@ namespace VisualOdometry
 			{
 				handler(this, EventArgs.Empty);
 			}
+		}
+
+		public void ResetOdometer()
+		{
+			m_RobotPose.Heading = Angle.FromDegrees(0);
+			m_RobotPose.Location = new System.Windows.Point(0, 0);
 		}
 
 		public void Dispose()

@@ -46,9 +46,23 @@
 			this.m_DrawFeaturesCheckBox = new System.Windows.Forms.CheckBox();
 			this.m_BottomPanel = new System.Windows.Forms.Panel();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.m_UnitsComboBox = new System.Windows.Forms.ComboBox();
+			this.label12 = new System.Windows.Forms.Label();
+			this.label14 = new System.Windows.Forms.Label();
+			this.m_DistanceFromStartTextBox = new System.Windows.Forms.TextBox();
+			this.label13 = new System.Windows.Forms.Label();
+			this.m_HeadingTextBox = new System.Windows.Forms.TextBox();
+			this.label10 = new System.Windows.Forms.Label();
+			this.m_PathLengthTextBox = new System.Windows.Forms.TextBox();
 			this.m_LocationTextBox = new System.Windows.Forms.TextBox();
 			this.label11 = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.m_FramesPerSecondTextBox = new System.Windows.Forms.TextBox();
+			this.label16 = new System.Windows.Forms.Label();
+			this.m_FrameTextBox = new System.Windows.Forms.TextBox();
+			this.label15 = new System.Windows.Forms.Label();
+			this.m_ShowGroundFeaturesCheckBox = new System.Windows.Forms.CheckBox();
+			this.m_ShowImageCheckBox = new System.Windows.Forms.CheckBox();
 			this.m_MapButton = new System.Windows.Forms.Button();
 			this.m_OtherViewsButton = new System.Windows.Forms.Button();
 			this.m_DetailsButton = new System.Windows.Forms.Button();
@@ -61,20 +75,7 @@
 			this.label5 = new System.Windows.Forms.Label();
 			this.m_Timer = new System.Windows.Forms.Timer(this.components);
 			this.m_ImageBox = new Emgu.CV.UI.ImageBox();
-			this.m_ShowImageCheckBox = new System.Windows.Forms.CheckBox();
-			this.m_PathLengthTextBox = new System.Windows.Forms.TextBox();
-			this.m_HeadingTextBox = new System.Windows.Forms.TextBox();
-			this.label10 = new System.Windows.Forms.Label();
-			this.label13 = new System.Windows.Forms.Label();
-			this.label14 = new System.Windows.Forms.Label();
-			this.m_DistanceFromStartTextBox = new System.Windows.Forms.TextBox();
-			this.m_ShowGroundFeaturesCheckBox = new System.Windows.Forms.CheckBox();
-			this.label12 = new System.Windows.Forms.Label();
-			this.m_UnitsComboBox = new System.Windows.Forms.ComboBox();
-			this.m_FrameTextBox = new System.Windows.Forms.TextBox();
-			this.label15 = new System.Windows.Forms.Label();
-			this.m_FramesPerSecondTextBox = new System.Windows.Forms.TextBox();
-			this.label16 = new System.Windows.Forms.Label();
+			this.m_ResetButton = new System.Windows.Forms.Button();
 			this.m_TopPanel.SuspendLayout();
 			this.m_BottomPanel.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -235,6 +236,7 @@
 			// 
 			// groupBox3
 			// 
+			this.groupBox3.Controls.Add(this.m_ResetButton);
 			this.groupBox3.Controls.Add(this.m_UnitsComboBox);
 			this.groupBox3.Controls.Add(this.label12);
 			this.groupBox3.Controls.Add(this.label14);
@@ -252,6 +254,81 @@
 			this.groupBox3.TabIndex = 10;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Odometry";
+			// 
+			// m_UnitsComboBox
+			// 
+			this.m_UnitsComboBox.FormattingEnabled = true;
+			this.m_UnitsComboBox.Items.AddRange(new object[] {
+            "m",
+            "cm",
+            "mm",
+            "ft",
+            "in"});
+			this.m_UnitsComboBox.Location = new System.Drawing.Point(101, 79);
+			this.m_UnitsComboBox.Name = "m_UnitsComboBox";
+			this.m_UnitsComboBox.Size = new System.Drawing.Size(68, 24);
+			this.m_UnitsComboBox.TabIndex = 3;
+			this.m_UnitsComboBox.SelectedIndexChanged += new System.EventHandler(this.OnSelectedUnitChanged);
+			// 
+			// label12
+			// 
+			this.label12.AutoSize = true;
+			this.label12.Location = new System.Drawing.Point(6, 82);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(44, 17);
+			this.label12.TabIndex = 27;
+			this.label12.Text = "Units:";
+			// 
+			// label14
+			// 
+			this.label14.AutoSize = true;
+			this.label14.Location = new System.Drawing.Point(175, 56);
+			this.label14.Name = "label14";
+			this.label14.Size = new System.Drawing.Size(133, 17);
+			this.label14.TabIndex = 21;
+			this.label14.Text = "Distance from Start:";
+			// 
+			// m_DistanceFromStartTextBox
+			// 
+			this.m_DistanceFromStartTextBox.Location = new System.Drawing.Point(314, 53);
+			this.m_DistanceFromStartTextBox.Name = "m_DistanceFromStartTextBox";
+			this.m_DistanceFromStartTextBox.ReadOnly = true;
+			this.m_DistanceFromStartTextBox.Size = new System.Drawing.Size(68, 22);
+			this.m_DistanceFromStartTextBox.TabIndex = 20;
+			// 
+			// label13
+			// 
+			this.label13.AutoSize = true;
+			this.label13.Location = new System.Drawing.Point(6, 56);
+			this.label13.Name = "label13";
+			this.label13.Size = new System.Drawing.Size(89, 17);
+			this.label13.TabIndex = 19;
+			this.label13.Text = "Path Length:";
+			// 
+			// m_HeadingTextBox
+			// 
+			this.m_HeadingTextBox.Location = new System.Drawing.Point(314, 23);
+			this.m_HeadingTextBox.Name = "m_HeadingTextBox";
+			this.m_HeadingTextBox.ReadOnly = true;
+			this.m_HeadingTextBox.Size = new System.Drawing.Size(68, 22);
+			this.m_HeadingTextBox.TabIndex = 18;
+			// 
+			// label10
+			// 
+			this.label10.AutoSize = true;
+			this.label10.Location = new System.Drawing.Point(243, 26);
+			this.label10.Name = "label10";
+			this.label10.Size = new System.Drawing.Size(65, 17);
+			this.label10.TabIndex = 17;
+			this.label10.Text = "Heading:";
+			// 
+			// m_PathLengthTextBox
+			// 
+			this.m_PathLengthTextBox.Location = new System.Drawing.Point(101, 53);
+			this.m_PathLengthTextBox.Name = "m_PathLengthTextBox";
+			this.m_PathLengthTextBox.ReadOnly = true;
+			this.m_PathLengthTextBox.Size = new System.Drawing.Size(68, 22);
+			this.m_PathLengthTextBox.TabIndex = 16;
 			// 
 			// m_LocationTextBox
 			// 
@@ -289,6 +366,62 @@
 			this.groupBox2.TabIndex = 9;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "View";
+			// 
+			// m_FramesPerSecondTextBox
+			// 
+			this.m_FramesPerSecondTextBox.Location = new System.Drawing.Point(208, 108);
+			this.m_FramesPerSecondTextBox.Name = "m_FramesPerSecondTextBox";
+			this.m_FramesPerSecondTextBox.ReadOnly = true;
+			this.m_FramesPerSecondTextBox.Size = new System.Drawing.Size(68, 22);
+			this.m_FramesPerSecondTextBox.TabIndex = 19;
+			// 
+			// label16
+			// 
+			this.label16.AutoSize = true;
+			this.label16.Location = new System.Drawing.Point(165, 111);
+			this.label16.Name = "label16";
+			this.label16.Size = new System.Drawing.Size(31, 17);
+			this.label16.TabIndex = 18;
+			this.label16.Text = "fps:";
+			// 
+			// m_FrameTextBox
+			// 
+			this.m_FrameTextBox.Location = new System.Drawing.Point(69, 108);
+			this.m_FrameTextBox.Name = "m_FrameTextBox";
+			this.m_FrameTextBox.ReadOnly = true;
+			this.m_FrameTextBox.Size = new System.Drawing.Size(83, 22);
+			this.m_FrameTextBox.TabIndex = 11;
+			// 
+			// label15
+			// 
+			this.label15.AutoSize = true;
+			this.label15.Location = new System.Drawing.Point(11, 111);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(52, 17);
+			this.label15.TabIndex = 10;
+			this.label15.Text = "Frame:";
+			// 
+			// m_ShowGroundFeaturesCheckBox
+			// 
+			this.m_ShowGroundFeaturesCheckBox.AutoSize = true;
+			this.m_ShowGroundFeaturesCheckBox.Location = new System.Drawing.Point(14, 81);
+			this.m_ShowGroundFeaturesCheckBox.Name = "m_ShowGroundFeaturesCheckBox";
+			this.m_ShowGroundFeaturesCheckBox.Size = new System.Drawing.Size(138, 21);
+			this.m_ShowGroundFeaturesCheckBox.TabIndex = 17;
+			this.m_ShowGroundFeaturesCheckBox.Text = "Ground Features";
+			this.m_ShowGroundFeaturesCheckBox.UseVisualStyleBackColor = true;
+			// 
+			// m_ShowImageCheckBox
+			// 
+			this.m_ShowImageCheckBox.AutoSize = true;
+			this.m_ShowImageCheckBox.Checked = true;
+			this.m_ShowImageCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.m_ShowImageCheckBox.Location = new System.Drawing.Point(14, 25);
+			this.m_ShowImageCheckBox.Name = "m_ShowImageCheckBox";
+			this.m_ShowImageCheckBox.Size = new System.Drawing.Size(68, 21);
+			this.m_ShowImageCheckBox.TabIndex = 16;
+			this.m_ShowImageCheckBox.Text = "Image";
+			this.m_ShowImageCheckBox.UseVisualStyleBackColor = true;
 			// 
 			// m_MapButton
 			// 
@@ -400,136 +533,15 @@
 			this.m_ImageBox.TabIndex = 2;
 			this.m_ImageBox.TabStop = false;
 			// 
-			// m_ShowImageCheckBox
+			// m_ResetButton
 			// 
-			this.m_ShowImageCheckBox.AutoSize = true;
-			this.m_ShowImageCheckBox.Checked = true;
-			this.m_ShowImageCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.m_ShowImageCheckBox.Location = new System.Drawing.Point(14, 25);
-			this.m_ShowImageCheckBox.Name = "m_ShowImageCheckBox";
-			this.m_ShowImageCheckBox.Size = new System.Drawing.Size(68, 21);
-			this.m_ShowImageCheckBox.TabIndex = 16;
-			this.m_ShowImageCheckBox.Text = "Image";
-			this.m_ShowImageCheckBox.UseVisualStyleBackColor = true;
-			// 
-			// m_PathLengthTextBox
-			// 
-			this.m_PathLengthTextBox.Location = new System.Drawing.Point(101, 53);
-			this.m_PathLengthTextBox.Name = "m_PathLengthTextBox";
-			this.m_PathLengthTextBox.ReadOnly = true;
-			this.m_PathLengthTextBox.Size = new System.Drawing.Size(68, 22);
-			this.m_PathLengthTextBox.TabIndex = 16;
-			// 
-			// m_HeadingTextBox
-			// 
-			this.m_HeadingTextBox.Location = new System.Drawing.Point(314, 23);
-			this.m_HeadingTextBox.Name = "m_HeadingTextBox";
-			this.m_HeadingTextBox.ReadOnly = true;
-			this.m_HeadingTextBox.Size = new System.Drawing.Size(68, 22);
-			this.m_HeadingTextBox.TabIndex = 18;
-			// 
-			// label10
-			// 
-			this.label10.AutoSize = true;
-			this.label10.Location = new System.Drawing.Point(243, 26);
-			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(65, 17);
-			this.label10.TabIndex = 17;
-			this.label10.Text = "Heading:";
-			// 
-			// label13
-			// 
-			this.label13.AutoSize = true;
-			this.label13.Location = new System.Drawing.Point(6, 56);
-			this.label13.Name = "label13";
-			this.label13.Size = new System.Drawing.Size(89, 17);
-			this.label13.TabIndex = 19;
-			this.label13.Text = "Path Length:";
-			// 
-			// label14
-			// 
-			this.label14.AutoSize = true;
-			this.label14.Location = new System.Drawing.Point(175, 56);
-			this.label14.Name = "label14";
-			this.label14.Size = new System.Drawing.Size(133, 17);
-			this.label14.TabIndex = 21;
-			this.label14.Text = "Distance from Start:";
-			// 
-			// m_DistanceFromStartTextBox
-			// 
-			this.m_DistanceFromStartTextBox.Location = new System.Drawing.Point(314, 53);
-			this.m_DistanceFromStartTextBox.Name = "m_DistanceFromStartTextBox";
-			this.m_DistanceFromStartTextBox.ReadOnly = true;
-			this.m_DistanceFromStartTextBox.Size = new System.Drawing.Size(68, 22);
-			this.m_DistanceFromStartTextBox.TabIndex = 20;
-			// 
-			// m_ShowGroundFeaturesCheckBox
-			// 
-			this.m_ShowGroundFeaturesCheckBox.AutoSize = true;
-			this.m_ShowGroundFeaturesCheckBox.Location = new System.Drawing.Point(14, 81);
-			this.m_ShowGroundFeaturesCheckBox.Name = "m_ShowGroundFeaturesCheckBox";
-			this.m_ShowGroundFeaturesCheckBox.Size = new System.Drawing.Size(138, 21);
-			this.m_ShowGroundFeaturesCheckBox.TabIndex = 17;
-			this.m_ShowGroundFeaturesCheckBox.Text = "Ground Features";
-			this.m_ShowGroundFeaturesCheckBox.UseVisualStyleBackColor = true;
-			// 
-			// label12
-			// 
-			this.label12.AutoSize = true;
-			this.label12.Location = new System.Drawing.Point(6, 82);
-			this.label12.Name = "label12";
-			this.label12.Size = new System.Drawing.Size(44, 17);
-			this.label12.TabIndex = 27;
-			this.label12.Text = "Units:";
-			// 
-			// m_UnitsComboBox
-			// 
-			this.m_UnitsComboBox.FormattingEnabled = true;
-			this.m_UnitsComboBox.Items.AddRange(new object[] {
-            "m",
-            "cm",
-            "mm",
-            "ft",
-            "in"});
-			this.m_UnitsComboBox.Location = new System.Drawing.Point(101, 79);
-			this.m_UnitsComboBox.Name = "m_UnitsComboBox";
-			this.m_UnitsComboBox.Size = new System.Drawing.Size(68, 24);
-			this.m_UnitsComboBox.TabIndex = 3;
-			this.m_UnitsComboBox.SelectedIndexChanged += new System.EventHandler(this.OnSelectedUnitChanged);
-			// 
-			// m_FrameTextBox
-			// 
-			this.m_FrameTextBox.Location = new System.Drawing.Point(69, 108);
-			this.m_FrameTextBox.Name = "m_FrameTextBox";
-			this.m_FrameTextBox.ReadOnly = true;
-			this.m_FrameTextBox.Size = new System.Drawing.Size(83, 22);
-			this.m_FrameTextBox.TabIndex = 11;
-			// 
-			// label15
-			// 
-			this.label15.AutoSize = true;
-			this.label15.Location = new System.Drawing.Point(11, 111);
-			this.label15.Name = "label15";
-			this.label15.Size = new System.Drawing.Size(52, 17);
-			this.label15.TabIndex = 10;
-			this.label15.Text = "Frame:";
-			// 
-			// m_FpsTextBox
-			// 
-			this.m_FramesPerSecondTextBox.Location = new System.Drawing.Point(208, 108);
-			this.m_FramesPerSecondTextBox.Name = "m_FpsTextBox";
-			this.m_FramesPerSecondTextBox.ReadOnly = true;
-			this.m_FramesPerSecondTextBox.Size = new System.Drawing.Size(68, 22);
-			this.m_FramesPerSecondTextBox.TabIndex = 19;
-			// 
-			// label16
-			// 
-			this.label16.AutoSize = true;
-			this.label16.Location = new System.Drawing.Point(165, 111);
-			this.label16.Name = "label16";
-			this.label16.Size = new System.Drawing.Size(31, 17);
-			this.label16.TabIndex = 18;
-			this.label16.Text = "fps:";
+			this.m_ResetButton.Location = new System.Drawing.Point(9, 108);
+			this.m_ResetButton.Name = "m_ResetButton";
+			this.m_ResetButton.Size = new System.Drawing.Size(75, 23);
+			this.m_ResetButton.TabIndex = 28;
+			this.m_ResetButton.Text = "Reset";
+			this.m_ResetButton.UseVisualStyleBackColor = true;
+			this.m_ResetButton.Click += new System.EventHandler(this.OnResetButtonClicked);
 			// 
 			// MainForm
 			// 
@@ -603,6 +615,7 @@
 		private System.Windows.Forms.Label label16;
 		private System.Windows.Forms.TextBox m_FrameTextBox;
 		private System.Windows.Forms.Label label15;
+		private System.Windows.Forms.Button m_ResetButton;
 	}
 }
 

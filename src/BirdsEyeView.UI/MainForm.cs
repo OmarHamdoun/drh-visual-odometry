@@ -53,9 +53,9 @@ namespace BirdsEyeView.UI
 		public MainForm()
 		{
 			InitializeComponent();
-			m_CameraParameters = CameraParameters.Load(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\MicrosoftCinemaFocus12_1280x720.txt");
+			m_CameraParameters = CameraParameters.Load(@"..\..\..\..\CalibrationFiles\MicrosoftCinema\Focus14\1280x720\MicrosoftCinemaFocus14_1280x720.txt");
 
-			m_RawImage = new Image<Bgr, byte>(@"C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720\Focus12.jpg");
+			m_RawImage = new Image<Bgr, byte>(@"..\..\..\..\CalibrationFiles\MicrosoftCinema\Focus14\1280x720\GroundProjectionCalibration.jpg");
 			this.CurrentImage = m_RawImage.Clone();
 			this.BirdsEyeImage = m_RawImage.Clone();
 

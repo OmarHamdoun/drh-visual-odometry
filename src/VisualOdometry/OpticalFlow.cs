@@ -138,14 +138,6 @@ namespace VisualOdometry
 			get { return m_MaskImage; }
 		}
 
-		//internal PointF[] FindFeaturesToTrack(Image<Gray, Byte> grayImage)
-		//{
-		//    PointF[][] foundFeaturesInChannels = grayImage.GoodFeaturesToTrack(this.MaxFeatureCount, this.QualityLevel, this.MinDistance, this.BlockSize);
-		//    // Next we refine the location of the found features
-		//    grayImage.FindCornerSubPix(foundFeaturesInChannels, new Size(c_WinSize, c_WinSize), new Size(-1, -1), m_SubCornerTerminationCriteria);
-		//    return foundFeaturesInChannels[0];
-		//}
-
 		internal PointF[] FindFeaturesToTrack(Image<Gray, Byte> grayImage, List<TrackedFeature> currentlyTrackedFeatures, int skyRegionBottom, int groundRegionTop)
 		{
 			if (m_MaskImage == null)
@@ -179,8 +171,10 @@ namespace VisualOdometry
 		/// <param name="groundTop"></param>
 		private void UpdateMaskImage(Size size, List<TrackedFeature> currentlyTrackedFeatures, int skyRegionBottom, int groundRegionTop)
 		{
-			m_MaskImage.SetValue(255); // fill white
 			Gray blockedAreaColor = new Gray(0); // black
+			Gray transparentAreaColor = new Gray(255); // white
+
+			m_MaskImage.SetValue(transparentAreaColor); // fill
 
 			// We mask out the area between the top of the ground region and the bottom of the sky region
 			Rectangle rectangle = new Rectangle(0, skyRegionBottom, m_MaskImage.Width, groundRegionTop - skyRegionBottom);
@@ -231,20 +225,20 @@ namespace VisualOdometry
 			}
 		}
 
-		internal void ClearPyramids()
-		{
-			if (m_PreviousPyrBufferParam != null)
-			{
-				m_PreviousPyrBufferParam.Dispose();
-			}
-			m_PreviousPyrBufferParam = null;
+		//internal void ClearPyramids()
+		//{
+		//    if (m_PreviousPyrBufferParam != null)
+		//    {
+		//        m_PreviousPyrBufferParam.Dispose();
+		//    }
+		//    m_PreviousPyrBufferParam = null;
 
-			if (m_CurrentPyrBufferParam != null)
-			{
-				m_CurrentPyrBufferParam.Dispose();
-			}
-			m_CurrentPyrBufferParam = null;
-		}
+		//    if (m_CurrentPyrBufferParam != null)
+		//    {
+		//        m_CurrentPyrBufferParam.Dispose();
+		//    }
+		//    m_CurrentPyrBufferParam = null;
+		//}
 
 		internal OpticalFlowResult CalculateOpticalFlow(Image<Gray, Byte> previousGrayImage, Image<Gray, Byte> currentGrayImage, PointF[] previousFoundFeaturePoints)
 		{

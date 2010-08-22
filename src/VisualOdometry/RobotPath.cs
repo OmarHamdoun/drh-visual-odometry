@@ -116,5 +116,16 @@ namespace VisualOdometry
 				return Math.Sqrt(dx * dx + dy * dy);
 			}
 		}
+
+		public void Clear()
+		{
+			m_Poses.Clear();
+			m_UtcTimeStamps.Clear();
+			m_PathLength = 0;
+			m_MinX = 0;
+			m_MaxX = 0;
+			m_MinY = 0;
+			m_MaxY = 0;
+		}
 	}
 }
