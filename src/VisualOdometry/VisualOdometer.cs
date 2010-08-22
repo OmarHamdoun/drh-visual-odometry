@@ -212,6 +212,11 @@ namespace VisualOdometry
 				m_SkyRegionBottom,
 				m_GroundRegionTop);
 
+			if (newRawTrackedFeaturePoints.Length == 0)
+			{
+				return;
+			}
+
 			m_RawTrackedFeaturePoints.AddRange(newRawTrackedFeaturePoints);
 			System.Drawing.PointF[] undistortedNewFeaturePoints = m_CameraParameters.IntrinsicCameraParameters.Undistort(
 				newRawTrackedFeaturePoints, m_CameraParameters.IntrinsicCameraParameters.IntrinsicMatrix, null);
