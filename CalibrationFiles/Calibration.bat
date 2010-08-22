@@ -1,1 +1,2 @@
-calibration.exe -w 9 -h 7 -s 25.0 -o .\cameraParams.txt -a 1.0 .\MicrosoftCinemaFocus14\Set1\Images.txt
+SET PATH=..\3rdParty\EmguCV;%PATH%
+..\3rdParty\Nant\nant.exe

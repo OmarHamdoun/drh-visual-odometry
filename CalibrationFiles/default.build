@@ -2,7 +2,7 @@
 <project name="CameraCalibration" default="calculateCameraCalibrationParams">
 	<!-- global project settings -->
 	<property name="basedir" value="${project::get-base-directory()}" />
-	<property name="imagesFolderPath" value="C:\svnDev\oss\Google\drh-visual-odometry\CalibrationFiles\MicrosoftCinema\Focus12\1280x720" />
+	<property name="imagesFolderPath" value=".\CalibrationFiles\MicrosoftCinema\Focus14\1280x720" />
 	<property name="imagesListFilePath" value="${imagesFolderPath}\Images.txt" />
 	<property name="calibrationParamsFilePath" value="${imagesFolderPath}\CalibrationParams.txt" />
 
